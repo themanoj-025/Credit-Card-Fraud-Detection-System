@@ -34,7 +34,7 @@ umap-learn>=0.5.3,<1.0.0
 scipy>=1.10.0,<2.0.0
 
 # ─── API ───────────────────────────────────────────────────────
-fastapi>=0.116.0,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
+fastapi>=0.141.1,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
 uvicorn>=0.22.0,<1.0.0
 pydantic>=2.0.0
 pydantic-settings>=2.0.0,<3.0.0
