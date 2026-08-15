@@ -1,0 +1,66 @@
+# FraudLens -- Retraining CronJob
+# Kubernetes CronJob for automated retraining trigger checks.
+#
+# Schedule: daily at 2 AM (adjust via spec.schedule)
+# Behavior:
+#   1. Checks drift events and feedback volume since last training
+#   2. If either condition is met, runs the full training pipeline
+#   3. Registers the trained model as a candidate (never auto-promotes)
+#   4. Stores candidate metadata in model_candidates table
+#
+# To manually trigger:
+#   kubectl create job --from=cronjob/fraudlens-retrain-check manual-trigger
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fraudlens-retrain-check
+  labels:
+    app: fraudlens
+    component: retraining
+spec:
+  schedule: "0 2 * * *"  # Daily at 02:00 UTC
+  concurrencyPolicy: Forbid  # Don't start new if previous still running
+  suspend: false
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2  # Retry twice on failure
+      activeDeadlineSeconds: 7200  # Max 2 hours for the full pipeline
+      ttlSecondsAfterFinished: 86400  # Clean up after 24 hours
+      template:
+        metadata:
+          labels:
+            app: fraudlens
+            component: retraining
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: retrain
+              image: ghcr.io/fraudlens/fraudlens:latest
+              imagePullPolicy: Always
+              command:
+                - python
+                - -m
+                - src.fraudlens.retraining.retrain_trigger
+              envFrom:
+                - configMapRef:
+                    name: fraudlens-config
+                - secretRef:
+                    name: fraudlens-secrets
+              env:
+                - name: RETRAINING_DRY_RUN
+                  value: "false"
+                - name: RETRAINING_FEEDBACK_THRESHOLD
+                  value: "100"
+                - name: RETRAINING_DRIFT_CRITICAL_THRESHOLD
+                  value: "3"
+                - name: LOG_LEVEL
+                  value: "INFO"
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: "2Gi"
+                limits:
+                  cpu: "4"
+                  memory: "8Gi"

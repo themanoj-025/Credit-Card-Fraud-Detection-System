@@ -1,0 +1,131 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Deployment
+# Kubernetes Deployment manifest for the FraudLens API
+# ════════════════════════════════════════════════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraudlens-api
+  labels:
+    app: fraudlens
+    component: api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: fraudlens
+      component: api
+  template:
+    metadata:
+      labels:
+        app: fraudlens
+        component: api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/fraudlens/fraudlens:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: fraudlens-config
+            - secretRef:
+                name: fraudlens-secrets
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 12
+---
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Dashboard Deployment
+# ════════════════════════════════════════════════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraudlens-dashboard
+  labels:
+    app: fraudlens
+    component: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fraudlens
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: fraudlens
+        component: dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: ghcr.io/fraudlens/fraudlens:latest
+          imagePullPolicy: Always
+          command:
+            - streamlit
+            - run
+            - app/streamlit_app.py
+            - --server.port=8501
+            - --server.address=0.0.0.0
+            - --server.headless=true
+          ports:
+            - containerPort: 8501
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: fraudlens-config
+            - secretRef:
+                name: fraudlens-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8501
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8501
+            initialDelaySeconds: 30
+            periodSeconds: 15

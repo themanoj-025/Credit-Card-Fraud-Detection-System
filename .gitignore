@@ -1,0 +1,116 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — .gitignore
+# ════════════════════════════════════════════════════════════════
+
+# ─── Python ───────────────────────────────────────────────────
+*.py[cod]
+__pycache__/
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.parquet
+
+# ─── Environment ──────────────────────────────────────────────
+.env
+.env.local
+.env.production
+venv/
+.venv/
+env/
+
+# ─── Data ──────────────────────────────────────────────────────
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/*.dvc
+data/processed/
+data/interim/*
+data/external/*
+!data/interim/.gitkeep
+!data/external/.gitkeep
+data/*.csv
+data/*.pkl
+data/*.parquet
+Dataset/
+
+# ─── Models ──────────────────────────────────────────────────
+models/*.pkl
+models/*.joblib
+models/rag_index/
+!models/.gitkeep
+
+# ─── MLflow ──────────────────────────────────────────────────
+mlruns/
+mlflow.db
+fraudlens.db
+
+# ─── Reports ─────────────────────────────────────────────────
+reports/
+reports/figures/
+reports/*.csv
+reports/*.json
+reports/*.html
+reports/*.pdf
+
+# ─── Monitoring ──────────────────────────────────────────────
+monitoring/*.json
+monitoring/drift_reports/
+
+# ─── IDE ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+nul
+
+# ─── Testing & Coverage ──────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+*.log
+.hypothesis/
+.tox/
+.benchmarks/
+.baseline_test_output.txt
+test_*.db
+
+# ─── Jupyter ─────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ─── DVC ─────────────────────────────────────────────────────
+.dvc/tmp/*            # Temp/lock files from DVC operations
+.dvc/cache/           # DVC data cache (large binary blobs)
+.dvc/config.local     # Local DVC config (machine-specific paths/creds)
+
+# ─── Linter / Formatter Cache ────────────────────────────────
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ─── Docker ──────────────────────────────────────────────────
+.docker/
+
+# ─── Archived / Dead Code ────────────────────────────────────
+src/**/_archived_*
+monitoring/_archived_*
+
+# ─── Generated Training Artifacts ───────────────────────────
+models/threshold.txt
+models/*.json
+catboost_info/
+
+# ─── ML Model Formats (defensive) ───────────────────────────
+*.pth
+*.h5
+*.pt
+*.ckpt

@@ -1,0 +1,43 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — ConfigMap
+# Non-sensitive configuration values
+# ════════════════════════════════════════════════════════════════
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fraudlens-config
+  labels:
+    app: fraudlens
+data:
+  # ─── API Settings ─────────────────────────────────────────────
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  API_WORKERS: "4"
+  LOG_LEVEL: "info"
+
+  # ─── Database ─────────────────────────────────────────────────
+  # Full DATABASE_URL is stored in the fraudlens-secrets Secret
+  # PostgreSQL host/port for application use
+  POSTGRES_HOST: "fraudlens-postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "fraudlens"
+  POSTGRES_USER: "fraudlens"
+
+  # ─── Redis ────────────────────────────────────────────────────
+  REDIS_URL: "redis://fraudlens-redis:6379/0"
+
+  # ─── Model Settings ───────────────────────────────────────────
+  MODEL_PATH: "/app/models/fraudlens_model.pkl"
+  SCALER_PATH: "/app/models/scaler.pkl"
+  PREDICTION_THRESHOLD: "0.5"
+
+  # ─── Feature Flags ────────────────────────────────────────────
+  FEATURE_LLM_NARRATOR: "true"
+  FEATURE_ANOMALY_SCORE: "true"
+  FEATURE_SHAP_EXPLANATION: "true"
+
+  # ─── Rate Limiting ────────────────────────────────────────────
+  RATE_LIMIT_DEFAULT: "100/minute"
+  RATE_LIMIT_PREDICT: "60/minute"
+  RATE_LIMIT_CHAT: "10/minute"
+  RATE_LIMIT_BATCH: "5/minute"

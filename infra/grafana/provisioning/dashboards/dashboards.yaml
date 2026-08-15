@@ -1,0 +1,18 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Grafana Dashboard Provisioning
+# ════════════════════════════════════════════════════════════════
+
+apiVersion: 1
+
+providers:
+  - name: 'FraudLens Dashboards'
+    orgId: 1
+    folder: 'FraudLens'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: true

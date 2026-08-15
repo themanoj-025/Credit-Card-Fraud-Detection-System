@@ -1,0 +1,185 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — CI/CD Pipeline
+#
+# Stages (all blocking):
+#   1. Lint     — black, isort, ruff (blocking — no || echo)
+#   2. Test     — pytest with coverage, parallelized
+#   3. Build    — Docker image build (serve stage)
+#   4. Scan     — Trivy vulnerability scan (fail on critical)
+#   5. Deploy   — (main only) push image → GHCR
+# ════════════════════════════════════════════════════════════════
+
+name: FraudLens CI/CD
+
+permissions:
+  contents: read
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ─── Lint (blocking) ─────────────────────────────────────────────
+  lint:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort ruff
+
+      - name: Check formatting with black
+        run: |
+          black --check src/ api/ app/ tests/
+
+      - name: Check import sorting with isort
+        run: |
+          isort --check-only --profile=black src/ api/ app/ tests/
+
+      - name: Lint with ruff
+        run: |
+          ruff check src/ api/ app/ tests/
+
+  # ─── Test (parallel, coverage enforced) ──────────────────────────
+  test:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-xdist
+
+      - name: Run all tests with coverage (parallel)
+        run: |
+          pytest tests/ -v --cov=src/fraudlens --cov-report=term-missing --cov-fail-under=85 --tb=short -n auto
+
+  # ─── Build — verify Docker image compiles ──────────────────────
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build serve image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: serve
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:ci-${{ github.sha }}
+
+      - name: Check image size
+        run: |
+          docker images --format "{{.Repository}}:{{.Tag}} {{.Size}}" | grep "${{ env.IMAGE_NAME }}"
+
+  # ─── Scan — Trivy vulnerability scan (fail on critical) ──────
+  scan:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build serve image (for scanning)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: serve
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:scan-target
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:scan-target
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+
+  # ─── Deploy — push to GHCR on main merge ─────────────────────
+  deploy:
+    timeout-minutes: 15
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: [scan]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,format=short
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push multi-stage images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: serve
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
