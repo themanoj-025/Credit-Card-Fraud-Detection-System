@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection/actions"><img src="https://img.shields.io/github/actions/workflow/status/themanoj-025/Credit-Card-Fraud-Detection/ci.yml?style=flat-square&label=CI" alt="CI Status" /></a>
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection/blob/main/LICENSE"><img src="https://img.shields.io/github/license/themanoj-025/Credit-Card-Fraud-Detection?style=flat-square" alt="License" /></a>
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection/stargazers"><img src="https://img.shields.io/github/stars/themanoj-025/Credit-Card-Fraud-Detection?style=social" alt="Stars" /></a>
+  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/actions"><img src="https://img.shields.io/github/actions/workflow/status/themanoj-025/Credit-Card-Fraud-Detection-System/ci.yml?style=flat-square&label=CI" alt="CI Status" /></a>
+  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/blob/main/LICENSE"><img src="https://img.shields.io/github/license/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/stargazers"><img src="https://img.shields.io/github/stars/themanoj-025/Credit-Card-Fraud-Detection-System?style=social" alt="Stars" /></a>
   <a href="#"><img src="https://img.shields.io/badge/coverage-78%25-yellowgreen?style=flat-square" alt="Coverage" /></a>
 </p>
 
@@ -73,8 +73,8 @@
 
 ```bash
 # Clone and start
-git clone https://github.com/themanoj-025/Credit-Card-Fraud-Detection.git
-cd "Credit Card Fraud Detection"
+git clone https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System.git
+cd Credit-Card-Fraud-Detection-System
 docker compose up -d
 
 # Access services
@@ -109,7 +109,18 @@ make dashboard
 
 Fraud detection is evaluated with the rare-positive metrics that matter: precision, recall, and PR-AUC.
 
-<!-- TODO: add the real fraud-detection metrics from the trained models (precision / recall / PR-AUC / F1 per model) -->
+Metrics below were measured on a **20% stratified holdout of the real [Kaggle creditcard.csv](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)** (56,962 transactions, 98 fraud cases). `Time`/`Amount` are standardized on the training split only (no leakage); precision/recall/F1 use a 0.5 threshold.
+
+| Model | Precision | Recall | F1 | PR-AUC | ROC-AUC |
+|-------|-----------|--------|-----|--------|---------|
+| **XGBoost** (deployed as `best_fraud_model`) | **0.872** | 0.837 | **0.854** | **0.881** | 0.972 |
+| CatBoost | 0.705 | **0.878** | 0.782 | 0.861 | 0.975 |
+| Random Forest | 0.818 | 0.827 | 0.822 | 0.835 | **0.984** |
+| Gradient Boosting | 0.724 | 0.857 | 0.785 | 0.643 | 0.968 |
+| Logistic Regression | 0.061 | 0.918 | 0.114 | 0.716 | 0.972 |
+| LightGBM | 0.042 | 0.857 | 0.080 | 0.043 | 0.905 |
+
+> 📝 **Note:** LightGBM's low precision suggests its saved artifact was trained on a different feature scale than the shared preprocessing pipeline. Model artifacts are gitignored — regenerate them consistently with `make setup-data && make train`, then re-run the evaluation with `python scripts/evaluate_saved_models.py`.
 
 ---
 
@@ -265,3 +276,11 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 <p align="center">
   If you find this project useful, please give it a ⭐ star!
 </p>
+---
+
+## ⭐ Star History
+
+[![Last Commit](https://img.shields.io/github/last-commit/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square)](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System)
+[![Contributors](https://img.shields.io/github/contributors/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square)](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/graphs/contributors)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=themanoj-025/Credit-Card-Fraud-Detection-System&type=Date)](https://star-history.com/#Credit-Card-Fraud-Detection-System&Date)
