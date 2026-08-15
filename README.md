@@ -25,6 +25,27 @@
 
 ---
 
+## 📋 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [📊 Model Performance](#-model-performance)
+- [🏗️ Architecture](#️-architecture)
+- [📋 Environment Variables](#-environment-variables)
+- [📁 Project Structure](#-project-structure)
+- [🧪 Testing](#-testing)
+- [📡 API Endpoints](#-api-endpoints)
+- [🗺️ Roadmap](#️-roadmap)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🙏 Acknowledgements](#-acknowledgements)
+
+---
+
+> 📸 **Screenshot placeholder:** Add a screenshot of the Streamlit dashboard's live-monitor page.
+
+---
+
 ## ✨ Features
 
 | Feature | Description |
@@ -86,22 +107,9 @@ make dashboard
 
 ## 📊 Model Performance
 
-### Rating Prediction (Best: RandomForest)
+Fraud detection is evaluated with the rare-positive metrics that matter: precision, recall, and PR-AUC.
 
-| Model | MAE | RMSE | R² | Train Time |
-|-------|-----|------|-----|------------|
-| RandomForest | 0.0596 | 0.1267 | 0.9172 | 8.15s |
-| XGBoost | 0.1373 | 0.2012 | 0.7913 | 1.25s |
-| CatBoost | 0.1637 | 0.2323 | 0.7220 | 2.49s |
-| LightGBM | 0.1672 | 0.2378 | 0.7085 | 5.05s |
-
-### ETA Prediction (Best: GradientBoosting)
-
-| Model | MAE (min) | RMSE (min) | R² | Train Time |
-|-------|-----------|------------|-----|------------|
-| GradientBoosting | 5.789 | 7.364 | 0.3837 | 7.75s |
-| LightGBM | 5.790 | 7.370 | 0.3828 | 0.57s |
-| CatBoost | 5.810 | 7.394 | 0.3788 | 2.31s |
+<!-- TODO: add the real fraud-detection metrics from the trained models (precision / recall / PR-AUC / F1 per model) -->
 
 ---
 
