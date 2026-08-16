@@ -47,7 +47,7 @@ class FeedbackRepository(BaseRepository[FeedbackModel]):
         """Get recent feedback entries."""
         stmt = select(FeedbackModel).order_by(FeedbackModel.created_at.desc())
         if confirmed_only:
-            stmt = stmt.where(FeedbackModel.confirmed_fraud == True)
+            stmt = stmt.where(FeedbackModel.confirmed_fraud.is_(True))
         stmt = stmt.limit(limit)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
