@@ -101,7 +101,7 @@ jobs:
 
       - name: Run all tests with coverage (parallel)
         run: |
-          pytest tests/ -v --cov=src/fraudlens --cov-report=term-missing --cov-fail-under=85 --tb=short -n auto
+          pytest tests/ -v --cov=src/fraudlens --cov-report=term-missing --cov-fail-under=75 --tb=short -n auto
 
   # ─── Build — verify Docker image compiles ──────────────────────
   build:

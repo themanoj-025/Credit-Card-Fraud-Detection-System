@@ -124,9 +124,9 @@ class TestProbabilityAccuracy:
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True
         )
-        assert "94.0%" in narrative, (
-            f"Narrative should include fraud probability. Got: {narrative[:150]}"
-        )
+        assert (
+            "94.0%" in narrative
+        ), f"Narrative should include fraud probability. Got: {narrative[:150]}"
 
     def test_narrative_accuracy_different_probabilities(
         self, narrator, sample_transaction, sample_shap_features
@@ -159,9 +159,9 @@ class TestConsistency:
 
         # All should mention "manual review" for fraud cases
         for i, n in enumerate(narratives):
-            assert "manual review" in n.lower(), (
-                f"Narrative {i} missing 'manual review' recommendation: {n[:100]}"
-            )
+            assert (
+                "manual review" in n.lower()
+            ), f"Narrative {i} missing 'manual review' recommendation: {n[:100]}"
 
     def test_consistent_legitimate_label(
         self, narrator, sample_transaction, sample_shap_features
@@ -173,9 +173,9 @@ class TestConsistency:
             narratives.append(n)
 
         for i, n in enumerate(narratives):
-            assert "legitimate" in n.lower(), (
-                f"Narrative {i} missing 'legitimate': {n[:100]}"
-            )
+            assert (
+                "legitimate" in n.lower()
+            ), f"Narrative {i} missing 'legitimate': {n[:100]}"
 
     def test_deterministic_fallback(
         self, narrator, sample_transaction, sample_shap_features

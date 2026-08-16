@@ -5,7 +5,6 @@ Custom metric cards with icons, rounded corners, and delta indicators.
 Built to match the dark-mode fraud-ops tool aesthetic.
 """
 
-
 import streamlit as st
 
 
