@@ -217,9 +217,9 @@ class TestFeatureImportanceCache:
             result = eda._get_feature_importances(sample_df)
 
         # fit() should NOT have been called — cache hit means we skip training
-        assert len(fit_called) == 0, (
-            "fit() was called despite cache being populated — cache miss bug"
-        )
+        assert (
+            len(fit_called) == 0
+        ), "fit() was called despite cache being populated — cache miss bug"
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 28
 
