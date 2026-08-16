@@ -64,9 +64,9 @@ class TestEndpointExistence:
         for endpoint in _REQUIRED_ENDPOINTS:
             method, path = endpoint.split(" ", 1)
             assert path in paths, f"Path '{path}' not in OpenAPI spec"
-            assert method.lower() in paths[path], (
-                f"Method '{method}' not found for path '{path}'"
-            )
+            assert (
+                method.lower() in paths[path]
+            ), f"Method '{method}' not found for path '{path}'"
 
     @staticmethod
     def _get_registered_routes(app) -> set[str]:
