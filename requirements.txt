@@ -74,7 +74,7 @@ structlog>=23.0.0,<24.0.0             # Structured JSON logging
 prometheus-fastapi-instrumentator>=8.1,<9.0  # Prometheus metrics; 8.1+ required for fastapi>=0.116 router handling
 opentelemetry-api>=1.22.0,<2.0.0       # OpenTelemetry API
 opentelemetry-sdk>=1.22.0,<2.0.0       # OpenTelemetry SDK
-opentelemetry-exporter-otlp>=1.22.0,<2.0.0  # OTLP exporter (Jaeger)
+opentelemetry-exporter-otlp>=1.44.0,<2.0.0  # OTLP exporter (Jaeger)
 opentelemetry-instrumentation-fastapi>=0.41b0,<1.0.0  # FastAPI auto-instrumentation
 
 # ─── Code Quality ──────────────────────────────────────────────
