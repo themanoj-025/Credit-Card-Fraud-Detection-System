@@ -71,6 +71,9 @@ Thumbs.db
 desktop.ini
 nul
 
+# ─── Node.js ──────────────────────────────────────────────────
+node_modules/
+
 # ─── Testing & Coverage ──────────────────────────────────────
 .pytest_cache/
 .coverage

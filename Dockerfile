@@ -113,8 +113,14 @@ COPY app/ ./app/
 # Copy trained models (if available)
 COPY models/ ./models/
 
-# Create directories
-RUN mkdir -p data/raw data/processed reports/figures logs
+# Create non-root user
+RUN addgroup --system app && adduser --system --ingroup app app
+
+# Create directories and fix ownership
+RUN mkdir -p data/raw data/processed reports/figures logs \
+    && chown -R app:app /app
+
+USER app
 
 # Expose ports: FastAPI on 8000, Streamlit on 8501
 EXPOSE 8000 8501
