@@ -91,6 +91,7 @@ COPY run_pipeline.py train_and_compare.py ./
 RUN mkdir -p data/raw data/processed reports/figures logs models
 
 # Default: run the training pipeline
+STOPSIGNAL SIGTERM
 CMD ["python", "run_pipeline.py"]
 
 # ─── Stage 5: Serve Image (slim) ────────────────────────────────────
@@ -130,4 +131,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Default: run the API with uvicorn
+STOPSIGNAL SIGTERM
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
