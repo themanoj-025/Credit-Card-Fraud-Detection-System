@@ -42,7 +42,14 @@
 
 ---
 
-> 📸 **Screenshot placeholder:** Add a screenshot of the Streamlit dashboard's live-monitor page.
+## 📸 Screenshots
+
+> _To add screenshots: run `make dashboard`, capture your screen, save images to `docs/assets/`, and reference them below._
+>
+> **Suggested screenshots:**
+> - Streamlit dashboard live-monitor page
+> - SHAP explanation for a flagged transaction
+> - Model comparison charts
 
 ---
 
