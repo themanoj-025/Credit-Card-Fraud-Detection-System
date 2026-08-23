@@ -90,7 +90,7 @@ class TestDetectDrift:
     def test_no_drift_with_same_distribution(self, detector, reference_data):
         """Test that unshifted data does not trigger drift."""
         results = detector.detect_drift(reference_data)
-        for feat, result in results.items():
+        for _feat, result in results.items():
             assert result["alert"] == "OK"
 
     def test_drift_detected_with_shifted_data(self, detector, drifted_data):

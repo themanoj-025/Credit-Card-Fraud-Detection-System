@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 """Honest evaluation of FraudLens saved models on a held-out split of the real Kaggle dataset."""
 import warnings
+
 warnings.filterwarnings("ignore")
 
 import joblib
 import pandas as pd
+from sklearn.metrics import (
+    average_precision_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, average_precision_score
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
@@ -44,7 +51,7 @@ for name, path in models.items():
         model = joblib.load(path)
         proba = model.predict_proba(X_test)[:, 1]
     except Exception as exc:  # missing dependency or artifact
-        print("SKIP %s: %s" % (name, exc))
+        print(f"SKIP {name}: {exc}")
         continue
     pred = (proba >= 0.5).astype(int)
     rows.append({

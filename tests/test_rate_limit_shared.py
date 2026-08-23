@@ -8,6 +8,7 @@ in docs/SECURITY.md.
 If Redis is not available, this test skips gracefully via pytest mark.
 """
 
+import contextlib
 import os
 
 import pytest
@@ -83,10 +84,8 @@ class TestSharedRedisCounter:
             )
         finally:
             # Clean up
-            try:
+            with contextlib.suppress(Exception):
                 limiter_a.storage.reset()
-            except Exception:
-                pass
 
     def test_different_backends_show_different_state(self, redis_uri):
         """
@@ -160,7 +159,5 @@ class TestSharedRedisCounter:
                 "This would mean the shared-state test is not actually testing sharing."
             )
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 limiter_redis.storage.reset()
-            except Exception:
-                pass

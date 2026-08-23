@@ -111,7 +111,7 @@ class TestResponseModels:
         assert "dependencies" in data
         assert isinstance(data["dependencies"], dict)
         # Each dependency should have status and detail
-        for dep_name, dep_info in data["dependencies"].items():
+        for _dep_name, dep_info in data["dependencies"].items():
             assert "status" in dep_info
             assert dep_info["status"] in ("ok", "degraded", "error")
             assert "detail" in dep_info
@@ -215,7 +215,7 @@ class TestOpenApiSpecConsistency:
         """Test that no two routes share the same operationId."""
         spec = app.openapi()
         operation_ids = []
-        for path, methods in spec.get("paths", {}).items():
+        for _path, methods in spec.get("paths", {}).items():
             for method in methods.values():
                 if "operationId" in method:
                     operation_ids.append(method["operationId"])

@@ -92,8 +92,8 @@ class ModelSelector:
         # Get reasoning
         reason_parts = [
             SELECTION_RULE_DESCRIPTION,
-            f"Among {len(sorted_df)} models, '{best_name}' achieved the "
-            f"highest {self.metric} ({best_value:.4f}).",
+            (f"Among {len(sorted_df)} models, '{best_name}' achieved the "
+            f"highest {self.metric} ({best_value:.4f})."),
         ]
 
         # Add runner-up context

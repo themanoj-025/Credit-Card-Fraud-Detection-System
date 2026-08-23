@@ -354,7 +354,7 @@ def _render_candidate_card(client: Any, cand: dict[str, Any], index: int) -> Non
             # ─── Action Buttons (only for pending candidates) ───────
             if is_pending:
                 st.markdown("<br>", unsafe_allow_html=True)
-                action_col1, action_col2, action_col3 = st.columns([2, 1, 1])
+                _action_col1, action_col2, action_col3 = st.columns([2, 1, 1])
 
                 with action_col2:
                     promote_key = f"promote_{version}_{index}"

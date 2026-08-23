@@ -224,14 +224,14 @@ class TestFindOptimalThreshold:
     ):
         """Test that optimal threshold is in valid range."""
         y_true, y_proba = sample_probabilities
-        threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
+        threshold, _cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         assert 0.0 <= threshold <= 1.0
 
     def test_optimal_threshold_is_not_default(self, calculator, sample_probabilities):
         """Test that optimal threshold differs from default 0.5 for imbalanced data."""
         y_true, y_proba = sample_probabilities
-        threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
+        threshold, _cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         # For imbalanced fraud data, optimal is usually much lower than 0.5
         # At minimum, it should be a reasonable value
@@ -241,7 +241,7 @@ class TestFindOptimalThreshold:
     def test_threshold_minimizes_cost(self, calculator, sample_probabilities):
         """Test that the returned threshold actually minimizes total cost."""
         y_true, y_proba = sample_probabilities
-        threshold, best_cost = calculator.find_optimal_threshold(y_true, y_proba)
+        _threshold, best_cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         # Test that a different threshold gives worse cost
         for test_threshold in [0.01, 0.5, 0.99]:
@@ -254,7 +254,7 @@ class TestFindOptimalThreshold:
     def test_threshold_returns_cost_dict(self, calculator, sample_probabilities):
         """Test that find_optimal_threshold returns valid cost dict."""
         y_true, y_proba = sample_probabilities
-        threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
+        _threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         assert isinstance(cost, dict)
         assert "total_cost_usd" in cost
@@ -274,7 +274,7 @@ class TestFindOptimalThreshold:
         """Test threshold when all fraud has high probability."""
         y_true = np.array([0, 0, 0, 1, 1])
         y_proba = np.array([0.1, 0.2, 0.3, 0.9, 0.95])
-        threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
+        _threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         # Should be able to separate perfectly
         assert cost["true_positives"] >= 1
@@ -283,7 +283,7 @@ class TestFindOptimalThreshold:
         """Test threshold when all fraud has low probability."""
         y_true = np.array([0, 0, 0, 1, 1])
         y_proba = np.array([0.1, 0.15, 0.2, 0.3, 0.35])
-        threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
+        threshold, _cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         # Threshold should be low to catch any fraud
         assert threshold <= 0.5
@@ -317,7 +317,7 @@ class TestEdgeCases:
         """Test threshold optimization with minimal data."""
         y_true = np.array([0, 1])
         y_proba = np.array([0.2, 0.8])
-        threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
+        threshold, _cost = calculator.find_optimal_threshold(y_true, y_proba)
 
         assert 0.0 <= threshold <= 1.0
 
