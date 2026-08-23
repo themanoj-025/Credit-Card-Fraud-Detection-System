@@ -36,7 +36,7 @@ def simple_model():
 @pytest.fixture
 def predictor(simple_model):
     """FraudPredictor with a trained model."""
-    model, X = simple_model
+    model, _X = simple_model
     return FraudPredictor(
         model=model,
         feature_names=[f"V{i}" for i in range(1, 29)] + ["Time", "Amount"],

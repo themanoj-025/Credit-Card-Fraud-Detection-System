@@ -76,7 +76,7 @@ class TestFraudPreprocessor:
     def test_scaler_fit_on_train_only(self, sample_data: pd.DataFrame):
         """Test that scaler is fitted ONLY on training data (no data leakage)."""
         preprocessor = FraudPreprocessor(test_size=0.2, random_state=42)
-        X_train, X_test, y_train, y_test = preprocessor.split_data(sample_data)
+        X_train, X_test, _y_train, _y_test = preprocessor.split_data(sample_data)
 
         X_train_scaled = preprocessor.fit_scale(X_train)
         X_test_scaled = preprocessor.transform_scale(X_test)
@@ -92,7 +92,7 @@ class TestFraudPreprocessor:
     def test_scaler_transform_uses_train_stats(self, sample_data: pd.DataFrame):
         """Test that transform uses the scaler fitted on training data."""
         preprocessor = FraudPreprocessor(test_size=0.2, random_state=42)
-        X_train, X_test, y_train, y_test = preprocessor.split_data(sample_data)
+        X_train, X_test, _y_train, _y_test = preprocessor.split_data(sample_data)
 
         # Fit scaler on train
         preprocessor.fit_scale(X_train)
@@ -133,7 +133,7 @@ class TestFraudPreprocessor:
         feature_cols = [f"V{i}" for i in range(1, 29)] + ["Time", "Amount"]
         X = small_df[feature_cols]
         y = small_df["Class"]
-        X_train, X_test, y_train, y_test = train_test_split(
+        X_train, X_test, _y_train, _y_test = train_test_split(
             X, y, test_size=0.33, random_state=42
         )
         assert X_train.shape[0] > 0
@@ -162,7 +162,7 @@ class TestResampler:
         data = preprocessor.full_preprocess(sample_data)
 
         resampler = Resampler(random_state=42)
-        X_res, y_res = resampler.resample(data["X_train"], data["y_train"], "smote")
+        _X_res, y_res = resampler.resample(data["X_train"], data["y_train"], "smote")
 
         # After SMOTE, minority should be larger
         assert y_res.sum() > data["y_train"].sum()
@@ -173,7 +173,7 @@ class TestResampler:
         data = preprocessor.full_preprocess(sample_data)
 
         resampler = Resampler(random_state=42)
-        X_res, y_res = resampler.resample(data["X_train"], data["y_train"], "adasyn")
+        _X_res, y_res = resampler.resample(data["X_train"], data["y_train"], "adasyn")
 
         assert y_res.sum() > data["y_train"].sum()
 
@@ -183,7 +183,7 @@ class TestResampler:
         data = preprocessor.full_preprocess(sample_data)
 
         resampler = Resampler(random_state=42)
-        X_res, y_res = resampler.resample(data["X_train"], data["y_train"], "none")
+        X_res, _y_res = resampler.resample(data["X_train"], data["y_train"], "none")
 
         assert len(X_res) == len(data["X_train"])
         assert X_res.equals(data["X_train"])

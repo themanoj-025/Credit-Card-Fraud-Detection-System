@@ -239,11 +239,10 @@ class TestEnsureDataReady:
             with patch(
                 "src.fraudlens.data.download._is_valid_dataset",
                 return_value=True,
-            ):
-                with patch("pandas.read_csv") as mock_read:
-                    mock_read.return_value = pd.DataFrame({"A": [1]})
-                    df = ensure_data_ready()
-                    assert isinstance(df, pd.DataFrame)
+            ), patch("pandas.read_csv") as mock_read:
+                mock_read.return_value = pd.DataFrame({"A": [1]})
+                df = ensure_data_ready()
+                assert isinstance(df, pd.DataFrame)
 
 
 # Tests: get_or_create_data
@@ -266,11 +265,10 @@ class TestGetOrCreateData:
             with patch(
                 "src.fraudlens.data.download._is_valid_dataset",
                 return_value=True,
-            ):
-                with patch("pandas.read_csv") as mock_read:
-                    mock_read.return_value = pd.DataFrame({"A": [1]})
-                    df = get_or_create_data()
-                    assert isinstance(df, pd.DataFrame)
+            ), patch("pandas.read_csv") as mock_read:
+                mock_read.return_value = pd.DataFrame({"A": [1]})
+                df = get_or_create_data()
+                assert isinstance(df, pd.DataFrame)
 
     def test_force_synthetic(self, tmp_path):
         """Should support force_synthetic parameter."""
