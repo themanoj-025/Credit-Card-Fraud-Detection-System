@@ -132,7 +132,7 @@ async def analyst_chat(
 
     except LLMServiceUnavailable:
         raise
-    except Exception as e:
+    except (OSError, ValueError, TypeError, KeyError) as e:
         logger.error("Chat failed after retries: %s", e)
         # Record failure on circuit breaker
         if circuit_breaker is not None:

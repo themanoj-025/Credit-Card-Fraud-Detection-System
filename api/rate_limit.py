@@ -42,7 +42,7 @@ elif redis_url:
     try:
         limiter = Limiter(key_func=get_remote_address, storage_uri=redis_url)
         logger.info("Rate limiter using Redis backend: %s", redis_url)
-    except Exception as e:
+    except (OSError, ConnectionError) as e:
         logger.warning(
             "Failed to connect to Redis at %s (%s). Falling back to in-memory storage.",
             redis_url,

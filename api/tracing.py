@@ -86,7 +86,7 @@ def setup_tracing(app: object) -> TracerProvider | None:
             otlp_exporter = OTLPSpanExporter(endpoint=OTLP_ENDPOINT, insecure=True)
             tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
             logger.info("OTLP trace exporter configured: %s", OTLP_ENDPOINT)
-        except Exception as e:
+        except (OSError, ConnectionError, ValueError) as e:
             logger.warning("Failed to configure OTLP exporter: %s", e)
     else:
         logger.info("OTLP exporter not available (install opentelemetry-exporter-otlp)")
@@ -104,7 +104,7 @@ def setup_tracing(app: object) -> TracerProvider | None:
         try:
             FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
             logger.info("FastAPI auto-instrumentation enabled")
-        except Exception as e:
+        except (OSError, ValueError, TypeError) as e:
             logger.warning("FastAPI instrumentation failed: %s", e)
     else:
         logger.info("FastAPI instrumentation not available")

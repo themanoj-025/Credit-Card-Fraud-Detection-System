@@ -18,6 +18,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
 
+try:
+    from sqlalchemy.exc import SQLAlchemyError
+except ImportError:
+    SQLAlchemyError = Exception
+
 from api.auth import require_admin_key
 from api.rate_limit import limiter
 
@@ -143,7 +148,7 @@ async def list_candidates(
             promoted=stats.get("promoted", 0),
             rejected=stats.get("rejected", 0),
         )
-    except Exception as e:
+    except (SQLAlchemyError, OSError) as e:
         logger.warning("Failed to list candidates: %s", e)
         # Fallback: return empty list if DB unavailable
         return ModelCandidateListResponse(
@@ -188,7 +193,7 @@ async def get_candidate(
         return _candidate_to_out(candidate)
     except HTTPException:
         raise
-    except Exception as e:
+    except (SQLAlchemyError, OSError) as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database unavailable: {e}",
@@ -263,7 +268,7 @@ async def promote_candidate(
                     model_version,
                     production_path,
                 )
-        except Exception as e:
+        except (OSError, shutil.Error) as e:
             logger.warning("Model file copy failed during promotion: %s", e)
 
         logger.info(
@@ -282,7 +287,7 @@ async def promote_candidate(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except (SQLAlchemyError, OSError) as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database unavailable: {e}",
@@ -342,7 +347,7 @@ async def reject_candidate(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except (SQLAlchemyError, OSError) as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database unavailable: {e}",
@@ -412,7 +417,7 @@ async def compare_candidate(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except (SQLAlchemyError, OSError) as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database unavailable: {e}",
