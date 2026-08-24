@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import requests
 import streamlit as st
 
 from app.api_client import get_api_client
@@ -109,7 +110,7 @@ def _predict_transaction(tx: dict[str, float]) -> dict | None:
     try:
         client = get_api_client()
         return client.predict(tx)
-    except Exception:
+    except (requests.RequestException, ValueError):
         return None
 
 
@@ -157,7 +158,7 @@ def _run_drift_check(batch_transactions: list[dict]) -> None:
         st.session_state.drift_details = drifts if drifts else "All features stable"
 
         st.session_state.last_drift_check = st.session_state.total_transactions
-    except Exception:
+    except (ValueError, KeyError, TypeError):
         pass
 
 

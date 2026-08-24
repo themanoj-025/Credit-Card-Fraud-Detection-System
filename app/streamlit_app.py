@@ -125,7 +125,7 @@ with st.sidebar:
         """,
             unsafe_allow_html=True,
         )
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         pass
 
     st.markdown("---")

@@ -256,7 +256,7 @@ class FraudTrainer:
                 # Log the model artifact
                 try:
                     mlflow.sklearn.log_model(model, artifact_path="model")
-                except Exception:
+                except (OSError, ImportError, ValueError):
                     import tempfile
 
                     import joblib

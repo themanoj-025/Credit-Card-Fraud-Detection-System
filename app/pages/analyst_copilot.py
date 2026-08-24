@@ -23,7 +23,7 @@ def _get_copilot_response(
         client = get_api_client()
         result = client.chat(message, history)
         return result.get("response", "")
-    except Exception:
+    except (requests.RequestException, ValueError, AttributeError):
         return None
 
 
