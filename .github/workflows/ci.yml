@@ -233,3 +233,12 @@ jobs:
           pip install pip-audit
       - name: Audit dependencies for known vulnerabilities
         run: pip-audit -r requirements.txt
+
+  hadolint:
+    name: Container lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
