@@ -150,7 +150,7 @@ class FraudLensAPI:
                 try:
                     response = self._client.get("/health")
                     return response.json()
-                except Exception:
+                except (requests.RequestException, ValueError):
                     pass
             return {"status": "error", "detail": str(e)}
 

@@ -390,6 +390,6 @@ class HyperparameterOptimizer:
         if self.study is not None:
             try:
                 return self.study.trials_dataframe()
-            except Exception:
+            except (ImportError, ValueError):
                 return None
         return None
