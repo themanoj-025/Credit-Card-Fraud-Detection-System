@@ -270,7 +270,7 @@ class FraudPredictor:
 # Providers
 
 
-def _get_request_state(request: Request | None = None):
+def _get_request_state(request: Request | None = None) -> object | None:
     """Get the FastAPI app state, working both as Depends() injection and plain function call."""
 
     if request is not None:
@@ -283,7 +283,7 @@ def _get_request_state(request: Request | None = None):
         return None
 
 
-def get_predictor(request: Request | None = None):
+def get_predictor(request: Request | None = None) -> FraudPredictor | None:
     """
     Get the FraudPredictor instance.
 
@@ -301,7 +301,7 @@ def get_predictor(request: Request | None = None):
         return None
 
 
-def get_anomaly_detector(request: Request | None = None):
+def get_anomaly_detector(request: Request | None = None) -> object | None:
     """Get the anomaly detector instance."""
     state = _get_request_state(request)
     if state is not None:
@@ -314,7 +314,7 @@ def get_anomaly_detector(request: Request | None = None):
         return None
 
 
-def get_case_narrator(request: Request | None = None):
+def get_case_narrator(request: Request | None = None) -> object | None:
     """Get the CaseNarrator instance."""
     state = _get_request_state(request)
     if state is not None:
@@ -327,7 +327,7 @@ def get_case_narrator(request: Request | None = None):
         return None
 
 
-def get_case_retriever(request: Request | None = None):
+def get_case_retriever(request: Request | None = None) -> object | None:
     """Get the SimilarCaseRetriever instance."""
     state = _get_request_state(request)
     if state is not None:
@@ -340,7 +340,7 @@ def get_case_retriever(request: Request | None = None):
         return None
 
 
-def get_copilot_client(request: Request | None = None):
+def get_copilot_client(request: Request | None = None) -> object | None:
     """Get the Anthropic client instance."""
     state = _get_request_state(request)
     if state is not None:
