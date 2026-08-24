@@ -14,7 +14,7 @@ imbalanced-learn>=0.10.0,<1.0.0
 shap>=0.41.0,<1.0.0
 
 # ─── LLM Features ──────────────────────────────────────────────
-anthropic>=0.30.0,<1.0.0       # LLM case narrator + analyst copilot
+anthropic>=1.0.0,<2.0.0       # LLM case narrator + analyst copilot
 faiss-cpu>=1.7.0,<2.0.0        # RAG similar-case retrieval
 
 # ─── Database & Persistence ───────────────────────────────────
