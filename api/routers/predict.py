@@ -84,7 +84,7 @@ async def predict_single(
                     min_s, max_s = scores.min(), scores.max()
                     probas = 1 - (scores - min_s) / (max_s - min_s + 1e-10)
                     anomaly_score = round(float(probas[0]), 4)
-        except Exception as anomaly_err:
+        except (ValueError, TypeError, AttributeError) as anomaly_err:
             logger.warning("Anomaly score computation failed: %s", anomaly_err)
 
         # Build response
@@ -112,7 +112,7 @@ async def predict_single(
             explanation=explanation,
             business_impact=business,
         )
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         logger.error("Prediction failed: %s", e)
         raise HTTPException(
             status_code=500, detail=f"Model prediction failed: {str(e)}"
@@ -173,6 +173,6 @@ async def predict_batch(
         )
 
         return BatchResponse(predictions=predictions, summary=summary)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         logger.error("Batch prediction failed: %s", e)
         raise HTTPException(status_code=500, detail=str(e))

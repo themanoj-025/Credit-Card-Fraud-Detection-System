@@ -13,6 +13,11 @@ import secrets
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
+try:
+    from sqlalchemy.exc import SQLAlchemyError
+except ImportError:
+    SQLAlchemyError = Exception
+
 from api.auth import require_admin_key
 from api.rate_limit import limiter
 from src.fraudlens.llm.cost_tracker import CostTracker, cost_tracker
@@ -184,7 +189,7 @@ async def get_llm_usage(
                         cost_usd=record.cost_usd,
                         status=record.status,
                     )
-                except Exception as e:
+                except (SQLAlchemyError, OSError) as e:
                     logger.warning("Failed to persist LLM call record: %s", e)
 
             await session.commit()
@@ -198,7 +203,7 @@ async def get_llm_usage(
 
         # Re-read memory summary — now only has records created during/after flush
         memory_summary = cost_tracker.get_period_summary_dict(period)
-    except Exception as e:
+    except (SQLAlchemyError, OSError) as e:
         logger.warning("DB cost query failed, using in-memory only: %s", e)
 
     # Step 3: Merge DB (historical) + in-memory (records created during flush)

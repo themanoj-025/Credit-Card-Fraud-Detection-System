@@ -73,6 +73,6 @@ async def explain_transaction(
         )
     except (ModelNotLoadedError, LLMServiceUnavailable):
         raise
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, OSError) as e:
         logger.error("Explanation failed: %s", e)
         raise PredictionError(detail=str(e), original=e)

@@ -85,7 +85,7 @@ def _try_load_case_narrator(app: FastAPI):
     try:
         app.state.case_narrator = CaseNarrator()
         logger.info("Case Narrator initialized")
-    except Exception as e:
+    except (OSError, ValueError, ImportError) as e:
         logger.warning("Case Narrator unavailable: %s", e)
 
 
@@ -98,7 +98,7 @@ def _try_load_rag_retriever(app: FastAPI):
             retriever.load(str(index_path))
             app.state.case_retriever = retriever
             logger.info("RAG retriever loaded from %s", index_path)
-        except Exception as e:
+        except (OSError, ValueError, ImportError) as e:
             logger.warning("RAG retriever unavailable: %s", e)
     else:
         logger.info("No RAG index found at %s", index_path)
@@ -123,7 +123,7 @@ async def lifespan(app: FastAPI):
     try:
         await init_db()
         logger.info("Database initialized")
-    except Exception as e:
+    except (OSError, ImportError) as e:
         logger.warning("Database initialization failed: %s", e)
 
     # Load supervised model via new DI-friendly architecture
@@ -138,7 +138,7 @@ async def lifespan(app: FastAPI):
         logger.info(
             "Model loaded successfully (threshold=%.4f)", model_loader.threshold
         )
-    except Exception as e:
+    except (OSError, ValueError, ImportError) as e:
         logger.warning("Failed to load model: %s", e)
         app.state.predictor = None
 
@@ -152,7 +152,7 @@ async def lifespan(app: FastAPI):
             logger.info("Anomaly detector loaded")
         else:
             app.state.anomaly_detector = None
-    except Exception as e:
+    except (OSError, ValueError, ImportError) as e:
         logger.warning("Failed to load anomaly detector: %s", e)
         app.state.anomaly_detector = None
 

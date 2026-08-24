@@ -25,6 +25,11 @@ import numpy as np
 import pandas as pd
 from fastapi import Request
 
+try:
+    from sqlalchemy.exc import SQLAlchemyError
+except ImportError:
+    SQLAlchemyError = Exception
+
 from src.fraudlens.explainability.shap_explainer import ShapExplainer
 from src.fraudlens.prediction.model_loader import ModelLoader
 
@@ -51,7 +56,7 @@ async def get_db_session():
         try:
             yield session
             await session.commit()
-        except Exception:
+        except SQLAlchemyError:
             await session.rollback()
             raise
 
@@ -274,7 +279,7 @@ def _get_request_state(request: Request | None = None):
     try:
         # If called as a plain function, we can't access app.state without a request
         return None
-    except Exception:
+    except (ImportError, ModuleNotFoundError):
         return None
 
 
@@ -292,7 +297,7 @@ def get_predictor(request: Request | None = None):
         from api.main import app
 
         return getattr(app.state, "predictor", None)
-    except Exception:
+    except (ImportError, ModuleNotFoundError, AttributeError):
         return None
 
 
@@ -305,7 +310,7 @@ def get_anomaly_detector(request: Request | None = None):
         from api.main import app
 
         return getattr(app.state, "anomaly_detector", None)
-    except Exception:
+    except (ImportError, ModuleNotFoundError, AttributeError):
         return None
 
 
@@ -318,7 +323,7 @@ def get_case_narrator(request: Request | None = None):
         from api.main import app
 
         return getattr(app.state, "case_narrator", None)
-    except Exception:
+    except (ImportError, ModuleNotFoundError, AttributeError):
         return None
 
 
@@ -331,7 +336,7 @@ def get_case_retriever(request: Request | None = None):
         from api.main import app
 
         return getattr(app.state, "case_retriever", None)
-    except Exception:
+    except (ImportError, ModuleNotFoundError, AttributeError):
         return None
 
 
@@ -344,7 +349,7 @@ def get_copilot_client(request: Request | None = None):
         from api.main import app
 
         return getattr(app.state, "copilot_client", None)
-    except Exception:
+    except (ImportError, ModuleNotFoundError, AttributeError):
         return None
 
 
@@ -355,5 +360,5 @@ def get_database_health(request: Request | None = None) -> dict:
         if state is not None:
             return {"status": "ok"}
         return {"status": "unknown"}
-    except Exception as e:
+    except (OSError, SQLAlchemyError) as e:
         return {"status": "error", "detail": str(e)}
