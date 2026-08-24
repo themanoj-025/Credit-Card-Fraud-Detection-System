@@ -18,7 +18,7 @@ anthropic>=0.30.0,<1.0.0       # LLM case narrator + analyst copilot
 faiss-cpu>=1.7.0,<2.0.0        # RAG similar-case retrieval
 
 # ─── Database & Persistence ───────────────────────────────────
-sqlalchemy[asyncio]>=2.0.0,<3.0.0
+sqlalchemy[asyncio]>=2.0.52,<3.0.0
 alembic>=1.12.0,<2.0.0
 asyncpg>=0.28.0,<1.0.0
 aiosqlite>=0.19.0,<1.0.0
