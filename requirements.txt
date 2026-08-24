@@ -88,5 +88,5 @@ tenacity>=8.2.0,<9.0.0                 # Retry logic with exponential backoff
 
 # ─── Utilities ─────────────────────────────────────────────────
 tqdm>=4.65.0,<5.0.0
-python-dotenv>=1.0.0,<2.0.0
+python-dotenv>=1.2.3,<2.0.0
 requests>=2.28.0,<3.0.0
