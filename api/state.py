@@ -55,7 +55,7 @@ def get_predictor():
     return _predictor
 
 
-def get_anomaly_detector():
+def get_anomaly_detector() -> Any:
     return _anomaly_detector
 
 
@@ -63,9 +63,9 @@ def get_case_narrator():
     return _case_narrator
 
 
-def get_case_retriever():
+def get_case_retriever() -> Any:
     return _case_retriever
 
 
-def get_copilot_client():
+def get_copilot_client() -> Any:
     return _copilot_client

@@ -80,7 +80,7 @@ def _try_load_copilot(app: FastAPI):
         logger.info("ANTHROPIC_API_KEY not set. Copilot unavailable.")
 
 
-def _try_load_case_narrator(app: FastAPI):
+def _try_load_case_narrator(app: FastAPI) -> Any:
     """Try to load the case narrator."""
     try:
         app.state.case_narrator = CaseNarrator()

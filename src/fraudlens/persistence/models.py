@@ -18,6 +18,7 @@ Usage:
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import (
     Boolean,
@@ -36,7 +37,7 @@ from .database import Base
 # Use appropriate types for SQLite vs PostgreSQL compatibility
 
 
-def _uuid_column():
+def _uuid_column() -> Any:
     """Return a UUID column compatible with both SQLite and PostgreSQL."""
     from sqlalchemy import String as SAString
     from sqlalchemy import TypeDecorator
@@ -60,7 +61,7 @@ def _uuid_column():
     return Column(_UUID(36), primary_key=True, default=uuid.uuid4)
 
 
-def _json_column():
+def _json_column() -> Any:
     """Return a JSON column compatible with both SQLite and PostgreSQL."""
     from sqlalchemy import JSON
 
