@@ -201,6 +201,34 @@ app = FastAPI(
     "LLM case narration, and RAG-based similar case retrieval.",
     version="2.0.0",
     lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {
+            "name": "admin",
+            "description": "Admin authentication and API key management",
+        },
+        {
+            "name": "predictions",
+            "description": "Single and batch fraud prediction with probability scores",
+        },
+        {
+            "name": "explainability",
+            "description": "SHAP-based feature importance and prediction explanations",
+        },
+        {
+            "name": "rag",
+            "description": "RAG-based similar case retrieval for fraud investigation",
+        },
+        {
+            "name": "copilot",
+            "description": "LLM-powered analyst copilot chat for fraud case analysis",
+        },
+        {
+            "name": "admin-models",
+            "description": "Model registry management (list, compare, promote models)",
+        },
+    ],
 )
 
 # Register rate limit error handler
