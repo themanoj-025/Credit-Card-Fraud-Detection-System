@@ -28,7 +28,7 @@ from src.fraudlens.config import (
 _DRIFT_DETECTOR = None
 
 
-def _get_drift_detector():
+def _get_drift_detector() -> Any:
     """Get or create the drift detector with reference data."""
     global _DRIFT_DETECTOR
     if _DRIFT_DETECTOR is not None:

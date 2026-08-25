@@ -192,7 +192,7 @@ class ShapExplainer:
 # Internal helpers
 
 
-def _extract_positive_class_values(shap_values, idx: int = 0):
+def _extract_positive_class_values(shap_values, idx: int = 0) -> Any:
     """Extract SHAP values for the positive (fraud) class."""
     if isinstance(shap_values, list):
         return shap_values[1][idx]
@@ -202,7 +202,7 @@ def _extract_positive_class_values(shap_values, idx: int = 0):
         return shap_values[idx]
 
 
-def _extract_positive_class_global(shap_values):
+def _extract_positive_class_global(shap_values) -> Any:
     """Extract global SHAP values for the positive class."""
     if isinstance(shap_values, list):
         return shap_values[1]
