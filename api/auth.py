@@ -70,7 +70,7 @@ async def require_api_key(
 
     Usage:
         @router.get("/predict")
-        async def predict(key: Optional[str] = Depends(require_api_key)):
+        async def predict(key: str | None = Depends(require_api_key)):
             ...
     """
     # Dev mode: no API keys configured — allow all requests
