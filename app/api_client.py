@@ -1,3 +1,5 @@
+import requests
+
 """
 FraudLens — Shared API Client for Streamlit Dashboard
 
@@ -129,7 +131,7 @@ class FraudLensAPI:
                     continue
             except FraudLensAPIError:
                 raise
-            except Exception as e:
+            except (requests.RequestException, ValueError, OSError) as e:
                 last_error = e
                 if attempt < self.max_retries:
                     time.sleep(_DEFAULT_RETRY_DELAY)
@@ -298,7 +300,7 @@ class FraudLensAPI:
                         continue
                 except FraudLensAPIError:
                     raise
-                except Exception as e:
+                except (requests.RequestException, ValueError, OSError) as e:
                     last_error = e
                     if attempt < self.max_retries:
                         time.sleep(_DEFAULT_RETRY_DELAY)
@@ -359,6 +361,6 @@ def api_call_with_spinner(
         else:
             st.error(f"❌ Request failed: {e}")
         return None
-    except Exception as e:
+    except (requests.RequestException, ValueError, OSError) as e:
         st.error(f"❌ Unexpected error: {e}")
         return None

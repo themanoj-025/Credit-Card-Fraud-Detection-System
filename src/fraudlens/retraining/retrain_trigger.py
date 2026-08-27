@@ -356,7 +356,7 @@ class RetrainingTrigger:
         except subprocess.TimeoutExpired:
             logger.error("Pipeline timed out after 3600s")
             return False
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             logger.error("Pipeline execution failed: %s", e)
             return False
 
@@ -419,7 +419,7 @@ class RetrainingTrigger:
             )
             return run_id
 
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             logger.warning("MLflow run registration failed: %s", e)
             return None
 
@@ -466,7 +466,7 @@ class RetrainingTrigger:
                         "threshold": float(best.get("Threshold", 0.5)),
                         "model_name": best.get("Model", "unknown"),
                     }
-            except Exception as e:
+            except (RuntimeError, ValueError, OSError) as e:
                 logger.warning("Failed to read comparison CSV: %s", e)
 
         return None

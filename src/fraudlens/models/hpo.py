@@ -382,7 +382,7 @@ class HyperparameterOptimizer:
                 # Log top-5 trials
                 for i, trial in enumerate(study.best_trials[:5]):
                     mlflow.log_metric(f"trial_{i}_value", trial.value)
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             logger.warning("MLflow HPO logging failed: %s", e)
 
     def get_trials_dataframe(self) -> Any:

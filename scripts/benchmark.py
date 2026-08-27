@@ -127,7 +127,7 @@ def main() -> None:
             response = client.get(f"{API_URL}/health")
             response.raise_for_status()
             print("✓ API is healthy\n")
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             print(f"✗ API not reachable: {e}")
             print("  Start the API: uvicorn api.main:app --host 0.0.0.0 --port 8000")
             return
