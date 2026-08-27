@@ -1,25 +1,26 @@
 # Security Policy
 
+## Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.0.x   | :white_check_mark: |
+
 ## Reporting a Vulnerability
 
-If you find a security vulnerability in this project, **do not open a public issue**. Please report it privately through GitHub's [Security Advisory feature](https://github.com/themanoj-025/Credit Card Fraud Detection/security/advisories) or a private message to the maintainers.
+If you discover a security vulnerability, please report it responsibly:
 
-Please include:
+1. **Do NOT** open a public GitHub issue for security vulnerabilities.
+2. Email the maintainers with details of the vulnerability.
+3. Include steps to reproduce the issue.
+4. Allow reasonable time for a fix before public disclosure.
 
-- The affected version / commit
-- A description of the vulnerability and its impact
-- Steps to reproduce (including any minimal exploit)
-- Suggested fix, if you have one
+## Security Measures
 
-## Response
-
-Reports are acknowledged within 5 business days. You will receive an update on the triage and, if accepted, a target date for the fix and disclosure.
-
-## Scope
-
-- Secrets, tokens, and authentication handling are in scope for reports.
-- Dependencies with known CVEs are tracked by dependabot and the CI security scans (gitleaks, CodeQL).
-
-## Safe Harbor
-
-Research conducted in good faith and reported privately is welcome; we will not pursue legal action for such reports.
+- **API Key Authentication**: All API endpoints require Bearer token authentication.
+- **Rate Limiting**: All endpoints are rate-limited per IP to prevent abuse.
+- **Input Validation**: Pydantic models validate all inputs before processing.
+- **Circuit Breakers**: LLM API calls use circuit breakers to prevent cascading failures.
+- **Structured Logging**: All security events are logged with request IDs for audit trails.
+- **No Hardcoded Secrets**: All secrets are loaded from environment variables.
+- **SQL Injection Prevention**: All database queries use parameterized statements.
