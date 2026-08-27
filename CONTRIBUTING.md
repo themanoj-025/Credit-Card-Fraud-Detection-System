@@ -1,30 +1,48 @@
 # Contributing to FraudLens
 
-Thanks for your interest in FraudLens! Bug reports, documentation, and pull requests are welcome.
+Thank you for your interest in contributing to FraudLens!
 
-## Getting started
+## Getting Started
 
-1. Fork the repository and clone your fork.
-2. Create a feature branch: `git checkout -b feature/amazing`.
-3. Install dependencies: `pip install -r requirements.txt`.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run the test suite (`pytest`)
+5. Submit a pull request
 
-## Development workflow
+## Development Setup
 
-- Add or update tests for every change.
-- Run the test suite:
-  - `make test` — all tests
-  - `make test-cov` — with coverage
-  - `make test-integration` — integration tests only
-- Verify the API boots with `make api` and the dashboard with `make dashboard`.
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-## Commit conventions
+# Run tests
+pytest
 
-Keep commits small and focused. Prefix messages with a type, e.g. `feat:`, `fix:`, `docs:`, `test:`.
+# Run with coverage
+pytest --cov=src/fraudlens --cov-report=html
 
-## Opening a pull request
+# Run linting
+ruff check .
+mypy src/
+```
 
-1. Push your branch and open a PR against `main`.
-2. Describe what you changed and why.
-3. Link any related issue.
+## Code Standards
 
-By contributing, you agree that your contributions are licensed under the MIT License.
+- **Python**: Follow PEP 8, enforced by `ruff`
+- **Type Hints**: All functions must have return type annotations
+- **Tests**: New features must include tests
+- **Commit Messages**: Use conventional commits (`feat:`, `fix:`, `docs:`, etc.)
+
+## Pull Request Process
+
+1. Update documentation if needed
+2. Add tests for new functionality
+3. Ensure all CI checks pass
+4. Request review from maintainers
+
+## Reporting Issues
+
+- Use GitHub Issues for bug reports
+- Include reproduction steps
+- Include environment details (Python version, OS)
