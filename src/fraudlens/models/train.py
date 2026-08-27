@@ -268,7 +268,7 @@ class FraudTrainer:
                 logger.info(
                     "  MLflow run logged: %s (tagged as %s)", run.info.run_id, name
                 )
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             logger.warning("  MLflow logging failed for %s: %s", name, e)
 
     def _log_cv_to_mlflow(self, name: str, cv_results: dict) -> None:
@@ -284,7 +284,7 @@ class FraudTrainer:
                 mlflow.log_metric("cv_std_score", cv_results["std_score"])
                 for i, s in enumerate(cv_results["scores"]):
                     mlflow.log_metric(f"cv_fold_{i + 1}_score", s)
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             logger.warning("  MLflow CV logging failed for %s: %s", name, e)
 
     def train_model(self, name: str, X_train: pd.DataFrame, y_train: pd.Series) -> Any:

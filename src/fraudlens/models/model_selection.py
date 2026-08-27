@@ -183,7 +183,7 @@ class ModelSelector:
                         mlflow.set_tag("selection_value", str(round(best_value, 4)))
                         mlflow.set_tag("selection_reasoning", reasoning[:200])
                     logger.info("  MLflow run '%s' tagged as selected:true", best_name)
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             logger.warning("  MLflow tagging failed for winning model: %s", e)
 
     def get_selection_summary(self) -> str:

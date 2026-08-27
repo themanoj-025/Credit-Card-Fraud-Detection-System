@@ -263,7 +263,7 @@ class FraudPredictor:
             if "explanation" in shap_result:
                 result["explanation"] = shap_result["explanation"]
                 logger.info("Async SHAP computed for transaction")
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             logger.warning("Async SHAP computation failed: %s", e)
 
 

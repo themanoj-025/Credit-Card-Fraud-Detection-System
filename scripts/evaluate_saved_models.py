@@ -50,7 +50,7 @@ for name, path in models.items():
     try:
         model = joblib.load(path)
         proba = model.predict_proba(X_test)[:, 1]
-    except Exception as exc:  # missing dependency or artifact
+    except (FileNotFoundError, ValueError, OSError) as exc:  # missing dependency or artifact
         print(f"SKIP {name}: {exc}")
         continue
     pred = (proba >= 0.5).astype(int)

@@ -146,7 +146,7 @@ class CaseNarrator:
             narrative = response.content[0].text.strip()
             logger.info("LLM narrative generated (%d chars)", len(narrative))
             return narrative
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             logger.warning("LLM call failed after retries: %s", e)
             if self._circuit_breaker is not None:
                 self._circuit_breaker.record_failure()

@@ -237,7 +237,7 @@ def _show_pending_tab() -> None:
 
     except FraudLensAPIError as e:
         st.error(f"❌ API Error: {e}")
-    except Exception as e:
+    except (ValueError, KeyError) as e:
         st.error(f"❌ Unexpected error: {e}")
 
 
@@ -396,7 +396,7 @@ def _handle_promote(client: Any, version: str) -> None:
                 st.warning(f"⚠️ Candidate already processed: {e}")
             else:
                 st.error(f"❌ Promotion failed: {e}")
-        except Exception as e:
+        except (ValueError, KeyError) as e:
             st.error(f"❌ Unexpected error: {e}")
 
 
@@ -418,7 +418,7 @@ def _handle_reject(client: Any, version: str) -> None:
                 st.warning(f"⚠️ Candidate already processed: {e}")
             else:
                 st.error(f"❌ Rejection failed: {e}")
-        except Exception as e:
+        except (ValueError, KeyError) as e:
             st.error(f"❌ Unexpected error: {e}")
 
 

@@ -1,3 +1,5 @@
+import requests
+
 """
 FraudLens — Automated Data Download
 
@@ -98,7 +100,7 @@ def _download_from_kaggle(target_path: Path) -> bool:
     except ImportError:
         logger.warning("kaggle package not installed. Install with: pip install kaggle")
         return False
-    except Exception as e:
+    except (requests.RequestException, ValueError, OSError) as e:
         logger.warning("Kaggle download failed: %s", e)
         return False
 
@@ -208,7 +210,7 @@ def _is_valid_dataset(path: Path) -> bool:
 
         return True
 
-    except Exception as e:
+    except (requests.RequestException, ValueError, OSError) as e:
         logger.warning("Dataset validation failed: %s", e)
         return False
 
