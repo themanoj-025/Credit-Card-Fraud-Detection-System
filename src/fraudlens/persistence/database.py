@@ -66,7 +66,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         try:
             yield session
             await session.commit()
-        except Exception:
+        except (OSError, ConnectionError):
             await session.rollback()
             raise
         finally:
