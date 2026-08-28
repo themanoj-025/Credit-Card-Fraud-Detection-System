@@ -48,12 +48,12 @@ def _uuid_column() -> Any:
         impl = SAString(36)
         cache_ok = True
 
-        def process_bind_param(self, value, dialect):
+        def process_bind_param(self, value, dialect) -> Any:
             if value is None:
                 return None
             return str(value)
 
-        def process_result_value(self, value, dialect):
+        def process_result_value(self, value, dialect) -> Any:
             if value is None:
                 return None
             return uuid.UUID(value) if isinstance(value, str) else value

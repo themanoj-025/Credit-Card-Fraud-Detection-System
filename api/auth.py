@@ -8,7 +8,7 @@ Usage:
     from api.auth import require_api_key, require_admin_key
 
     @router.post("/predict")
-    async def predict(api_key: str = Depends(require_api_key)):
+    async def predict(api_key: str = Depends(require_api_key)) -> Any:
         ...
 """
 
@@ -70,7 +70,7 @@ async def require_api_key(
 
     Usage:
         @router.get("/predict")
-        async def predict(key: str | None = Depends(require_api_key)):
+        async def predict(key: str | None = Depends(require_api_key)) -> Any:
             ...
     """
     # Dev mode: no API keys configured — allow all requests
@@ -103,7 +103,7 @@ async def require_admin_key(
 
     Usage:
         @router.post("/admin/keys")
-        async def create_key(key: str = Depends(require_admin_key)):
+        async def create_key(key: str = Depends(require_admin_key)) -> Any:
             ...
     """
     key_hash = hashlib.sha256(api_key.encode()).hexdigest()

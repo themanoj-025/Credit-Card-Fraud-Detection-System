@@ -76,7 +76,7 @@ class CaseNarrator:
         """Set the circuit breaker instance (called during app initialization)."""
         self._circuit_breaker = breaker
 
-    def _init_client(self):
+    def _init_client(self) -> Any:
         """Initialize the Anthropic client."""
         try:
             from anthropic import Anthropic
@@ -154,11 +154,11 @@ class CaseNarrator:
                 shap_explanation, fraud_probability, is_fraud
             )
 
-    def _call_llm_with_response(self, prompt: str):
+    def _call_llm_with_response(self, prompt: str) -> Any:
         """Make the LLM call with tenacity retry logic, returning the full response."""
 
         @_LLM_RETRY
-        def _do_call():
+        def _do_call() -> Any:
             return self._client.messages.create(
                 model=self.model,
                 max_tokens=self.max_tokens,

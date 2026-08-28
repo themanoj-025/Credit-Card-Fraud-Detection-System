@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # Database Session Provider
 
 
-async def get_db_session():
+async def get_db_session() -> Any:
     """Get a new async database session via FastAPI Depends().
 
     Usage:
@@ -47,7 +47,7 @@ async def get_db_session():
         async def create_feedback(
             session: AsyncSession = Depends(get_db_session),
             ...
-        ):
+        ) -> Any:
             ...
     """
     from src.fraudlens.persistence.database import AsyncSessionLocal
@@ -152,7 +152,7 @@ class FraudPredictor:
         return self.model_loader.feature_names
 
     @property
-    def scaler(self):
+    def scaler(self) -> Any:
         return self.model_loader.scaler
 
     def _vectorize_transaction(self, transaction: dict) -> np.ndarray:

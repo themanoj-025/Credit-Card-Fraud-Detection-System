@@ -48,7 +48,7 @@ class TransactionInput(BaseModel):
     V28: float = Field(default=0.0, description="PCA component V28")
 
     @validator("Amount")
-    def amount_must_be_finite(cls, v):
+    def amount_must_be_finite(cls, v) -> Any:
         """Validate Amount is finite and non-negative."""
         if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
             raise ValueError("Amount must be a finite number (not NaN/Inf)")

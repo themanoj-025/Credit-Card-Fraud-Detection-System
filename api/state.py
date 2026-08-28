@@ -51,7 +51,7 @@ def set_copilot_client(client) -> None:
 # Getter functions (called from routers)
 
 
-def get_predictor():
+def get_predictor() -> Any:
     return _predictor
 
 
@@ -59,7 +59,7 @@ def get_anomaly_detector() -> Any:
     return _anomaly_detector
 
 
-def get_case_narrator():
+def get_case_narrator() -> Any:
     return _case_narrator
 
 

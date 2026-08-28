@@ -65,7 +65,7 @@ from src.fraudlens.prediction.model_loader import ModelLoader
 # Attempt to load optional dependencies
 
 
-def _try_load_copilot(app: FastAPI):
+def _try_load_copilot(app: FastAPI) -> Any:
     """Try to load Anthropic client for copilot features."""
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if api_key:
@@ -89,7 +89,7 @@ def _try_load_case_narrator(app: FastAPI) -> Any:
         logger.warning("Case Narrator unavailable: %s", e)
 
 
-def _try_load_rag_retriever(app: FastAPI):
+def _try_load_rag_retriever(app: FastAPI) -> Any:
     """Try to load the RAG-based similar case retriever."""
     index_path = MODELS_DIR / "rag_index"
     if index_path.exists():
@@ -108,7 +108,7 @@ def _try_load_rag_retriever(app: FastAPI):
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> Any:
     """Load models and dependencies on startup into app.state."""
     logger.info("Starting FraudLens API v2.0.0...")
 
@@ -240,7 +240,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.middleware("http")
-async def add_correlation_id(request, call_next):
+async def add_correlation_id(request, call_next) -> Any:
     """Inject X-Request-ID correlation ID into every request.
 
     Reads from request header or generates a new one. Sets it in structlog
@@ -285,7 +285,7 @@ app.add_middleware(SlowAPIMiddleware)
 
 
 @app.middleware("http")
-async def add_security_headers(request, call_next):
+async def add_security_headers(request, call_next) -> Any:
     """Add security headers to every response."""
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -328,7 +328,7 @@ setup_tracing(app)
 
 @app.get("/health")
 @app.get("/v1/health")
-async def health():
+async def health() -> Any:
     """Health check endpoint. No auth required.
 
     Returns per-dependency status breakdown for monitoring and orchestration.
@@ -387,7 +387,7 @@ async def health():
 
 
 @app.get("/model-info")
-async def model_info():
+async def model_info() -> Any:
     """Get model metadata and configuration."""
     pred = get_predictor()
     if pred is None:
