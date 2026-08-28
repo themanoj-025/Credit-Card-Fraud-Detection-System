@@ -38,7 +38,7 @@ fastapi>=0.116.0,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires 
 uvicorn>=0.22.0,<1.0.0
 pydantic>=2.0.0
 pydantic-settings>=2.15.0,<3.0.0
-httpx>=0.24.0,<1.0.0
+httpx>=0.28.1,<1.0.0
 slowapi>=0.1.9,<1.0.0            # Rate limiting (Redis-backed)
 
 # ─── Dashboard ─────────────────────────────────────────────────
@@ -63,7 +63,7 @@ pytest-asyncio>=0.21.0,<2.0.0       # Async test support
 
 # ─── Performance ──────────────────────────────────────────
 redis>=4.6.0,<5.0.0               # Production caching + rate limiting
-httpx>=0.24.0,<1.0.0               # HTTP client with connection pooling
+httpx>=0.28.1,<1.0.0               # HTTP client with connection pooling
 
 
 # ─── Hyperparameter Optimization ───────────────────────────
