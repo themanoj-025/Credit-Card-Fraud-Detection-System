@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 @pytest.fixture(scope="session")
-def app():
+def app() -> Any:
     """Get the FastAPI application."""
     from api.main import app
 
@@ -72,7 +72,7 @@ def small_training_data() -> tuple:
 
 
 @pytest.fixture
-def trained_model(small_training_data):
+def trained_model(small_training_data) -> Any:
     """A small trained model for integration tests."""
     from src.fraudlens.models.train import FraudTrainer
 
@@ -86,7 +86,7 @@ def trained_model(small_training_data):
 
 
 @pytest.fixture(autouse=True)
-def mock_anthropic(monkeypatch):
+def mock_anthropic(monkeypatch) -> Any:
     """
     Mock the Anthropic API client so tests never make real API calls.
 
@@ -103,11 +103,11 @@ def mock_anthropic(monkeypatch):
         stop_reason = "end_turn"
 
     class MockMessages:
-        def create(self, *args, **kwargs):
+        def create(self, *args, **kwargs) -> Any:
             return MockMessage()
 
     class MockAnthropic:
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args, **kwargs) -> Any:
             self.messages = MockMessages()
 
     monkeypatch.setattr(anthropic, "Anthropic", MockAnthropic)
@@ -127,7 +127,7 @@ def engineered_transaction() -> dict[str, float]:
 
 
 @pytest.fixture
-def trained_engineer(small_training_data):
+def trained_engineer(small_training_data) -> Any:
     """A fitted FeatureEngineer for inference parity tests."""
     from src.fraudlens.features.engineering import FeatureEngineer
 

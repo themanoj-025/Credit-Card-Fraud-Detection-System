@@ -155,7 +155,7 @@ class FraudPredictor:
         return result
 
     @staticmethod
-    def _extract_shap_values(shap_values, idx: int = 0):
+    def _extract_shap_values(shap_values, idx: int = 0) -> Any:
         """Extract SHAP values for the positive class, handling different SHAP output shapes."""
         # Newer SHAP (TreeExplainer) returns shape (n_samples, n_features, n_classes) for multi-class
         # Older SHAP returns list of arrays [neg_class_vals, pos_class_vals]
@@ -237,7 +237,7 @@ class FraudPredictor:
 
         return " | ".join(parts) if parts else "No strong individual feature drivers"
 
-    def _extract_global_shap_values(self, shap_values):
+    def _extract_global_shap_values(self, shap_values) -> Any:
         """Extract global SHAP values, handling different output shapes."""
         if isinstance(shap_values, list):
             return shap_values[1]

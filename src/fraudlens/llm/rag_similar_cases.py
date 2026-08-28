@@ -69,7 +69,7 @@ class EmbeddingProjector:
         self._fitted = False
         self._input_dim: int | None = None
 
-    def _get_default_transformer(self):
+    def _get_default_transformer(self) -> Any:
         """Create default PCA transformer."""
         from sklearn.decomposition import PCA
 
@@ -181,7 +181,7 @@ class SimilarCaseRetriever:
         # Effective embedding dim depends on projection state
         self.embedding_dim = projection_components if use_projection else embedding_dim
 
-    def _init_faiss(self):
+    def _init_faiss(self) -> Any:
         """Lazy import FAISS to avoid hard dependency."""
         try:
             import faiss
