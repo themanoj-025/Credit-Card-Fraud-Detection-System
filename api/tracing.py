@@ -15,6 +15,7 @@ Usage:
 
 import logging
 import os
+from typing import Any
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
@@ -27,7 +28,7 @@ try:
 
     _HAS_OTLP = True
 except ImportError:
-    OTLPSpanExporter = None  # type: ignore
+    OTLPSpanExporter: Any = None
     _HAS_OTLP = False
 
 # FastAPI instrumentation is optional
@@ -36,7 +37,7 @@ try:
 
     _HAS_FASTAPI_INSTR = True
 except ImportError:
-    FastAPIInstrumentor = None  # type: ignore
+    FastAPIInstrumentor: Any = None
     _HAS_FASTAPI_INSTR = False
 
 logger = logging.getLogger(__name__)
