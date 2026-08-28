@@ -78,12 +78,15 @@ async def init_db() -> None:
 
     Should be called on application startup.
     """
-    from src.fraudlens.persistence.models import (  # noqa: F401  — register models
+    from src.fraudlens.persistence.models import (
         ApiKeyModel,
         DriftEventModel,
         FeedbackModel,
         PredictionModel,
     )
+
+    # Ensure models are registered with SQLAlchemy metadata
+    _ = [ApiKeyModel, DriftEventModel, FeedbackModel, PredictionModel]
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

@@ -22,12 +22,15 @@ from alembic import context
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.persistence.database import Base
-from src.fraudlens.persistence.models import (  # noqa: F401 — register models
+from src.fraudlens.persistence.models import (
     ApiKeyModel,
     DriftEventModel,
     FeedbackModel,
     PredictionModel,
 )
+
+# Ensure models are registered with SQLAlchemy metadata for Alembic
+_ = [ApiKeyModel, DriftEventModel, FeedbackModel, PredictionModel]
 
 # Alembic Config object
 config = context.config
