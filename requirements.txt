@@ -56,7 +56,7 @@ evidently>=0.3.0,<1.0.0
 # ─── Testing ───────────────────────────────────────────────────
 pytest>=7.3.0,<8.0.0
 pytest-cov>=7.1.0,<8.0.0
-locust>=2.20.0,<3.0.0              # Load testing
+locust>=2.46.3,<3.0.0              # Load testing
 respx>=0.23.1,<1.0.0               # HTTP mock for integration tests
 pytest-xdist>=3.3.0,<4.0.0         # Parallel test execution
 pytest-asyncio>=0.21.0,<2.0.0       # Async test support
