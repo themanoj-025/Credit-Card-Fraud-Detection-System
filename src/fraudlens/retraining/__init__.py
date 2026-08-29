@@ -22,9 +22,9 @@ from .retrain_trigger import (
 )
 
 __all__ = [
+    "CandidateInfo",
     "RetrainingTrigger",
     "TriggerResult",
-    "CandidateInfo",
     "check_and_trigger",
     "run_retraining_pipeline",
 ]

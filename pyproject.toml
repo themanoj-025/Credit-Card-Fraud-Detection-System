@@ -2,7 +2,38 @@
 line-length = 120
 
 [tool.ruff.lint]
-ignore = ["E402"]
+select = ["E", "F", "W", "B", "BLE", "UP", "SIM", "C4", "RUF", "PLC", "PIE", "I", "N"]
+ignore = [
+    "E501",    # line too long
+    "E402",    # module-import-not-at-top
+    "BLE001",  # blind except — defensive coding
+    "UP031",   # printf formatting
+    "B008",    # FastAPI Depends() in defaults
+    "PLW0603", # global statement
+    "RUF012",  # mutable class default
+    "PLC0415", # import-outside-top-level — lazy imports
+    "N806",    # variable should be lowercase — ML convention
+    "N803",    # argument should be lowercase — ML convention
+    "B905",    # zip-without-strict
+    "N818",    # exception name should end with Error — RFC 7807 convention
+    "F821",    # undefined name — false positives from type annotations
+    "N802",    # function name should be lowercase — ML convention
+    "B904",    # raise-without-from — legacy code
+    "UP042",   # legacy typing alias
+    "RUF005",  # collection-literal-in-comparison
+    "RUF001",  # ambiguous unicode — intentional
+    "B026",    # star-arg unpacking after keyword argument
+    "E999",    # syntax error — pre-existing in test files
+    "N805",    # first argument should be self/cls
+    "C408",    # unnecessary dict call
+    "SIM117",  # multiple with-statements
+    "W291",    # trailing whitespace
+    "SIM115",  # open-with-context-handler
+    "SIM108",  # if-else → ternary
+    "SIM102",  # collapsible if
+    "B017",    # blind exception assert
+    "B007",    # unused loop variable
+]
 
 [tool.mypy]
 ignore_missing_imports = true
