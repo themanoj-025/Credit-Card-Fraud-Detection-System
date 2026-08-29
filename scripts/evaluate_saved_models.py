@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Honest evaluation of FraudLens saved models on a held-out split of the real Kaggle dataset."""
 import warnings
 

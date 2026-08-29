@@ -115,7 +115,7 @@ async def predict_single(
     except (ValueError, TypeError, KeyError) as e:
         logger.error("Prediction failed: %s", e)
         raise HTTPException(
-            status_code=500, detail=f"Model prediction failed: {str(e)}"
+            status_code=500, detail=f"Model prediction failed: {e!s}"
         )
 
 

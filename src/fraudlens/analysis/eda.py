@@ -547,7 +547,7 @@ def run_eda(output_dir: Path = FIGURES_DIR) -> None:
 
     # Save a summary of findings
     summary = {
-        "n_transactions": int(len(df)),
+        "n_transactions": len(df),
         "n_fraud": int(df["Class"].sum()),
         "n_legitimate": int(len(df) - df["Class"].sum()),
         "fraud_rate_pct": round(df["Class"].mean() * 100, 4),

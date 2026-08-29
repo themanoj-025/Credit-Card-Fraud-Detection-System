@@ -7,7 +7,39 @@ target-version = "py311"
 line-length = 88
 
 [lint]
-select = ["E4", "E7", "E9", "F"]
+select = ["E", "F", "W", "B", "BLE", "UP", "SIM", "C4", "RUF", "PLC", "PIE", "I", "N"]
+
+# Intentional ignores for this codebase
+ignore = [
+    "E501",    # line too long — style preference
+    "E402",    # module-import-not-at-top — setup pattern
+    "BLE001",  # blind except — defensive coding in ML pipeline
+    "UP031",   # printf formatting — legacy code
+    "B008",    # FastAPI Depends() in defaults
+    "PLW0603", # global statement — singleton pattern
+    "RUF012",  # mutable class default — ML model config
+    "PLC0415", # import-outside-top-level — lazy imports
+    "N806",    # variable should be lowercase — ML convention (X, y)
+    "N803",    # argument should be lowercase — ML convention
+    "B905",    # zip-without-strict
+    "N818",    # exception name should end with Error — RFC 7807 convention
+    "F821",    # undefined name — false positives from type annotations
+    "N802",    # function name should be lowercase — ML convention
+    "B904",    # raise-without-from — legacy code
+    "UP042",   # legacy typing alias
+    "RUF005",  # collection-literal-in-comparison
+    "RUF001",  # ambiguous unicode — intentional
+    "B026",    # star-arg unpacking after keyword argument
+    "N805",    # first argument should be self/cls
+    "C408",    # unnecessary dict call
+    "SIM117",  # multiple with-statements
+    "W291",    # trailing whitespace
+    "SIM115",  # open-with-context-handler
+    "SIM108",  # if-else → ternary
+    "SIM102",  # collapsible if
+    "B017",    # blind exception assert
+    "B007",    # unused loop variable
+]
 
 # Intentional imports-after-code:
 # - api/main.py runs setup_structlog() before importing the app modules so
