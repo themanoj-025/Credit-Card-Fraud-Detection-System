@@ -18,18 +18,17 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.fraudlens.persistence.models import (
-
-pytestmark = pytest.mark.slow
     ApiKeyModel,
     DriftEventModel,
     FeedbackModel,
     PredictionModel,
 )
+
+pytestmark = pytest.mark.slow
 from src.fraudlens.persistence.repositories.api_keys import ApiKeyRepository
 from src.fraudlens.persistence.repositories.drift_events import DriftEventRepository
 from src.fraudlens.persistence.repositories.feedback import FeedbackRepository
 from src.fraudlens.persistence.repositories.predictions import PredictionRepository
-
 
 
 @pytest.fixture

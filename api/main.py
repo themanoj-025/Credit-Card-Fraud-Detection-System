@@ -227,6 +227,9 @@ app = FastAPI(
         {
             "name": "admin-models",
             "description": "Model registry management (list, compare, promote models)",
+        },
+    ],
+)
 
 # --- OpenTelemetry distributed tracing (OTEL_ENABLED=true) ---
 try:
@@ -237,10 +240,6 @@ try:
         FastAPIInstrumentor.instrument_app(app)
 except ImportError:
     pass
-
-        },
-    ],
-)
 
 # Register rate limit error handler
 app.state.limiter = limiter
