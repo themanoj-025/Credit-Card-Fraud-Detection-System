@@ -47,3 +47,9 @@ warn_unused_ignores = true
 show_missing = true
 fail_under = 80
 skip_empty = true
+
+[tool.pytest.ini_options]
+addopts = "-m 'not slow'"
+markers = [
+    "slow: integration tests (database, HTTP, ML models) — excluded from default run; use pytest -m slow"
+]

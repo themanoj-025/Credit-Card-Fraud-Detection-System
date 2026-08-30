@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+
+pytestmark = pytest.mark.slow
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.llm.case_narrator import CaseNarrator, create_case_narrator
@@ -514,6 +516,7 @@ class TestFactualityChecker:
         Returns dict with pass/fail and any hallucinated features.
         """
         import re
+
 
         actual_features = {f["feature"] for f in shap_features}
         mentioned_features = set(re.findall(r"V\d+", narrative))

@@ -17,6 +17,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+
+pytestmark = pytest.mark.slow
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
@@ -184,6 +186,7 @@ class TestShapOutput:
     def test_shap_values_are_bounded(self):
         """Test that SHAP values in explanation are within expected bounds."""
         from src.fraudlens.explainability.shap_explainer import ShapExplanation
+
 
         explanation = ShapExplanation.from_raw(
             [("V14", 0.5), ("Amount", -0.3)],
