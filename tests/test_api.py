@@ -12,12 +12,10 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-
 pytestmark = pytest.mark.slow
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from api.main import app
-
 
 client = TestClient(app)
 

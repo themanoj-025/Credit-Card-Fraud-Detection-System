@@ -9,8 +9,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-
-
 pytestmark = pytest.mark.slow
 class TestDatabaseEngine:
     """Test database engine configuration."""

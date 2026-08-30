@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-import json
-import streamlit as st
 from typing import Any
+
+import streamlit as st
+
+
 def _show_pending_tab() -> None:
     """Show pending candidates with promote/reject actions."""
     client = get_api_client()
