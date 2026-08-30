@@ -65,7 +65,7 @@ class TestFactuality:
 
     def test_narrative_mentions_top_features(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that the top SHAP features appear in the narrative."""
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True
@@ -80,7 +80,7 @@ class TestFactuality:
 
     def test_narrative_does_not_hallucinate_features(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that narrative doesn't mention features not in SHAP list."""
         actual_features = {f["feature"] for f in sample_shap_features}
         narrative = narrator.narrate(
@@ -100,7 +100,7 @@ class TestFactuality:
 
     def test_feature_values_match_transaction(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that feature values in narrative match the transaction."""
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True
@@ -119,7 +119,7 @@ class TestProbabilityAccuracy:
 
     def test_narrative_includes_probability(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that the narrative includes the fraud probability."""
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True
@@ -130,7 +130,7 @@ class TestProbabilityAccuracy:
 
     def test_narrative_accuracy_different_probabilities(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that different probabilities produce different narratives."""
 
         # The fallback narrator always produces correct numbers
@@ -149,7 +149,7 @@ class TestConsistency:
 
     def test_consistent_fraud_label(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that flagged-fraud narratives consistently mention review."""
         # Run multiple times to check stability
         narratives = []
@@ -165,7 +165,7 @@ class TestConsistency:
 
     def test_consistent_legitimate_label(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that legitimate narratives consistently say 'legitimate'."""
         narratives = []
         for _ in range(3):
@@ -179,7 +179,7 @@ class TestConsistency:
 
     def test_deterministic_fallback(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that the fallback template is deterministic."""
         n1 = narrator.narrate(sample_transaction, 0.75, sample_shap_features, True)
         n2 = narrator.narrate(sample_transaction, 0.75, sample_shap_features, True)
@@ -193,14 +193,14 @@ class TestConsistency:
 class TestEdgeCases:
     """Eval: narratives should handle edge cases gracefully."""
 
-    def test_no_shap_features(self, narrator, sample_transaction):
+    def test_no_shap_features(self, narrator, sample_transaction) -> None:
         """Test narrative with empty SHAP explanation."""
         narrative = narrator.narrate(sample_transaction, 0.60, [], True)
         assert isinstance(narrative, str)
         assert len(narrative) > 0
         assert "60.0%" in narrative
 
-    def test_many_shap_features(self, narrator, sample_transaction):
+    def test_many_shap_features(self, narrator, sample_transaction) -> None:
         """Test narrative with many SHAP features (should not overflow)."""
         many_features = [
             {
@@ -218,7 +218,7 @@ class TestEdgeCases:
 
     def test_extreme_probability(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test narrative with extreme (0% and 100%) probabilities."""
         # 0% probability (legitimate)
         n1 = narrator.narrate(sample_transaction, 0.0, sample_shap_features, False)
@@ -238,7 +238,7 @@ class TestBusinessReadability:
 
     def test_narrative_is_plain_english(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that the narrative is in plain English (no raw numbers-only output)."""
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True
@@ -258,7 +258,7 @@ class TestBusinessReadability:
 
     def test_narrative_actionable(
         self, narrator, sample_transaction, sample_shap_features
-    ):
+    ) -> None:
         """Test that fraud narratives recommend an action."""
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True

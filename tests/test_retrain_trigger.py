@@ -162,7 +162,7 @@ def drift_events_with_datetime_objects() -> list:
 class TestRetrainingTriggerInit:
     """Tests for RetrainingTrigger initialization."""
 
-    def test_default_initialization(self):
+    def test_default_initialization(self) -> None:
         """Default constructor should set reasonable thresholds."""
         t = RetrainingTrigger()
         assert t.feedback_threshold == 100
@@ -171,7 +171,7 @@ class TestRetrainingTriggerInit:
         assert t.models_dir is not None
         assert t.pipeline_script is not None
 
-    def test_custom_initialization(self):
+    def test_custom_initialization(self) -> None:
         """Custom params should override defaults."""
         t = RetrainingTrigger(
             feedback_threshold=10,
@@ -182,7 +182,7 @@ class TestRetrainingTriggerInit:
         assert t.drift_critical_threshold == 5
         assert t.drift_window_days == 14
 
-    def test_models_dir_default(self):
+    def test_models_dir_default(self) -> None:
         """models_dir should default to project models/ directory."""
         t = RetrainingTrigger()
         assert "models" in str(t.models_dir)
@@ -194,14 +194,14 @@ class TestRetrainingTriggerInit:
 class TestGenerateCandidateVersion:
     """Tests for candidate version generation."""
 
-    def test_format(self, trigger):
+    def test_format(self, trigger) -> None:
         """Version should follow vYYYYMMDD_HHMMSS format."""
         version = trigger.generate_candidate_version()
         assert version.startswith("v")
         assert len(version) == 16  # v + 8 digits + _ + 6 digits = 16
         assert "_" in version
 
-    def test_increments_each_call(self, trigger):
+    def test_increments_each_call(self, trigger) -> None:
         """Two calls in quick succession should produce different versions."""
         v1 = trigger.generate_candidate_version()
         v2 = trigger.generate_candidate_version()
@@ -216,14 +216,14 @@ class TestGenerateCandidateVersion:
 class TestCheckDriftCondition:
     """Tests for the drift condition check."""
 
-    def test_below_threshold(self, trigger, few_critical_drift_events):
+    def test_below_threshold(self, trigger, few_critical_drift_events) -> None:
         """1 CRITICAL event < threshold of 2 → met=False."""
         result = trigger.check_drift_condition(few_critical_drift_events)
         assert result["met"] is False
         assert result["count"] == 1
         assert result["threshold"] == 2
 
-    def test_at_threshold(self, trigger):
+    def test_at_threshold(self, trigger) -> None:
         """2 CRITICAL events = threshold of 2 → met=True."""
         events = [
             {"feature_name": "V14", "alert_type": "CRITICAL"},
@@ -233,20 +233,20 @@ class TestCheckDriftCondition:
         assert result["met"] is True
         assert result["count"] == 2
 
-    def test_above_threshold(self, trigger, recent_critical_drift_events):
+    def test_above_threshold(self, trigger, recent_critical_drift_events) -> None:
         """3 CRITICAL events > threshold of 2 → met=True."""
         result = trigger.check_drift_condition(recent_critical_drift_events)
         assert result["met"] is True
         assert result["count"] == 3
         assert result["threshold"] == 2
 
-    def test_no_events(self, trigger):
+    def test_no_events(self, trigger) -> None:
         """Empty list → met=False."""
         result = trigger.check_drift_condition([])
         assert result["met"] is False
         assert result["count"] == 0
 
-    def test_only_warnings(self, trigger):
+    def test_only_warnings(self, trigger) -> None:
         """Only WARNING events → met=False."""
         events = [
             {"feature_name": "V14", "alert_type": "WARNING"},
@@ -256,26 +256,26 @@ class TestCheckDriftCondition:
         assert result["met"] is False
         assert result["count"] == 0
 
-    def test_none_uses_report_fallback(self, trigger):
+    def test_none_uses_report_fallback(self, trigger) -> None:
         """None input uses file-based fallback → graceful."""
         with patch("pathlib.Path.exists", return_value=False):
             result = trigger.check_drift_condition(None)
             assert result["met"] is False
             assert result["detail"] == "No drift report found"
 
-    def test_old_events_outside_window(self, trigger, old_drift_events):
+    def test_old_events_outside_window(self, trigger, old_drift_events) -> None:
         """Events older than drift_window_days should NOT trigger."""
         result = trigger.check_drift_condition(old_drift_events)
         assert result["met"] is False
         assert result["count"] == 0
 
-    def test_string_alert_key(self, trigger, drift_events_with_string_alerts):
+    def test_string_alert_key(self, trigger, drift_events_with_string_alerts) -> None:
         """Events using 'alert' key (not 'alert_type') should be detected."""
         result = trigger.check_drift_condition(drift_events_with_string_alerts)
         assert result["met"] is True
         assert result["count"] == 2
 
-    def test_datetime_objects(self, trigger, drift_events_with_datetime_objects):
+    def test_datetime_objects(self, trigger, drift_events_with_datetime_objects) -> None:
         """Events with datetime objects (not strings) should work."""
         result = trigger.check_drift_condition(drift_events_with_datetime_objects)
         assert result["met"] is True
@@ -288,39 +288,39 @@ class TestCheckDriftCondition:
 class TestCheckFeedbackCondition:
     """Tests for the feedback volume condition check."""
 
-    def test_below_threshold(self, trigger):
+    def test_below_threshold(self, trigger) -> None:
         """3 feedback labels < threshold of 5 → met=False."""
         result = trigger.check_feedback_condition(3)
         assert result["met"] is False
         assert result["count"] == 3
         assert result["threshold"] == 5
 
-    def test_at_threshold(self, trigger):
+    def test_at_threshold(self, trigger) -> None:
         """5 feedback labels = threshold of 5 → met=True."""
         result = trigger.check_feedback_condition(5)
         assert result["met"] is True
         assert result["count"] == 5
 
-    def test_above_threshold(self, trigger):
+    def test_above_threshold(self, trigger) -> None:
         """10 feedback labels > threshold of 5 → met=True."""
         result = trigger.check_feedback_condition(10)
         assert result["met"] is True
         assert result["count"] == 10
 
-    def test_zero_feedback(self, trigger):
+    def test_zero_feedback(self, trigger) -> None:
         """0 feedback → met=False."""
         result = trigger.check_feedback_condition(0)
         assert result["met"] is False
         assert result["count"] == 0
 
-    def test_none_no_training_history(self, trigger):
+    def test_none_no_training_history(self, trigger) -> None:
         """None input with no model artifacts → met=False with graceful message."""
         with patch.object(trigger, "_get_last_training_time", return_value=None):
             result = trigger.check_feedback_condition(None)
             assert result["met"] is False
             assert "No training history" in result["detail"]
 
-    def test_none_with_training_history(self, trigger):
+    def test_none_with_training_history(self, trigger) -> None:
         """None input with training artifacts → does not raise."""
         with patch.object(trigger, "_get_last_training_time", return_value=1000000.0):
             result = trigger.check_feedback_condition(None)
@@ -333,7 +333,7 @@ class TestCheckFeedbackCondition:
 class TestCheckConditions:
     """Tests for the combined check_conditions method."""
 
-    def test_no_triggers(self, trigger):
+    def test_no_triggers(self, trigger) -> None:
         """No drift or feedback → any_triggered=False."""
         result = trigger.check_conditions(
             recent_drift_events=[],
@@ -344,7 +344,7 @@ class TestCheckConditions:
         assert result["conditions"]["feedback_volume"]["met"] is False
         assert result["primary_reason"] == "No trigger conditions met"
 
-    def test_drift_only(self, trigger, recent_critical_drift_events):
+    def test_drift_only(self, trigger, recent_critical_drift_events) -> None:
         """Only drift triggered → any_triggered=True with drift reason."""
         result = trigger.check_conditions(
             recent_drift_events=recent_critical_drift_events,
@@ -355,7 +355,7 @@ class TestCheckConditions:
         assert result["conditions"]["feedback_volume"]["met"] is False
         assert "Drift trigger" in result["primary_reason"]
 
-    def test_feedback_only(self, trigger):
+    def test_feedback_only(self, trigger) -> None:
         """Only feedback triggered → any_triggered=True with feedback reason."""
         result = trigger.check_conditions(
             recent_drift_events=[],
@@ -366,7 +366,7 @@ class TestCheckConditions:
         assert result["conditions"]["feedback_volume"]["met"] is True
         assert "Feedback volume trigger" in result["primary_reason"]
 
-    def test_both_triggers(self, trigger, recent_critical_drift_events):
+    def test_both_triggers(self, trigger, recent_critical_drift_events) -> None:
         """Both conditions met → any_triggered=True with combined reason."""
         result = trigger.check_conditions(
             recent_drift_events=recent_critical_drift_events,
@@ -384,7 +384,7 @@ class TestCheckConditions:
 class TestTriggerDryRun:
     """Tests for the trigger() method in dry_run mode."""
 
-    def test_dry_run_no_trigger(self, trigger):
+    def test_dry_run_no_trigger(self, trigger) -> None:
         """No conditions met in dry_run → triggered=False, no version."""
         result = trigger.trigger(
             recent_drift_events=[],
@@ -395,7 +395,7 @@ class TestTriggerDryRun:
         assert result.candidate_version is None
         assert result.error is None
 
-    def test_dry_run_drift_trigger(self, trigger, recent_critical_drift_events):
+    def test_dry_run_drift_trigger(self, trigger, recent_critical_drift_events) -> None:
         """Drift condition met in dry_run → triggered=True, version present."""
         result = trigger.trigger(
             recent_drift_events=recent_critical_drift_events,
@@ -409,7 +409,7 @@ class TestTriggerDryRun:
         assert result.trigger_metrics["conditions"]["drift"]["met"] is True
         assert result.candidate_metrics is None  # No pipeline in dry_run
 
-    def test_dry_run_feedback_trigger(self, trigger):
+    def test_dry_run_feedback_trigger(self, trigger) -> None:
         """Feedback condition met in dry_run → triggered=True, version present."""
         result = trigger.trigger(
             recent_drift_events=[],
@@ -421,7 +421,7 @@ class TestTriggerDryRun:
         assert "Feedback volume" in result.reason
         assert result.trigger_metrics["conditions"]["feedback_volume"]["met"] is True
 
-    def test_dry_run_both_triggers(self, trigger, recent_critical_drift_events):
+    def test_dry_run_both_triggers(self, trigger, recent_critical_drift_events) -> None:
         """Both conditions met in dry_run → triggered=True, combined reason."""
         result = trigger.trigger(
             recent_drift_events=recent_critical_drift_events,
@@ -431,7 +431,7 @@ class TestTriggerDryRun:
         assert result.triggered is True
         assert "AND" in result.reason
 
-    def test_dry_run_returns_trigger_metrics(self, trigger):
+    def test_dry_run_returns_trigger_metrics(self, trigger) -> None:
         """Trigger metrics should include condition details."""
         result = trigger.trigger(
             recent_drift_events=[],
@@ -443,7 +443,7 @@ class TestTriggerDryRun:
         assert "feedback_volume" in result.trigger_metrics["conditions"]
         assert "primary_reason" in result.trigger_metrics
 
-    def test_dry_run_edge_feedback_at_threshold(self, trigger):
+    def test_dry_run_edge_feedback_at_threshold(self, trigger) -> None:
         """Exactly at feedback threshold → triggered."""
         result = trigger.trigger(
             recent_drift_events=[],
@@ -452,7 +452,7 @@ class TestTriggerDryRun:
         )
         assert result.triggered is True
 
-    def test_dry_run_edge_drift_at_threshold(self, trigger):
+    def test_dry_run_edge_drift_at_threshold(self, trigger) -> None:
         """Exactly at drift threshold → triggered."""
         events = [
             {"feature_name": "V14", "alert_type": "CRITICAL"},
@@ -472,7 +472,7 @@ class TestTriggerDryRun:
 class TestTriggerPipelineFailure:
     """Tests for trigger() when pipeline fails (not dry_run)."""
 
-    def test_pipeline_script_not_found(self, trigger):
+    def test_pipeline_script_not_found(self, trigger) -> None:
         """If pipeline script doesn't exist, returns error."""
         trigger.pipeline_script = "/nonexistent/pipeline.py"
         result = trigger.trigger(
@@ -491,7 +491,7 @@ class TestTriggerPipelineFailure:
 class TestCheckAndTrigger:
     """Tests for the check_and_trigger convenience function."""
 
-    def test_dry_run_default(self):
+    def test_dry_run_default(self) -> None:
         """check_and_trigger with dry_run=True should return TriggerResult."""
         result = check_and_trigger(
             feedback_threshold=5,
@@ -501,7 +501,7 @@ class TestCheckAndTrigger:
         assert isinstance(result, TriggerResult)
         assert result.triggered is False  # No drift or feedback passed in
 
-    def test_dry_run_custom_thresholds(self):
+    def test_dry_run_custom_thresholds(self) -> None:
         """Custom thresholds should be respected."""
         result = check_and_trigger(
             feedback_threshold=1,
@@ -511,7 +511,7 @@ class TestCheckAndTrigger:
         # Still no events passed, so no trigger
         assert result.triggered is False
 
-    def test_returns_trigger_result_type(self):
+    def test_returns_trigger_result_type(self) -> None:
         """check_and_trigger always returns TriggerResult."""
         result = check_and_trigger(dry_run=True)
         assert isinstance(result, TriggerResult)
@@ -526,7 +526,7 @@ class TestCheckAndTrigger:
 class TestTriggerResult:
     """Tests for the TriggerResult dataclass."""
 
-    def test_default_values(self):
+    def test_default_values(self) -> None:
         """TriggerResult should have sensible defaults."""
         result = TriggerResult(triggered=False)
         assert result.reason == ""
@@ -535,7 +535,7 @@ class TestTriggerResult:
         assert result.candidate_metrics is None
         assert result.error is None
 
-    def test_triggered_true(self):
+    def test_triggered_true(self) -> None:
         """A triggered result should carry reason and version."""
         result = TriggerResult(
             triggered=True,
@@ -556,7 +556,7 @@ class TestTriggerResult:
 class TestCandidateInfo:
     """Tests for the CandidateInfo dataclass."""
 
-    def test_default_status(self):
+    def test_default_status(self) -> None:
         """Default status should be 'candidate'."""
         info = CandidateInfo(
             version="v20260722_120000",
@@ -574,7 +574,7 @@ class TestCandidateInfo:
         assert info.version == "v20260722_120000"
         assert info.trigger == "drift"
 
-    def test_custom_status(self):
+    def test_custom_status(self) -> None:
         """Status should be overridable."""
         info = CandidateInfo(
             version="v20260722_120000",
@@ -591,7 +591,7 @@ class TestCandidateInfo:
         )
         assert info.status == "promoted"
 
-    def test_minimal_constructor(self):
+    def test_minimal_constructor(self) -> None:
         """CandidateInfo should work with minimum required fields."""
         info = CandidateInfo(
             version="v1",
@@ -614,7 +614,7 @@ class TestCandidateInfo:
 class TestIntegrationScenarios:
     """End-to-end scenarios simulating real retraining checks."""
 
-    def test_scenario_no_retraining_needed(self, trigger):
+    def test_scenario_no_retraining_needed(self, trigger) -> None:
         """
         Scenario: System is healthy, no drift, no feedback.
         Expected: No retraining triggered.
@@ -627,7 +627,7 @@ class TestIntegrationScenarios:
         assert result.triggered is False
         assert result.candidate_version is None
 
-    def test_scenario_drift_detected(self, trigger, recent_critical_drift_events):
+    def test_scenario_drift_detected(self, trigger, recent_critical_drift_events) -> None:
         """
         Scenario: 3 CRITICAL drift events detected (threshold=2).
         Expected: Retraining triggered by drift, candidate version generated.
@@ -643,7 +643,7 @@ class TestIntegrationScenarios:
         assert result.trigger_metrics["conditions"]["drift"]["met"] is True
         assert result.trigger_metrics["conditions"]["feedback_volume"]["met"] is False
 
-    def test_scenario_feedback_accumulated(self, trigger):
+    def test_scenario_feedback_accumulated(self, trigger) -> None:
         """
         Scenario: 50 new feedback labels (threshold=5), no drift.
         Expected: Retraining triggered by feedback volume.
@@ -657,7 +657,7 @@ class TestIntegrationScenarios:
         assert "Feedback volume" in result.reason
         assert result.candidate_version is not None
 
-    def test_scenario_both_conditions(self, trigger, recent_critical_drift_events):
+    def test_scenario_both_conditions(self, trigger, recent_critical_drift_events) -> None:
         """
         Scenario: Both drift (3 CRITICAL) AND feedback (50 labels) present.
         Expected: Retraining triggered with combined reason.
@@ -671,7 +671,7 @@ class TestIntegrationScenarios:
         assert "AND" in result.reason
         assert result.candidate_version is not None
 
-    def test_scenario_drift_with_custom_thresholds(self):
+    def test_scenario_drift_with_custom_thresholds(self) -> None:
         """
         Scenario: Custom high drift threshold (5), only 3 events.
         Expected: No retraining.
@@ -688,7 +688,7 @@ class TestIntegrationScenarios:
         )
         assert result.triggered is False
 
-    def test_scenario_mixed_alert_types(self, trigger):
+    def test_scenario_mixed_alert_types(self, trigger) -> None:
         """
         Scenario: Mix of CRITICAL, WARNING, and OK events.
         Only CRITICAL should count toward the drift threshold.
@@ -715,30 +715,30 @@ class TestIntegrationScenarios:
 class TestTimestampParsing:
     """Tests for _parse_timestamp edge cases."""
 
-    def test_datetime_object(self, trigger):
+    def test_datetime_object(self, trigger) -> None:
         """Datetime objects should be returned as-is."""
         dt = datetime(2026, 7, 22, 12, 0, 0)
         result = trigger._parse_timestamp({"created_at": dt})
         assert result == dt
 
-    def test_iso_string(self, trigger):
+    def test_iso_string(self, trigger) -> None:
         """ISO format strings should be parsed."""
         result = trigger._parse_timestamp({"created_at": "2026-07-22T12:00:00"})
         assert result is not None
         assert result.year == 2026
 
-    def test_timestamp_key_fallback(self, trigger):
+    def test_timestamp_key_fallback(self, trigger) -> None:
         """'timestamp' key should be used when 'created_at' is missing."""
         result = trigger._parse_timestamp({"timestamp": "2026-07-22T12:00:00"})
         assert result is not None
         assert result.year == 2026
 
-    def test_invalid_string(self, trigger):
+    def test_invalid_string(self, trigger) -> None:
         """Invalid date strings should return None."""
         result = trigger._parse_timestamp({"created_at": "not-a-date"})
         assert result is None
 
-    def test_missing_key(self, trigger):
+    def test_missing_key(self, trigger) -> None:
         """Missing both 'created_at' and 'timestamp' should return None."""
         result = trigger._parse_timestamp({"feature_name": "V14"})
         assert result is None

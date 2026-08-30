@@ -80,21 +80,21 @@ def sample_shap_explanation() -> list:
 class TestCaseNarratorInit:
     """Tests for CaseNarrator initialization."""
 
-    def test_default_initialization(self):
+    def test_default_initialization(self) -> None:
         """Test default constructor sets reasonable values."""
         narrator = CaseNarrator()
         assert narrator.model is not None
         assert narrator.max_tokens > 0
         assert 0.0 <= narrator.temperature <= 1.0
 
-    def test_custom_parameters(self):
+    def test_custom_parameters(self) -> None:
         """Test custom model, max_tokens, and temperature."""
         narrator = CaseNarrator(model="test-model", max_tokens=500, temperature=0.7)
         assert narrator.model == "test-model"
         assert narrator.max_tokens == 500
         assert narrator.temperature == 0.7
 
-    def test_empty_api_key_forces_fallback(self):
+    def test_empty_api_key_forces_fallback(self) -> None:
         """Test that empty API key forces fallback path."""
         narrator = CaseNarrator(api_key="")
         assert narrator.api_key == ""
@@ -106,7 +106,7 @@ class TestCaseNarratorInit:
 class TestFallbackNarrative:
     """Tests for fallback (template-based) narrative generation."""
 
-    def test_fraud_fallback_narrative(self, narrator_no_key, sample_shap_explanation):
+    def test_fraud_fallback_narrative(self, narrator_no_key, sample_shap_explanation) -> None:
         """Test fallback narrative for flagged fraud transaction."""
         narrative = narrator_no_key._fallback_narrative(
             sample_shap_explanation, 0.94, True
@@ -119,7 +119,7 @@ class TestFallbackNarrative:
 
     def test_legitimate_fallback_narrative(
         self, narrator_no_key, sample_shap_explanation
-    ):
+    ) -> None:
         """Test fallback narrative for legitimate transaction."""
         narrative = narrator_no_key._fallback_narrative(
             sample_shap_explanation, 0.12, False
@@ -127,13 +127,13 @@ class TestFallbackNarrative:
         assert isinstance(narrative, str)
         assert "legitimate" in narrative.lower()
 
-    def test_fallback_narrative_with_empty_shap(self, narrator_no_key):
+    def test_fallback_narrative_with_empty_shap(self, narrator_no_key) -> None:
         """Test fallback handles empty SHAP explanation gracefully."""
         narrative = narrator_no_key._fallback_narrative([], 0.88, True)
         assert isinstance(narrative, str)
         assert len(narrative) > 0
 
-    def test_fallback_narrative_with_single_feature(self, narrator_no_key):
+    def test_fallback_narrative_with_single_feature(self, narrator_no_key) -> None:
         """Test fallback with only one SHAP feature."""
         shap = [{"feature": "V14", "shap_value": 0.5, "impact": "increases"}]
         narrative = narrator_no_key._fallback_narrative(shap, 0.90, True)
@@ -149,7 +149,7 @@ class TestPromptBuilding:
 
     def test_prompt_contains_transaction_details(
         self, narrator_no_key, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that the prompt includes amount, time, and probability."""
         prompt = narrator_no_key._build_prompt(
             sample_transaction, 0.94, sample_shap_explanation, True
@@ -161,7 +161,7 @@ class TestPromptBuilding:
 
     def test_prompt_contains_shap_features(
         self, narrator_no_key, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that the prompt includes SHAP feature names."""
         prompt = narrator_no_key._build_prompt(
             sample_transaction, 0.94, sample_shap_explanation, True
@@ -169,7 +169,7 @@ class TestPromptBuilding:
         assert "V14" in prompt
         assert "V4" in prompt
 
-    def test_prompt_limits_to_five_features(self, narrator_no_key, sample_transaction):
+    def test_prompt_limits_to_five_features(self, narrator_no_key, sample_transaction) -> None:
         """Test that prompt only includes top 5 SHAP features."""
         long_shap = [
             {"feature": f"V{i}", "shap_value": 0.1, "impact": "increases"}
@@ -182,7 +182,7 @@ class TestPromptBuilding:
         assert "V14" not in prompt
         assert "V1" in prompt  # First feature should be there
 
-    def test_prompt_time_conversion(self, narrator_no_key, sample_shap_explanation):
+    def test_prompt_time_conversion(self, narrator_no_key, sample_shap_explanation) -> None:
         """Test that raw Time is converted to hours in the prompt."""
         tx = {"Time": 100000.0, "Amount": 100.0}
         prompt = narrator_no_key._build_prompt(tx, 0.5, sample_shap_explanation, False)
@@ -198,7 +198,7 @@ class TestNarrate:
 
     def test_narrate_returns_string(
         self, narrator_no_key, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that narrate() returns a non-empty string."""
         result = narrator_no_key.narrate(
             sample_transaction, 0.94, sample_shap_explanation, True
@@ -208,7 +208,7 @@ class TestNarrate:
 
     def test_narrate_fraud_includes_probability(
         self, narrator_no_key, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that fraud narrative includes the probability."""
         result = narrator_no_key.narrate(
             sample_transaction, 0.88, sample_shap_explanation, True
@@ -217,7 +217,7 @@ class TestNarrate:
 
     def test_narrate_legitimate_includes_confidence(
         self, narrator_no_key, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that legitimate narrative includes confidence."""
         result = narrator_no_key.narrate(
             sample_transaction, 0.15, sample_shap_explanation, False
@@ -226,7 +226,7 @@ class TestNarrate:
 
     def test_narrate_includes_action_recommendation(
         self, narrator_no_key, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that fraud narrative includes action recommendation."""
         result = narrator_no_key.narrate(
             sample_transaction, 0.95, sample_shap_explanation, True
@@ -240,12 +240,12 @@ class TestNarrate:
 class TestCreateCaseNarrator:
     """Tests for the create_case_narrator factory function."""
 
-    def test_factory_returns_case_narrator(self):
+    def test_factory_returns_case_narrator(self) -> None:
         """Test that factory returns a CaseNarrator instance."""
         narrator = create_case_narrator()
         assert isinstance(narrator, CaseNarrator)
 
-    def test_factory_creates_new_instance(self):
+    def test_factory_creates_new_instance(self) -> None:
         """Test that each call creates a new instance."""
         n1 = create_case_narrator()
         n2 = create_case_narrator()
@@ -258,14 +258,14 @@ class TestCreateCaseNarrator:
 class TestEdgeCases:
     """Edge case tests for CaseNarrator."""
 
-    def test_zero_probability(self, narrator_no_key, sample_shap_explanation):
+    def test_zero_probability(self, narrator_no_key, sample_shap_explanation) -> None:
         """Test handling of zero fraud probability."""
         result = narrator_no_key.narrate(
             {"Amount": 10.0, "Time": 0.0}, 0.0, sample_shap_explanation, False
         )
         assert isinstance(result, str)
 
-    def test_one_probability(self, narrator_no_key, sample_shap_explanation):
+    def test_one_probability(self, narrator_no_key, sample_shap_explanation) -> None:
         """Test handling of 100% fraud probability."""
         result = narrator_no_key.narrate(
             {"Amount": 5000.0, "Time": 86400.0}, 1.0, sample_shap_explanation, True
@@ -273,14 +273,14 @@ class TestEdgeCases:
         assert isinstance(result, str)
         assert "100.0%" in result
 
-    def test_negative_amount(self, narrator_no_key, sample_shap_explanation):
+    def test_negative_amount(self, narrator_no_key, sample_shap_explanation) -> None:
         """Test handling of negative amount (edge case)."""
         result = narrator_no_key.narrate(
             {"Amount": -50.0, "Time": 0.0}, 0.75, sample_shap_explanation, True
         )
         assert isinstance(result, str)
 
-    def test_missing_transaction_fields(self, narrator_no_key, sample_shap_explanation):
+    def test_missing_transaction_fields(self, narrator_no_key, sample_shap_explanation) -> None:
         """Test handling of transaction with missing fields."""
         result = narrator_no_key.narrate({}, 0.60, sample_shap_explanation, False)
         assert isinstance(result, str)
@@ -301,7 +301,7 @@ class TestMockedAnthropicPath:
 
     def test_narrate_with_mocked_client_returns_narrative(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that narrate() returns the mock's narrative text.
 
         The conftest.py auto-used fixture monkeypatches anthropic.Anthropic
@@ -319,7 +319,7 @@ class TestMockedAnthropicPath:
 
     def test_mocked_path_includes_probability(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that the conftest mock path returns a narrative string."""
         narrator = CaseNarrator(api_key="test-key-123")
         result = narrator.narrate(
@@ -330,7 +330,7 @@ class TestMockedAnthropicPath:
 
     def test_mocked_path_with_cost_tracking(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """Test that the mock path works end-to-end (cost tracking is internal)."""
         narrator = CaseNarrator(api_key="test-key-123")
         result = narrator.narrate(
@@ -345,7 +345,7 @@ class TestMockedAnthropicEdgeCases:
 
     def test_timeout_falls_back_gracefully(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """
         Mock the client's messages.create to raise a timeout exception
         and verify the narrator falls back instead of crashing.
@@ -354,18 +354,18 @@ class TestMockedAnthropicEdgeCases:
 
         narrator = CaseNarrator(api_key="test-key-123")
 
-        def _raise_timeout(*args, **kwargs):
+        def _raise_timeout(*args, **kwargs) -> None:
             import anthropic
 
             raise anthropic.APITimeoutError("Request timed out")
 
         with patch.object(narrator, "_client", None):
             # Patch _init_client to set up a client whose create raises
-            def _setup_timeout_client():
+            def _setup_timeout_client() -> None:
                 import anthropic
 
                 class TimeoutMessages:
-                    def create(self, *args, **kwargs):
+                    def create(self, *args, **kwargs) -> None:
                         raise anthropic.APITimeoutError("Request timed out")
 
                 class TimeoutClient:
@@ -408,7 +408,7 @@ class TestMockedAnthropicEdgeCases:
 
         from unittest.mock import patch
 
-        def _setup_empty_client():
+        def _setup_empty_client() -> None:
             narrator._client = EmptyClient()
 
         with patch.object(narrator, "_init_client", _setup_empty_client):
@@ -443,7 +443,7 @@ class TestMockedAnthropicEdgeCases:
 
         from unittest.mock import patch
 
-        def _setup_malformed_client():
+        def _setup_malformed_client() -> None:
             narrator._client = MalformedClient()
 
         with patch.object(narrator, "_init_client", _setup_malformed_client):
@@ -457,7 +457,7 @@ class TestMockedAnthropicEdgeCases:
 
     def test_circuit_breaker_skips_llm_call(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> bool:
         """
         When the circuit breaker is open, narrate() should skip the LLM call
         entirely and go directly to the fallback.
@@ -465,13 +465,13 @@ class TestMockedAnthropicEdgeCases:
         narrator = CaseNarrator(api_key="test-key-123")
 
         class OpenBreaker:
-            def is_open(self):
+            def is_open(self) -> bool:
                 return True
 
-            def record_success(self):
+            def record_success(self) -> None:
                 pass
 
-            def record_failure(self):
+            def record_failure(self) -> None:
                 pass
 
         narrator.set_circuit_breaker(OpenBreaker())
@@ -481,7 +481,7 @@ class TestMockedAnthropicEdgeCases:
         # Mock _init_client to raise - if circuit breaker works, it won't be called
         called = []
 
-        def _should_not_call():
+        def _should_not_call() -> None:
             called.append(True)
             raise RuntimeError("Should not have initialized client!")
 
@@ -527,7 +527,7 @@ class TestFactualityChecker:
             "actual": sorted(actual_features),
         }
 
-    def test_matched_case_passes(self):
+    def test_matched_case_passes(self) -> None:
         """Golden set: narrative mentions only expected features."""
         shap_features = [
             {
@@ -550,7 +550,7 @@ class TestFactualityChecker:
         assert result["pass"] is True
         assert len(result["hallucinated"]) == 0
 
-    def test_hallucinated_feature_fails(self):
+    def test_hallucinated_feature_fails(self) -> None:
         """Golden set: narrative mentions a feature not in SHAP contributors."""
         shap_features = [
             {
@@ -568,7 +568,7 @@ class TestFactualityChecker:
         assert result["pass"] is False
         assert "V10" in result["hallucinated"]
 
-    def test_all_features_mentioned_passes(self):
+    def test_all_features_mentioned_passes(self) -> None:
         """Golden set: narrative mentions ALL actual SHAP features."""
         shap_features = [
             {
@@ -590,7 +590,7 @@ class TestFactualityChecker:
         result = self._factuality_check(narrative, shap_features)
         assert result["pass"] is True
 
-    def test_no_features_mentioned_passes(self):
+    def test_no_features_mentioned_passes(self) -> None:
         """Narrative with no V-feature references should pass (no hallucination)."""
         shap_features = [
             {
@@ -605,7 +605,7 @@ class TestFactualityChecker:
         result = self._factuality_check(narrative, shap_features)
         assert result["pass"] is True
 
-    def test_multiple_hallucinated_features_fails(self):
+    def test_multiple_hallucinated_features_fails(self) -> None:
         """Multiple hallucinated features should all be reported."""
         shap_features = [
             {"feature": "V1", "value": 1.0, "shap_value": 0.5, "impact": "increases"},

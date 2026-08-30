@@ -26,14 +26,14 @@ def mock_session():
 class TestBaseRepository:
     """Tests for BaseRepository generic CRUD operations."""
 
-    def test_init(self, mock_session):
+    def test_init(self, mock_session) -> None:
         """Test repository initialization stores session and model class."""
         repo = BaseRepository(mock_session, PredictionModel)
         assert repo.session == mock_session
         assert repo.model_class == PredictionModel
 
     @pytest.mark.asyncio
-    async def test_create(self, mock_session):
+    async def test_create(self, mock_session) -> None:
         """Test create adds instance and flushes."""
         repo = BaseRepository(mock_session, PredictionModel)
         result = await repo.create(
@@ -49,7 +49,7 @@ class TestBaseRepository:
         assert result.decision == "FRAUD"
 
     @pytest.mark.asyncio
-    async def test_get_found(self, mock_session):
+    async def test_get_found(self, mock_session) -> None:
         """Test get returns instance when found."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = PredictionModel(decision="FRAUD")
@@ -62,7 +62,7 @@ class TestBaseRepository:
         assert result.decision == "FRAUD"
 
     @pytest.mark.asyncio
-    async def test_get_not_found(self, mock_session):
+    async def test_get_not_found(self, mock_session) -> None:
         """Test get returns None when not found."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None
@@ -74,7 +74,7 @@ class TestBaseRepository:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_list_defaults(self, mock_session):
+    async def test_list_defaults(self, mock_session) -> None:
         """Test list with default parameters uses descending order."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -88,7 +88,7 @@ class TestBaseRepository:
         assert len(results) == 1
 
     @pytest.mark.asyncio
-    async def test_list_with_pagination(self, mock_session):
+    async def test_list_with_pagination(self, mock_session) -> None:
         """Test list respects skip/limit."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = []
@@ -100,7 +100,7 @@ class TestBaseRepository:
         assert len(results) == 0
 
     @pytest.mark.asyncio
-    async def test_list_ascending_order(self, mock_session):
+    async def test_list_ascending_order(self, mock_session) -> None:
         """Test list with ascending order."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = []
@@ -112,7 +112,7 @@ class TestBaseRepository:
         assert len(results) == 0
 
     @pytest.mark.asyncio
-    async def test_count_no_filters(self, mock_session):
+    async def test_count_no_filters(self, mock_session) -> None:
         """Test count returns total without filters."""
         mock_result = MagicMock()
         mock_result.scalar.return_value = 42
@@ -124,7 +124,7 @@ class TestBaseRepository:
         assert count == 42
 
     @pytest.mark.asyncio
-    async def test_count_with_filters(self, mock_session):
+    async def test_count_with_filters(self, mock_session) -> None:
         """Test count with filter arguments."""
         mock_result = MagicMock()
         mock_result.scalar.return_value = 15
@@ -136,7 +136,7 @@ class TestBaseRepository:
         assert count == 15
 
     @pytest.mark.asyncio
-    async def test_count_zero_when_no_rows(self, mock_session):
+    async def test_count_zero_when_no_rows(self, mock_session) -> None:
         """Test count returns 0 when no matching records."""
         mock_result = MagicMock()
         mock_result.scalar.return_value = None
@@ -148,7 +148,7 @@ class TestBaseRepository:
         assert count == 0
 
     @pytest.mark.asyncio
-    async def test_update_success(self, mock_session):
+    async def test_update_success(self, mock_session) -> None:
         """Test update modifies attributes and flushes."""
         instance = PredictionModel(decision="LEGITIMATE")
         mock_result = MagicMock()
@@ -164,7 +164,7 @@ class TestBaseRepository:
         mock_session.flush.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_update_not_found(self, mock_session):
+    async def test_update_not_found(self, mock_session) -> None:
         """Test update returns None when instance not found."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None
@@ -176,7 +176,7 @@ class TestBaseRepository:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_update_ignores_unknown_attrs(self, mock_session):
+    async def test_update_ignores_unknown_attrs(self, mock_session) -> None:
         """Test update silently ignores attributes that don't exist on the model."""
         instance = PredictionModel(decision="LEGITIMATE")
         mock_result = MagicMock()
@@ -190,7 +190,7 @@ class TestBaseRepository:
         assert result.decision == "FRAUD"
 
     @pytest.mark.asyncio
-    async def test_delete_success(self, mock_session):
+    async def test_delete_success(self, mock_session) -> None:
         """Test delete returns True when instance exists."""
         instance = PredictionModel(decision="FRAUD")
         mock_result = MagicMock()
@@ -205,7 +205,7 @@ class TestBaseRepository:
         mock_session.flush.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_delete_not_found(self, mock_session):
+    async def test_delete_not_found(self, mock_session) -> None:
         """Test delete returns False when instance not found."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None

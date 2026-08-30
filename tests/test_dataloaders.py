@@ -27,7 +27,7 @@ def sample_csv_data() -> pd.DataFrame:
 class TestDataLoaderInit:
     """Test DataLoader initialization."""
 
-    def test_default_init(self):
+    def test_default_init(self) -> None:
         """Test default initialization uses config values."""
         loader = DataLoader()
         assert loader.data_path is not None
@@ -35,7 +35,7 @@ class TestDataLoaderInit:
         assert loader.review_cost == 5.0
         assert loader.df is None
 
-    def test_custom_init(self):
+    def test_custom_init(self) -> None:
         """Test custom initialization values."""
         loader = DataLoader(
             data_path="/custom/path.csv",
@@ -47,7 +47,7 @@ class TestDataLoaderInit:
         assert loader.avg_fraud_loss == 200.0
         assert loader.review_cost == 10.0
 
-    def test_init_partial_custom(self):
+    def test_init_partial_custom(self) -> None:
         """Test with only data_path provided."""
         loader = DataLoader(data_path="/data/creditcard.csv")
         assert loader.avg_fraud_loss == 150.0  # default
@@ -57,7 +57,7 @@ class TestDataLoaderInit:
 class TestDataLoaderLoad:
     """Test the load method."""
 
-    def test_load_success(self, sample_csv_data, tmp_path):
+    def test_load_success(self, sample_csv_data, tmp_path) -> None:
         """Test successful loading of CSV file."""
         csv_path = tmp_path / "creditcard.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -70,13 +70,13 @@ class TestDataLoaderLoad:
         assert "Class" in df.columns
         assert loader.df is not None
 
-    def test_load_file_not_found(self):
+    def test_load_file_not_found(self) -> None:
         """Test FileNotFoundError when file doesn't exist."""
         loader = DataLoader(data_path="/nonexistent/path.csv")
         with pytest.raises(FileNotFoundError, match="Dataset not found"):
             loader.load()
 
-    def test_load_updates_internal_df(self, sample_csv_data, tmp_path):
+    def test_load_updates_internal_df(self, sample_csv_data, tmp_path) -> None:
         """Test that load() sets self.df."""
         csv_path = tmp_path / "test.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -90,13 +90,13 @@ class TestDataLoaderLoad:
 class TestDataLoaderStats:
     """Test get_basic_stats and related methods."""
 
-    def test_get_basic_stats_not_loaded(self):
+    def test_get_basic_stats_not_loaded(self) -> None:
         """Test ValueError when calling stats before loading."""
         loader = DataLoader()
         with pytest.raises(ValueError, match="Dataset not loaded"):
             loader.get_basic_stats()
 
-    def test_get_basic_stats_shape(self, sample_csv_data, tmp_path):
+    def test_get_basic_stats_shape(self, sample_csv_data, tmp_path) -> None:
         """Test basic stats contains all expected keys."""
         csv_path = tmp_path / "data.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -119,7 +119,7 @@ class TestDataLoaderStats:
             stats["n_features"] == 30
         )  # V1-V28 + Time + Amount = 30 features, minus Class in shape[1]-1
 
-    def test_get_column_info(self, sample_csv_data, tmp_path):
+    def test_get_column_info(self, sample_csv_data, tmp_path) -> None:
         """Test column info returns expected DataFrame."""
         csv_path = tmp_path / "data.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -134,13 +134,13 @@ class TestDataLoaderStats:
         assert "n_unique" in info.columns
         assert len(info) == len(sample_csv_data.columns)
 
-    def test_get_column_info_not_loaded(self):
+    def test_get_column_info_not_loaded(self) -> None:
         """Test ValueError when calling column info before loading."""
         loader = DataLoader()
         with pytest.raises(ValueError, match="Dataset not loaded"):
             loader.get_column_info()
 
-    def test_get_class_distribution(self, sample_csv_data, tmp_path):
+    def test_get_class_distribution(self, sample_csv_data, tmp_path) -> None:
         """Test class distribution returns expected keys."""
         csv_path = tmp_path / "data.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -156,13 +156,13 @@ class TestDataLoaderStats:
         assert "avg_fraud_loss" in dist
         assert dist["n_fraud"] + dist["n_legitimate"] == 200
 
-    def test_get_class_distribution_not_loaded(self):
+    def test_get_class_distribution_not_loaded(self) -> None:
         """Test ValueError when calling class distribution before loading."""
         loader = DataLoader()
         with pytest.raises(ValueError, match="Dataset not loaded"):
             loader.get_class_distribution()
 
-    def test_sample_transaction(self, sample_csv_data, tmp_path):
+    def test_sample_transaction(self, sample_csv_data, tmp_path) -> None:
         """Test sample transaction returns a fraud dict without 'Class'."""
         csv_path = tmp_path / "data.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -176,7 +176,7 @@ class TestDataLoaderStats:
         assert "Amount" in tx
         assert "Time" in tx
 
-    def test_sample_transaction_not_loaded(self):
+    def test_sample_transaction_not_loaded(self) -> None:
         """Test ValueError when sample_transaction called before loading."""
         loader = DataLoader()
         with pytest.raises(ValueError, match="Dataset not loaded"):
@@ -186,7 +186,7 @@ class TestDataLoaderStats:
 class TestLoadDataFunction:
     """Test the convenience load_data function."""
 
-    def test_load_data(self, sample_csv_data, tmp_path):
+    def test_load_data(self, sample_csv_data, tmp_path) -> None:
         """Test load_data returns DataFrame and stats dict."""
         csv_path = tmp_path / "data.csv"
         sample_csv_data.to_csv(csv_path, index=False)
@@ -198,7 +198,7 @@ class TestLoadDataFunction:
         assert len(df) == 200
         assert stats["n_samples"] == 200
 
-    def test_load_data_file_not_found(self):
+    def test_load_data_file_not_found(self) -> None:
         """Test load_data propagates FileNotFoundError."""
         with pytest.raises(FileNotFoundError):
             load_data("/nonexistent/path.csv")
@@ -207,7 +207,7 @@ class TestLoadDataFunction:
 class TestDataLoaderEdgeCases:
     """Test edge cases for DataLoader."""
 
-    def test_empty_dataframe(self, tmp_path):
+    def test_empty_dataframe(self, tmp_path) -> None:
         """Test handling of empty CSV."""
         empty_df = pd.DataFrame(
             columns=[f"V{i}" for i in range(1, 29)] + ["Time", "Amount", "Class"]
@@ -223,7 +223,7 @@ class TestDataLoaderEdgeCases:
         assert stats["n_fraud"] == 0
         assert stats["n_legitimate"] == 0
 
-    def test_all_legitimate(self, tmp_path):
+    def test_all_legitimate(self, tmp_path) -> None:
         """Test dataset with no fraud samples."""
         df = pd.DataFrame({f"V{i}": [0.0, 0.1] for i in range(1, 29)})
         df["Time"] = [0.0, 100.0]

@@ -75,7 +75,7 @@ def query_transaction() -> dict:
 class TestBuildIndex:
     """Tests for building the FAISS index."""
 
-    def test_build_index_success(self, sample_historical_data):
+    def test_build_index_success(self, sample_historical_data) -> None:
         """Test that building an index succeeds."""
         retriever = SimilarCaseRetriever()
         retriever.build_index(sample_historical_data)
@@ -83,14 +83,14 @@ class TestBuildIndex:
         assert retriever.index is not None
         assert retriever.historical_cases is not None
 
-    def test_build_index_initialized_flag(self, sample_historical_data):
+    def test_build_index_initialized_flag(self, sample_historical_data) -> None:
         """Test that _initialized is True after build."""
         retriever = SimilarCaseRetriever()
         assert not retriever._initialized
         retriever.build_index(sample_historical_data)
         assert retriever._initialized
 
-    def test_build_index_stores_outcomes(self, sample_historical_data):
+    def test_build_index_stores_outcomes(self, sample_historical_data) -> None:
         """Test that historical_cases DataFrame stores outcomes."""
         retriever = SimilarCaseRetriever()
         retriever.build_index(sample_historical_data)
@@ -106,14 +106,14 @@ class TestRetrieve:
 
     def test_retrieve_returns_correct_count(
         self, sample_historical_data, query_transaction
-    ):
+    ) -> None:
         """Test that retrieve returns top_k results."""
         retriever = SimilarCaseRetriever(top_k=3)
         retriever.build_index(sample_historical_data)
         results = retriever.retrieve(query_transaction, top_k=3)
         assert len(results) == 3
 
-    def test_retrieve_less_than_total(self, sample_historical_data, query_transaction):
+    def test_retrieve_less_than_total(self, sample_historical_data, query_transaction) -> None:
         """Test retrieving fewer results than total cases."""
         retriever = SimilarCaseRetriever()
         retriever.build_index(sample_historical_data)
@@ -122,7 +122,7 @@ class TestRetrieve:
 
     def test_retrieve_results_have_expected_keys(
         self, sample_historical_data, query_transaction
-    ):
+    ) -> None:
         """Test that each result has the expected fields."""
         retriever = SimilarCaseRetriever(top_k=3)
         retriever.build_index(sample_historical_data)
@@ -135,7 +135,7 @@ class TestRetrieve:
 
     def test_retrieve_scores_are_reasonable(
         self, sample_historical_data, query_transaction
-    ):
+    ) -> None:
         """Test that similarity scores are between -1 and 1 (cosine/IP)."""
         retriever = SimilarCaseRetriever(top_k=3)
         retriever.build_index(sample_historical_data)
@@ -143,7 +143,7 @@ class TestRetrieve:
         for r in results:
             assert -1.0 <= r["similarity_score"] <= 1.0
 
-    def test_retrieve_raises_without_index(self, query_transaction):
+    def test_retrieve_raises_without_index(self, query_transaction) -> None:
         """Test that retrieve raises RuntimeError before index is built."""
         retriever = SimilarCaseRetriever()
         with pytest.raises(RuntimeError):
@@ -156,7 +156,7 @@ class TestRetrieve:
 class TestSaveLoad:
     """Tests for saving and loading the FAISS index."""
 
-    def test_save_load_round_trip(self, sample_historical_data, query_transaction):
+    def test_save_load_round_trip(self, sample_historical_data, query_transaction) -> None:
         """Test that save/load round-trip preserves retrieval behavior."""
         # Build and save
         retriever1 = SimilarCaseRetriever(top_k=3)
@@ -177,7 +177,7 @@ class TestSaveLoad:
         # Scores should match
         assert abs(score_before - score_after) < 0.001
 
-    def test_save_creates_files(self, sample_historical_data):
+    def test_save_creates_files(self, sample_historical_data) -> None:
         """Test that save creates index file and CSV."""
         retriever = SimilarCaseRetriever(top_k=3)
         retriever.build_index(sample_historical_data)
@@ -186,13 +186,13 @@ class TestSaveLoad:
             assert (Path(tmpdir) / "index.faiss").exists()
             assert (Path(tmpdir) / "historical_cases.csv").exists()
 
-    def test_save_raises_without_index(self):
+    def test_save_raises_without_index(self) -> None:
         """Test that save raises RuntimeError before index is built."""
         retriever = SimilarCaseRetriever()
         with pytest.raises(RuntimeError):
             retriever.save("/tmp/does_not_matter")
 
-    def test_load_initializes_flag(self, sample_historical_data):
+    def test_load_initializes_flag(self, sample_historical_data) -> None:
         """Test that load sets _initialized=True."""
         retriever = SimilarCaseRetriever(top_k=3)
         retriever.build_index(sample_historical_data)
@@ -209,13 +209,13 @@ class TestSaveLoad:
 class TestFactory:
     """Tests for create_retriever factory function."""
 
-    def test_create_without_data(self):
+    def test_create_without_data(self) -> None:
         """Test creating retriever without historical data."""
         retriever = create_retriever()
         assert isinstance(retriever, SimilarCaseRetriever)
         assert not retriever._initialized
 
-    def test_create_with_data(self, sample_historical_data):
+    def test_create_with_data(self, sample_historical_data) -> None:
         """Test creating retriever with historical data."""
         retriever = create_retriever(sample_historical_data)
         assert isinstance(retriever, SimilarCaseRetriever)
@@ -230,7 +230,7 @@ class TestEdgeCases:
 
     def test_retrieve_more_than_available(
         self, sample_historical_data, query_transaction
-    ):
+    ) -> None:
         """Test retrieving more than available cases returns all."""
         small_data = sample_historical_data.head(2)
         retriever = SimilarCaseRetriever(top_k=10)
@@ -238,7 +238,7 @@ class TestEdgeCases:
         results = retriever.retrieve(query_transaction, top_k=10)
         assert len(results) == 2  # Only 2 available
 
-    def test_retrieve_with_missing_features(self, query_transaction):
+    def test_retrieve_with_missing_features(self, query_transaction) -> None:
         """Test retrieving with missing feature columns."""
         minimal_data = pd.DataFrame(
             {

@@ -21,7 +21,7 @@ from src.fraudlens.explainability.shap_utils import FraudPredictor
 
 
 @pytest.fixture
-def simple_model():
+def simple_model() -> tuple[object, ...]:
     """A simple trained RandomForest for testing."""
     np.random.seed(42)
     X = pd.DataFrame({f"V{i}": np.random.randn(200) for i in range(1, 29)})
@@ -60,14 +60,14 @@ def sample_transaction():
 class TestFraudPredictorInit:
     """Tests for FraudPredictor initialization."""
 
-    def test_default_initialization(self):
+    def test_default_initialization(self) -> None:
         """Test default constructor uses config values."""
         predictor = FraudPredictor()
         assert len(predictor.feature_names) == 30
         assert predictor.threshold == 0.5
         assert predictor.max_shap_features == 10
 
-    def test_custom_initialization(self):
+    def test_custom_initialization(self) -> None:
         """Test custom parameters."""
         predictor = FraudPredictor(
             threshold=0.3,
@@ -85,7 +85,7 @@ class TestFraudPredictorInit:
 class TestPrediction:
     """Tests for predict_single and predict_batch."""
 
-    def test_predict_single_returns_expected_keys(self, predictor, sample_transaction):
+    def test_predict_single_returns_expected_keys(self, predictor, sample_transaction) -> None:
         """Test that predict_single returns all expected keys."""
         result = predictor.predict_single(sample_transaction, return_shap=False)
         assert "fraud_probability" in result
@@ -95,7 +95,7 @@ class TestPrediction:
         assert isinstance(result["fraud_probability"], float)
         assert result["decision"] in ("FRAUD", "LEGITIMATE")
 
-    def test_predict_single_with_shap(self, predictor, sample_transaction):
+    def test_predict_single_with_shap(self, predictor, sample_transaction) -> None:
         """Test that predict_single returns explanation when requested."""
         result = predictor.predict_single(sample_transaction, return_shap=True)
         assert "explanation" in result
@@ -103,7 +103,7 @@ class TestPrediction:
         assert "top_features" in result["explanation"]
         assert len(result["explanation"]["top_features"]) <= predictor.max_shap_features
 
-    def test_explanation_contains_feature_details(self, predictor, sample_transaction):
+    def test_explanation_contains_feature_details(self, predictor, sample_transaction) -> None:
         """Test that each feature explanation has required fields."""
         result = predictor.predict_single(sample_transaction, return_shap=True)
         for feat in result["explanation"]["top_features"]:
@@ -113,7 +113,7 @@ class TestPrediction:
             assert "impact" in feat
             assert feat["impact"] in ("increases", "decreases")
 
-    def test_predict_batch_returns_dataframe(self, predictor, simple_model):
+    def test_predict_batch_returns_dataframe(self, predictor, simple_model) -> None:
         """Test that predict_batch returns a DataFrame with expected columns."""
         _, X = simple_model
         result = predictor.predict_batch(X.head(10))
@@ -123,7 +123,7 @@ class TestPrediction:
         assert "decision" in result.columns
         assert len(result) == 10
 
-    def test_predict_single_detects_signal(self, predictor, sample_transaction):
+    def test_predict_single_detects_signal(self, predictor, sample_transaction) -> None:
         """Test that a transaction with strong V14 signal gets higher probability."""
         result = predictor.predict_single(sample_transaction, return_shap=False)
         # V14 = -5 is a strong fraud signal — should be > 0.5
@@ -131,7 +131,7 @@ class TestPrediction:
             result["fraud_probability"] >= 0.3
         )  # Not guaranteed >0.5 with small model
 
-    def test_predict_legitimate_low_probability(self, predictor):
+    def test_predict_legitimate_low_probability(self, predictor) -> None:
         """Test that a normal transaction gets low probability."""
         tx = {f"V{i}": round(float(np.random.randn()), 4) for i in range(1, 29)}
         tx["Time"] = 100000.0
@@ -147,7 +147,7 @@ class TestPrediction:
 class TestShapExplanation:
     """Tests for SHAP explanation content."""
 
-    def test_explanation_includes_important_features(self, predictor):
+    def test_explanation_includes_important_features(self, predictor) -> None:
         """Test that explanation highlights V14 when it's the signal."""
         # Transaction with very strong V14 signal
         tx = {f"V{i}": 0.0 for i in range(1, 29)}
@@ -160,7 +160,7 @@ class TestShapExplanation:
         # V14 should be in the top features for this transaction
         assert "V14" in top_features
 
-    def test_shap_values_have_expected_shape(self, predictor, simple_model):
+    def test_shap_values_have_expected_shape(self, predictor, simple_model) -> None:
         """Test that SHAP values array has correct dimensions."""
         _, X = simple_model
         predictor._init_shap_explainer(X.head(50))
@@ -177,7 +177,7 @@ class TestShapExplanation:
 
         assert shap_vals.shape == (5, len(predictor.feature_names))
 
-    def test_predict_without_model_returns_none(self):
+    def test_predict_without_model_returns_none(self) -> None:
         """Test that predict raises error without model."""
         predictor = FraudPredictor()
         with pytest.raises(Exception):
@@ -190,20 +190,20 @@ class TestShapExplanation:
 class TestFormatExplanation:
     """Tests for _format_explanation method."""
 
-    def test_format_with_increasing_features(self, predictor):
+    def test_format_with_increasing_features(self, predictor) -> None:
         """Test formatting with features that increase fraud risk."""
         top = [("V14", 0.5), ("V4", 0.3), ("V12", 0.1)]
         result = predictor._format_explanation(top)
         assert "V14" in result
         assert "Flagged" in result
 
-    def test_format_with_decreasing_features(self, predictor):
+    def test_format_with_decreasing_features(self, predictor) -> None:
         """Test formatting with features that decrease fraud risk."""
         top = [("V14", -0.3), ("V4", -0.2)]
         result = predictor._format_explanation(top)
         assert "Mitigated" in result
 
-    def test_format_empty_list(self, predictor):
+    def test_format_empty_list(self, predictor) -> None:
         """Test formatting with empty feature list."""
         result = predictor._format_explanation([])
         assert "No strong" in result
@@ -215,7 +215,7 @@ class TestFormatExplanation:
 class TestGlobalImportance:
     """Tests for get_global_feature_importance."""
 
-    def test_global_importance_returns_dataframe(self, predictor, simple_model):
+    def test_global_importance_returns_dataframe(self, predictor, simple_model) -> None:
         """Test that global importance returns a DataFrame."""
         _, X = simple_model
         importance = predictor.get_global_feature_importance(X.head(50))
@@ -224,7 +224,7 @@ class TestGlobalImportance:
         assert "mean_abs_shap" in importance.columns
         assert len(importance) == len(predictor.feature_names)
 
-    def test_global_importance_sorted(self, predictor, simple_model):
+    def test_global_importance_sorted(self, predictor, simple_model) -> None:
         """Test that global importance is sorted by mean_abs_shap descending."""
         _, X = simple_model
         importance = predictor.get_global_feature_importance(X.head(50))

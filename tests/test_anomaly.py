@@ -24,7 +24,7 @@ def normal_data():
 
 
 @pytest.fixture
-def labeled_data(normal_data):
+def labeled_data(normal_data) -> tuple[object, ...]:
     """Create a dataset with labels (mostly normal, a few fraud)."""
     np.random.seed(42)
     n = len(normal_data)
@@ -35,7 +35,7 @@ def labeled_data(normal_data):
 class TestIsolationForestDetector:
     """Tests for IsolationForestDetector."""
 
-    def test_init_defaults(self):
+    def test_init_defaults(self) -> None:
         """Test default initialization parameters."""
         detector = IsolationForestDetector()
         assert detector.contamination == 0.01
@@ -43,7 +43,7 @@ class TestIsolationForestDetector:
         assert detector.random_state == 42
         assert detector.model is None
 
-    def test_init_custom(self):
+    def test_init_custom(self) -> None:
         """Test custom initialization."""
         detector = IsolationForestDetector(
             contamination=0.05, n_estimators=100, random_state=123
@@ -52,7 +52,7 @@ class TestIsolationForestDetector:
         assert detector.n_estimators == 100
         assert detector.random_state == 123
 
-    def test_fit_with_labels(self, labeled_data):
+    def test_fit_with_labels(self, labeled_data) -> None:
         """Test fit with labels trains on legitimate only."""
         X, y = labeled_data
         detector = IsolationForestDetector()
@@ -61,14 +61,14 @@ class TestIsolationForestDetector:
         assert detector.model is not None
         assert hasattr(detector.model, "predict")
 
-    def test_fit_without_labels(self, normal_data):
+    def test_fit_without_labels(self, normal_data) -> None:
         """Test fit without labels trains on all data."""
         detector = IsolationForestDetector()
         detector.fit(normal_data)
 
         assert detector.model is not None
 
-    def test_predict_returns_minus_one_or_one(self, labeled_data):
+    def test_predict_returns_minus_one_or_one(self, labeled_data) -> None:
         """Test predict returns -1 (anomaly) or 1 (normal)."""
         X, y = labeled_data
         detector = IsolationForestDetector()
@@ -78,13 +78,13 @@ class TestIsolationForestDetector:
         assert len(predictions) == len(X)
         assert set(predictions).issubset({-1, 1})
 
-    def test_predict_not_fitted(self, normal_data):
+    def test_predict_not_fitted(self, normal_data) -> None:
         """Test predict raises ValueError when not fitted."""
         detector = IsolationForestDetector()
         with pytest.raises(ValueError, match="Model not fitted"):
             detector.predict(normal_data)
 
-    def test_score_returns_float_array(self, labeled_data):
+    def test_score_returns_float_array(self, labeled_data) -> None:
         """Test score returns array of floats."""
         X, y = labeled_data
         detector = IsolationForestDetector()
@@ -95,13 +95,13 @@ class TestIsolationForestDetector:
         assert len(scores) == len(X)
         assert np.issubdtype(scores.dtype, np.floating)
 
-    def test_score_not_fitted(self, normal_data):
+    def test_score_not_fitted(self, normal_data) -> None:
         """Test score raises ValueError when not fitted."""
         detector = IsolationForestDetector()
         with pytest.raises(ValueError, match="Model not fitted"):
             detector.score(normal_data)
 
-    def test_predict_proba_as_fraud_range(self, labeled_data):
+    def test_predict_proba_as_fraud_range(self, labeled_data) -> None:
         """Test predict_proba_as_fraud returns values in [0, 1]."""
         X, y = labeled_data
         detector = IsolationForestDetector()
@@ -112,13 +112,13 @@ class TestIsolationForestDetector:
         assert probas.min() >= 0.0
         assert probas.max() <= 1.0
 
-    def test_predict_proba_as_fraud_not_fitted(self, normal_data):
+    def test_predict_proba_as_fraud_not_fitted(self, normal_data) -> None:
         """Test predict_proba_as_fraud raises when not fitted."""
         detector = IsolationForestDetector()
         with pytest.raises(ValueError, match="Model not fitted"):
             detector.predict_proba_as_fraud(normal_data)
 
-    def test_fit_with_y_none(self, normal_data):
+    def test_fit_with_y_none(self, normal_data) -> None:
         """Test fit() with only X argument."""
         detector = IsolationForestDetector()
         detector.fit(normal_data)

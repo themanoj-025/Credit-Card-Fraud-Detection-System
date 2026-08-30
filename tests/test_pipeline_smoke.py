@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 class TestPipelineSummarySmoke:
     """Smoke tests for the run_pipeline.py summary section."""
 
-    def test_summary_section_does_not_crash(self):
+    def test_summary_section_does_not_crash(self) -> None:
         """
         Verify the summary block finishes without NameError or other exceptions.
 
@@ -113,7 +113,7 @@ class TestPipelineSummarySmoke:
         assert "Threshold:" in output
         assert "Anomaly detector:" in output
 
-    def test_summary_with_empty_business_costs(self):
+    def test_summary_with_empty_business_costs(self) -> None:
         """Verify summary handles missing business_costs gracefully."""
         selection = {
             "best_model_name": "xgboost",
@@ -163,7 +163,7 @@ class TestPipelineSummarySmoke:
         data["Class"] = np.random.choice([0, 1], n, p=[0.95, 0.05])
         return pd.DataFrame(data)
 
-    def test_model_selection_summary_not_crash(self, tiny_synthetic_data):
+    def test_model_selection_summary_not_crash(self, tiny_synthetic_data) -> None:
         """
         Run the model selection + summary path end-to-end with tiny data.
 
@@ -249,7 +249,7 @@ class TestPipelineSummarySmoke:
 class TestRunPipelineDirectly:
     """Test that run_pipeline.py's import/constants work without crash."""
 
-    def test_run_pipeline_imports_cleanly(self):
+    def test_run_pipeline_imports_cleanly(self) -> None:
         """
         Verify that importing run_pipeline.py as a module doesn't crash.
 
@@ -265,7 +265,7 @@ class TestRunPipelineDirectly:
         # This will raise PyCompileError if syntax is broken
         py_compile.compile(str(pipeline_path), doraise=True)
 
-    def test_summary_would_fail_with_has_autoencoder_bug(self):
+    def test_summary_would_fail_with_has_autoencoder_bug(self) -> None:
         """
         Verify the regression test would catch a reintroduced has_autoencoder bug.
 
