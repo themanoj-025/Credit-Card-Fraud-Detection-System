@@ -14,6 +14,9 @@ from src.fraudlens.persistence.models import PredictionModel
 from src.fraudlens.persistence.repositories.base import BaseRepository
 
 
+
+
+pytestmark = pytest.mark.slow
 @pytest.fixture
 def mock_session():
     """Create a mocked async session."""

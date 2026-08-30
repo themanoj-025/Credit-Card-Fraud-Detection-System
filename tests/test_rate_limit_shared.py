@@ -13,6 +13,8 @@ import os
 
 import pytest
 
+
+pytestmark = pytest.mark.slow
 # Markers
 # This test requires Redis. On CI it always runs; locally it's skippable.
 pytestmark = [
@@ -132,6 +134,7 @@ class TestSharedRedisCounter:
         """
         from slowapi import Limiter
         from slowapi.util import get_remote_address
+
 
         # Redis-backed limiter
         limiter_redis = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
