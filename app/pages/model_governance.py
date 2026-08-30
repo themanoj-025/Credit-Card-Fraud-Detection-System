@@ -13,12 +13,8 @@ Key features:
 """
 
 import os
-from typing import Any
 
 import streamlit as st
-
-from app.api_client import FraudLensAPIError, get_api_client
-from app.components.metric_cards import metric_card
 
 # Constants
 
@@ -160,12 +156,9 @@ def show() -> None:
 
 
 
-from app.pages.governance_tabs import (  # noqa: E402
-    _show_pending_tab,
-    _render_candidate_card,
-    _handle_promote,
-    _handle_reject,
-    _show_history_tab,
+from app.pages.governance_tabs import (
     _show_about_tab,
     _show_demo_content,
+    _show_history_tab,
+    _show_pending_tab,
 )

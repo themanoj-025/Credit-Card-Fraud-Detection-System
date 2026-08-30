@@ -13,9 +13,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.fraudlens.persistence.models import PredictionModel
 from src.fraudlens.persistence.repositories.base import BaseRepository
 
-
-
-
 pytestmark = pytest.mark.slow
 @pytest.fixture
 def mock_session():
