@@ -16,7 +16,7 @@ from src.fraudlens.models.hpo import HyperparameterOptimizer
 
 
 @pytest.fixture
-def sample_data():
+def sample_data() -> tuple[object, ...]:
     """Create a small labeled dataset for HPO tests."""
     np.random.seed(42)
     n = 200
@@ -56,7 +56,7 @@ def mock_optuna_module():
 class TestHyperparameterOptimizer:
     """Tests for HyperparameterOptimizer."""
 
-    def test_init_defaults(self):
+    def test_init_defaults(self) -> None:
         """Test default initialization parameters."""
         optimizer = HyperparameterOptimizer()
         assert optimizer.n_trials == 50
@@ -67,7 +67,7 @@ class TestHyperparameterOptimizer:
         assert optimizer.best_score == 0.0
         assert optimizer.study is None
 
-    def test_init_custom(self):
+    def test_init_custom(self) -> None:
         """Test custom initialization parameters."""
         optimizer = HyperparameterOptimizer(
             n_trials=10, cv_folds=5, random_state=123, timeout_seconds=60
@@ -77,28 +77,28 @@ class TestHyperparameterOptimizer:
         assert optimizer.random_state == 123
         assert optimizer.timeout_seconds == 60
 
-    def test_compute_scale_pos_weight_balanced(self):
+    def test_compute_scale_pos_weight_balanced(self) -> None:
         """Test scale_pos_weight with equal classes."""
         optimizer = HyperparameterOptimizer()
         y = pd.Series([0, 0, 0, 1, 1, 1])
         weight = optimizer._compute_scale_pos_weight(y)
         assert weight == 1.0
 
-    def test_compute_scale_pos_weight_imbalanced(self):
+    def test_compute_scale_pos_weight_imbalanced(self) -> None:
         """Test scale_pos_weight with imbalanced classes."""
         optimizer = HyperparameterOptimizer()
         y = pd.Series([0] * 95 + [1] * 5)
         weight = optimizer._compute_scale_pos_weight(y)
         assert weight == 19.0
 
-    def test_compute_scale_pos_weight_no_positives(self):
+    def test_compute_scale_pos_weight_no_positives(self) -> None:
         """Test scale_pos_weight with no positive class (edge case)."""
         optimizer = HyperparameterOptimizer()
         y = pd.Series([0] * 100)
         weight = optimizer._compute_scale_pos_weight(y)
         assert weight == 1.0
 
-    def test_cv_score(self, sample_data):
+    def test_cv_score(self, sample_data) -> None:
         """Test _cv_score returns a float between 0 and 1."""
         X, y = sample_data
         X_small = X.iloc[:50]
@@ -123,12 +123,12 @@ class TestHyperparameterOptimizer:
     # block verified by code inspection. The valuable tests are the success-path tests
     # below that verify param assembly, fixed-param injection, and best_score tracking.
 
-    def test_get_trials_dataframe_no_study(self):
+    def test_get_trials_dataframe_no_study(self) -> None:
         """Test get_trials_dataframe returns None when no study exists."""
         optimizer = HyperparameterOptimizer()
         assert optimizer.get_trials_dataframe() is None
 
-    def test_tune_xgboost_with_mocked_optuna(self, sample_data, mock_optuna_module):
+    def test_tune_xgboost_with_mocked_optuna(self, sample_data, mock_optuna_module) -> None:
         """
         Test tune_xgboost with mock optuna to verify param assembly.
 
@@ -163,7 +163,7 @@ class TestHyperparameterOptimizer:
         assert params["random_state"] == 42
         assert optimizer.best_score == 0.85
 
-    def test_tune_lightgbm_with_mocked_optuna(self, sample_data, mock_optuna_module):
+    def test_tune_lightgbm_with_mocked_optuna(self, sample_data, mock_optuna_module) -> None:
         """Test tune_lightgbm with mock optuna to verify param assembly."""
         X, y = sample_data
         mock_optuna_module.create_study.return_value.best_params = {
@@ -193,7 +193,7 @@ class TestHyperparameterOptimizer:
         assert params["random_state"] == 42
         assert optimizer.best_score == 0.82
 
-    def test_get_trials_dataframe_with_study(self, sample_data, mock_optuna_module):
+    def test_get_trials_dataframe_with_study(self, sample_data, mock_optuna_module) -> None:
         """Test get_trials_dataframe returns DataFrame after tuning."""
         X, y = sample_data
 
@@ -214,7 +214,7 @@ class TestHyperparameterOptimizer:
 class TestHPOFailurePath:
     """Tests for HPO failure handling."""
 
-    def test_trial_failure_does_not_crash_study(self, sample_data):
+    def test_trial_failure_does_not_crash_study(self, sample_data) -> None:
         """
         Force _cv_score to raise; verify the failure is caught and the
         optimizer returns a fallback rather than crashing entirely.
@@ -239,7 +239,7 @@ class TestHPOFailurePath:
         # tune_xgboost level (which wraps study.optimize)
         call_count = [0]
 
-        def _always_fail(self_obj, X, y, model_class, params):
+        def _always_fail(self_obj, X, y, model_class, params) -> None:
             call_count[0] += 1
             raise ValueError("Simulated CV failure")
 

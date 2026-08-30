@@ -38,17 +38,17 @@ def sample_transaction() -> dict:
 class TestHealth:
     """Tests for the /health and /v1/health endpoints."""
 
-    def test_health_endpoint(self):
+    def test_health_endpoint(self) -> None:
         """Test that health check returns 200."""
         response = client.get("/health")
         assert response.status_code == 200
 
-    def test_v1_health_endpoint(self):
+    def test_v1_health_endpoint(self) -> None:
         """Test that /v1/health returns 200."""
         response = client.get("/v1/health")
         assert response.status_code == 200
 
-    def test_health_returns_expected_keys(self):
+    def test_health_returns_expected_keys(self) -> None:
         """Test that health response contains required fields."""
         response = client.get("/health")
         data = response.json()
@@ -56,7 +56,7 @@ class TestHealth:
         assert "version" in data
         assert "dependencies" in data
 
-    def test_health_status_is_valid(self):
+    def test_health_status_is_valid(self) -> None:
         """Test that status is 'healthy' or 'degraded' (not 'error')."""
         response = client.get("/health")
         data = response.json()
@@ -69,13 +69,13 @@ class TestHealth:
 class TestPrediction:
     """Tests for the /v1/predict endpoint."""
 
-    def test_predict_endpoint_accepts_valid_data(self, sample_transaction: dict):
+    def test_predict_endpoint_accepts_valid_data(self, sample_transaction: dict) -> None:
         """Test that /v1/predict returns 200 for valid input."""
         response = client.post("/v1/predict", json=sample_transaction)
         # Note: May return 503 if model isn't loaded in test env
         assert response.status_code in (200, 503)
 
-    def test_predict_returns_correct_schema(self, sample_transaction: dict):
+    def test_predict_returns_correct_schema(self, sample_transaction: dict) -> None:
         """Test that prediction response contains all required fields."""
         response = client.post("/v1/predict", json=sample_transaction)
         if response.status_code == 200:
@@ -88,7 +88,7 @@ class TestPrediction:
             assert data["decision"] in ("FRAUD", "LEGITIMATE")
             assert isinstance(data["is_fraud"], bool)
 
-    def test_predict_rejects_negative_amount(self):
+    def test_predict_rejects_negative_amount(self) -> None:
         """Test that negative Amount returns 422 validation error."""
         tx = {f"V{i}": 0.0 for i in range(1, 29)}
         tx["Time"] = 0.0
@@ -96,7 +96,7 @@ class TestPrediction:
         response = client.post("/v1/predict", json=tx)
         assert response.status_code == 422
 
-    def test_predict_rejects_missing_required_field(self):
+    def test_predict_rejects_missing_required_field(self) -> None:
         """Test that missing Amount returns 422 validation error."""
         tx = {f"V{i}": 0.0 for i in range(1, 29)}
         tx["Time"] = 0.0
@@ -111,13 +111,13 @@ class TestPrediction:
 class TestBatchPrediction:
     """Tests for the /v1/predict/batch endpoint."""
 
-    def test_batch_endpoint(self, sample_transaction: dict):
+    def test_batch_endpoint(self, sample_transaction: dict) -> None:
         """Test that batch endpoint accepts valid input."""
         batch = {"transactions": [sample_transaction, sample_transaction]}
         response = client.post("/v1/predict/batch", json=batch)
         assert response.status_code in (200, 503)
 
-    def test_batch_returns_summary(self, sample_transaction: dict):
+    def test_batch_returns_summary(self, sample_transaction: dict) -> None:
         """Test that batch response contains predictions and summary."""
         batch = {"transactions": [sample_transaction]}
         response = client.post("/v1/predict/batch", json=batch)
@@ -127,7 +127,7 @@ class TestBatchPrediction:
             assert "summary" in data
             assert data["summary"]["total"] == 1
 
-    def test_batch_with_multiple_transactions(self, sample_transaction: dict):
+    def test_batch_with_multiple_transactions(self, sample_transaction: dict) -> None:
         """Test batch with multiple transactions."""
         batch = {"transactions": [sample_transaction] * 5}
         response = client.post("/v1/predict/batch", json=batch)
@@ -136,7 +136,7 @@ class TestBatchPrediction:
             assert data["summary"]["total"] == 5
             assert len(data["predictions"]) == 5
 
-    def test_batch_rejects_empty_list(self):
+    def test_batch_rejects_empty_list(self) -> None:
         """Test that empty transactions list returns 422."""
         response = client.post("/v1/predict/batch", json={"transactions": []})
         assert response.status_code == 422
@@ -148,12 +148,12 @@ class TestBatchPrediction:
 class TestModelInfo:
     """Tests for the /model-info endpoint."""
 
-    def test_model_info_endpoint(self):
+    def test_model_info_endpoint(self) -> None:
         """Test that model-info returns 200."""
         response = client.get("/model-info")
         assert response.status_code == 200
 
-    def test_model_info_returns_dict(self):
+    def test_model_info_returns_dict(self) -> None:
         """Test that model-info returns a JSON object."""
         response = client.get("/model-info")
         data = response.json()
@@ -166,12 +166,12 @@ class TestModelInfo:
 class TestExplainEndpoint:
     """Tests for the /v1/explain endpoint."""
 
-    def test_explain_endpoint_accepts_valid_data(self, sample_transaction: dict):
+    def test_explain_endpoint_accepts_valid_data(self, sample_transaction: dict) -> None:
         """Test that /v1/explain returns 200 or 503 for valid input."""
         response = client.post("/v1/explain", json=sample_transaction)
         assert response.status_code in (200, 503)
 
-    def test_explain_returns_shap_values(self, sample_transaction: dict):
+    def test_explain_returns_shap_values(self, sample_transaction: dict) -> None:
         """Test that /v1/explain returns SHAP values in response."""
         response = client.post("/v1/explain", json=sample_transaction)
         if response.status_code == 200:
@@ -187,7 +187,7 @@ class TestExplainEndpoint:
 class TestChatEndpoint:
     """Tests for the /v1/chat endpoint using mocked responses."""
 
-    def test_chat_endpoint_returns_503_without_key(self):
+    def test_chat_endpoint_returns_503_without_key(self) -> None:
         """Test that /v1/chat returns 503 when no API key is set."""
         response = client.post(
             "/v1/chat",
@@ -201,7 +201,7 @@ class TestChatEndpoint:
         data = response.json()
         assert "detail" in data
 
-    def test_chat_endpoint_returns_expected_schema(self):
+    def test_chat_endpoint_returns_expected_schema(self) -> None:
         """Test that /v1/chat response has expected structure even when failing."""
         response = client.post(
             "/v1/chat",
@@ -214,7 +214,7 @@ class TestChatEndpoint:
         data = response.json()
         assert "detail" in data
 
-    def test_chat_endpoint_missing_message(self):
+    def test_chat_endpoint_missing_message(self) -> None:
         """Test that /v1/chat with missing message returns 422."""
         response = client.post("/v1/chat", json={"conversation_history": []})
         assert response.status_code == 422
@@ -226,7 +226,7 @@ class TestChatEndpoint:
 class TestSimilarCasesEndpoint:
     """Tests for the /v1/similar-cases endpoint."""
 
-    def test_similar_cases_endpoint(self, sample_transaction: dict):
+    def test_similar_cases_endpoint(self, sample_transaction: dict) -> None:
         """Test that /v1/similar-cases returns 200 or 503."""
         response = client.post("/v1/similar-cases", json=sample_transaction)
         assert response.status_code in (200, 503)
@@ -238,7 +238,7 @@ class TestSimilarCasesEndpoint:
 class TestExplainValidation:
     """Tests for /v1/explain request validation."""
 
-    def test_explain_rejects_negative_amount(self):
+    def test_explain_rejects_negative_amount(self) -> None:
         """Test that negative Amount returns 422."""
         tx = {f"V{i}": 0.0 for i in range(1, 29)}
         tx["Time"] = 0.0

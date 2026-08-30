@@ -35,7 +35,7 @@ _REQUIRED_ENDPOINTS: set[str] = {
 class TestEndpointExistence:
     """Contract: all required API endpoints must exist."""
 
-    def test_all_required_endpoints_exist(self, app):
+    def test_all_required_endpoints_exist(self, app) -> None:
         """Test that required endpoints are registered.
 
         Checks that all expected routes are discoverable.
@@ -49,7 +49,7 @@ class TestEndpointExistence:
                 f"Available routes: {sorted(routes)}"
             )
 
-    def test_openapi_spec_generates(self, app):
+    def test_openapi_spec_generates(self, app) -> None:
         """Test that the OpenAPI spec is generated without errors."""
         spec = app.openapi()
         assert spec is not None
@@ -57,7 +57,7 @@ class TestEndpointExistence:
         assert "info" in spec
         assert "paths" in spec
 
-    def test_openapi_spec_contains_all_endpoints(self, app):
+    def test_openapi_spec_contains_all_endpoints(self, app) -> None:
         """Test that the OpenAPI spec includes all required endpoints."""
         spec = app.openapi()
         paths = spec.get("paths", {})
@@ -87,7 +87,7 @@ class TestEndpointExistence:
 class TestResponseModels:
     """Contract: response models must match expected structure."""
 
-    def test_predict_response_model(self, client, sample_transaction):
+    def test_predict_response_model(self, client, sample_transaction) -> None:
         """Test that /v1/predict response matches PredictionResponse schema."""
         response = client.post("/v1/predict", json=sample_transaction)
         if response.status_code == 200:
@@ -101,7 +101,7 @@ class TestResponseModels:
             assert data["decision"] in ("FRAUD", "LEGITIMATE")
             assert isinstance(data["is_fraud"], bool)
 
-    def test_health_response_model(self, client):
+    def test_health_response_model(self, client) -> None:
         """Test that /v1/health response matches expected schema."""
         response = client.get("/v1/health")
         assert response.status_code == 200
@@ -116,7 +116,7 @@ class TestResponseModels:
             assert dep_info["status"] in ("ok", "degraded", "error")
             assert "detail" in dep_info
 
-    def test_batch_response_model(self, client, sample_batch):
+    def test_batch_response_model(self, client, sample_batch) -> None:
         """Test that /v1/predict/batch response matches BatchResponse schema."""
         response = client.post("/v1/predict/batch", json=sample_batch)
         if response.status_code == 200:
@@ -127,7 +127,7 @@ class TestResponseModels:
             assert "flagged_fraud" in data["summary"]
             assert "estimated_review_cost" in data["summary"]
 
-    def test_explain_response_model(self, client, sample_transaction):
+    def test_explain_response_model(self, client, sample_transaction) -> None:
         """Test that /v1/explain response matches ExplanationResponse schema."""
         response = client.post("/v1/explain", json=sample_transaction)
         if response.status_code == 200:
@@ -141,7 +141,7 @@ class TestResponseModels:
 class TestErrorResponseContract:
     """Contract: all error responses must follow RFC 7807 format."""
 
-    def test_validation_error_has_rfc7807_format(self, client):
+    def test_validation_error_has_rfc7807_format(self, client) -> None:
         """Test that 422 errors follow RFC 7807 problem-details format."""
         response = client.post(
             "/v1/predict",
@@ -157,7 +157,7 @@ class TestErrorResponseContract:
         assert "detail" in data
         assert "errors" in data
 
-    def test_validation_error_has_field_level_errors(self, client):
+    def test_validation_error_has_field_level_errors(self, client) -> None:
         """Test that 422 errors include field-level validation details."""
         tx = {f"V{i}": 0.0 for i in range(1, 29)}
         tx["Time"] = 0.0
@@ -173,7 +173,7 @@ class TestErrorResponseContract:
             assert "field" in error
             assert "message" in error
 
-    def test_404_has_rfc7807_format(self, client):
+    def test_404_has_rfc7807_format(self, client) -> None:
         """Test that 404 errors follow RFC 7807."""
         response = client.get("/nonexistent-route")
         assert response.status_code == 404
@@ -186,13 +186,13 @@ class TestErrorResponseContract:
 class TestOpenApiSpecConsistency:
     """Contract: the OpenAPI spec must not have breaking changes."""
 
-    def test_spec_version_matches_code(self, app):
+    def test_spec_version_matches_code(self, app) -> None:
         """Test that OpenAPI version matches the app version."""
         spec = app.openapi()
         info = spec.get("info", {})
         assert info.get("version") == "2.0.0"
 
-    def test_spec_has_core_schemas(self, app):
+    def test_spec_has_core_schemas(self, app) -> None:
         """Test that the spec defines core prediction schemas."""
         spec = app.openapi()
         schemas = spec.get("components", {}).get("schemas", {})
@@ -211,7 +211,7 @@ class TestOpenApiSpecConsistency:
                 f"Available schemas: {list(schemas.keys())}"
             )
 
-    def test_no_duplicate_operation_ids(self, app):
+    def test_no_duplicate_operation_ids(self, app) -> None:
         """Test that no two routes share the same operationId."""
         spec = app.openapi()
         operation_ids = []

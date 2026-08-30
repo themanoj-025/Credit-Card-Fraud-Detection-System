@@ -42,7 +42,7 @@ class TestSharedRedisCounter:
       3. If they used separate backends instead, B would show a higher remaining count
     """
 
-    def test_two_limiters_share_state(self, redis_uri):
+    def test_two_limiters_share_state(self, redis_uri) -> None:
         """
         Core test: two limiters sharing Redis see the same consumption state.
 
@@ -88,7 +88,7 @@ class TestSharedRedisCounter:
             with contextlib.suppress(Exception):
                 limiter_a.storage.reset()
 
-    def test_different_backends_show_different_state(self, redis_uri):
+    def test_different_backends_show_different_state(self, redis_uri) -> None:
         """
         Verify the test would catch a regression: if we point two limiters at
         separate in-memory backends instead of shared Redis, they should show
@@ -126,7 +126,7 @@ class TestSharedRedisCounter:
             "This means the positive test would pass even without shared state."
         )
 
-    def test_redis_and_memory_limiters_differ(self, redis_uri):
+    def test_redis_and_memory_limiters_differ(self, redis_uri) -> None:
         """
         Verify that Redis-backed and in-memory limiters show different state
         after consuming through one — proving the shared-Redis test is valid.

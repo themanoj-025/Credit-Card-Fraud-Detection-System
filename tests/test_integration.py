@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 class TestTrainingToPredictionPipeline:
     """End-to-end: train model → predict → verify output shape/range."""
 
-    def test_train_and_predict_produces_valid_probas(self, trained_model):
+    def test_train_and_predict_produces_valid_probas(self, trained_model) -> None:
         """Test that training a model and predicting yields valid probabilities."""
         model, trainer = trained_model
         _X, _y = (
@@ -45,7 +45,7 @@ class TestTrainingToPredictionPipeline:
         assert all(0.0 <= p <= 1.0 for p in probas)
         assert probas.dtype == np.float64
 
-    def test_predict_proba_output_shape(self, trained_model):
+    def test_predict_proba_output_shape(self, trained_model) -> None:
         """Test that predict_proba returns the correct shape."""
         model, _ = trained_model
         X_test = pd.DataFrame({f"V{i}": np.random.randn(10) for i in range(1, 29)})
@@ -55,7 +55,7 @@ class TestTrainingToPredictionPipeline:
         probas = model.predict_proba(X_test)
         assert probas.shape == (10, 2), f"Expected (10, 2), got {probas.shape}"
 
-    def test_decision_based_on_threshold(self, trained_model):
+    def test_decision_based_on_threshold(self, trained_model) -> None:
         """Test that decisions (FRAUD/LEGITIMATE) are threshold-consistent."""
         model, _ = trained_model
         X_test = pd.DataFrame({f"V{i}": np.random.randn(20) for i in range(1, 29)})
@@ -74,7 +74,7 @@ class TestTrainingToPredictionPipeline:
 class TestApiWithModel:
     """Tests that the API correctly integrates with the loaded model."""
 
-    def test_api_health_endpoint(self, client):
+    def test_api_health_endpoint(self, client) -> None:
         """Test that health endpoint is reachable."""
         response = client.get("/health")
         assert response.status_code == 200
@@ -82,18 +82,18 @@ class TestApiWithModel:
         assert "status" in data
         assert "dependencies" in data
 
-    def test_api_v1_health_endpoint(self, client):
+    def test_api_v1_health_endpoint(self, client) -> None:
         """Test that /v1/health endpoint is reachable."""
         response = client.get("/v1/health")
         assert response.status_code == 200
 
-    def test_api_accepts_valid_prediction(self, client, sample_transaction):
+    def test_api_accepts_valid_prediction(self, client, sample_transaction) -> None:
         """Test that the API accepts valid prediction requests."""
         response = client.post("/v1/predict", json=sample_transaction)
         # May return 503 if no model is loaded in test environment
         assert response.status_code in (200, 503)
 
-    def test_prediction_schema_when_model_loaded(self, client, fraud_transaction):
+    def test_prediction_schema_when_model_loaded(self, client, fraud_transaction) -> None:
         """Test the prediction response schema when model is available."""
         response = client.post("/v1/predict", json=fraud_transaction)
         if response.status_code == 200:
@@ -105,7 +105,7 @@ class TestApiWithModel:
             assert "business_impact" in data
             assert 0.0 <= data["fraud_probability"] <= 1.0
 
-    def test_batch_prediction_schema(self, client, sample_batch):
+    def test_batch_prediction_schema(self, client, sample_batch) -> None:
         """Test that batch prediction returns the correct schema."""
         response = client.post("/v1/predict/batch", json=sample_batch)
         if response.status_code == 200:
@@ -126,7 +126,7 @@ class TestFeatureEngineeringParity:
     output shape/column order regardless of when it's called.
     """
 
-    def test_engineer_produces_expected_feature_count(self, trained_engineer):
+    def test_engineer_produces_expected_feature_count(self, trained_engineer) -> None:
         """Test that feature engineering produces a predictable number of features."""
         engineer, n_features = trained_engineer
         assert n_features > 30  # Should add features beyond the base 30
@@ -135,7 +135,7 @@ class TestFeatureEngineeringParity:
 
     def test_engineer_reproducible_transform(
         self, trained_engineer, engineered_transaction
-    ):
+    ) -> None:
         """Test that transforming the same data twice produces identical results."""
         engineer, _ = trained_engineer
         df = pd.DataFrame([engineered_transaction])
@@ -147,7 +147,7 @@ class TestFeatureEngineeringParity:
 
     def test_engineer_column_order_consistent(
         self, trained_engineer, engineered_transaction
-    ):
+    ) -> None:
         """Test that column order is deterministic (critical for train/serve parity)."""
         engineer, _ = trained_engineer
         df = pd.DataFrame([engineered_transaction])
@@ -164,7 +164,7 @@ class TestFeatureEngineeringParity:
 class TestShapOutput:
     """Tests that SHAP explanations have the correct structure."""
 
-    def test_shap_explanation_has_required_fields(self):
+    def test_shap_explanation_has_required_fields(self) -> None:
         """Test that ShapExplanation has summary and top_features."""
         from src.fraudlens.explainability.shap_explainer import ShapExplanation
 
@@ -182,7 +182,7 @@ class TestShapOutput:
         assert "summary" in as_dict
         assert "top_features" in as_dict
 
-    def test_shap_values_are_bounded(self):
+    def test_shap_values_are_bounded(self) -> None:
         """Test that SHAP values in explanation are within expected bounds."""
         from src.fraudlens.explainability.shap_explainer import ShapExplanation
 

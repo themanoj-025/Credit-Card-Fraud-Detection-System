@@ -36,7 +36,7 @@ class _SimpleModel:
 
 
 @pytest.fixture
-def trained_models():
+def trained_models() -> dict[str, object]:
     """Create a dict of trained model objects (pickle-able)."""
     return {"LogisticRegression": _SimpleModel("LR"), "XGBoost": _SimpleModel("XGB")}
 
@@ -44,25 +44,25 @@ def trained_models():
 class TestModelSelector:
     """Tests for ModelSelector."""
 
-    def test_init_defaults(self):
+    def test_init_defaults(self) -> None:
         """Test default initialization uses config values."""
         selector = ModelSelector()
         assert selector.metric == "pr_auc"
         assert selector.higher_is_better is True
         assert selector.selection_result is None
 
-    def test_init_custom(self):
+    def test_init_custom(self) -> None:
         """Test custom initialization."""
         selector = ModelSelector(metric="f1", higher_is_better=True)
         assert selector.metric == "f1"
         assert selector.higher_is_better is True
 
-    def test_init_lower_is_better(self):
+    def test_init_lower_is_better(self) -> None:
         """Test that lower_is_better works (e.g., for error metrics)."""
         selector = ModelSelector(metric="mse", higher_is_better=False)
         assert selector.higher_is_better is False
 
-    def test_select_picks_highest_metric(self, comparison_data, trained_models):
+    def test_select_picks_highest_metric(self, comparison_data, trained_models) -> None:
         """Test select picks the model with highest PR-AUC."""
         selector = ModelSelector(metric="PR-AUC")
         result = selector.select(comparison_data, trained_models)
@@ -71,7 +71,7 @@ class TestModelSelector:
         assert result["metric_value"] == 0.88
         assert "PR-AUC" in result["metric_used"]
 
-    def test_select_returns_all_keys(self, comparison_data, trained_models):
+    def test_select_returns_all_keys(self, comparison_data, trained_models) -> None:
         """Test select returns the expected result structure."""
         selector = ModelSelector(metric="PR-AUC")
         result = selector.select(comparison_data, trained_models)
@@ -83,7 +83,7 @@ class TestModelSelector:
         assert "reasoning" in result
         assert "ranking" in result
 
-    def test_select_stores_selection_result(self, comparison_data, trained_models):
+    def test_select_stores_selection_result(self, comparison_data, trained_models) -> None:
         """Test select updates self.selection_result."""
         selector = ModelSelector(metric="PR-AUC")
         selector.select(comparison_data, trained_models)
@@ -91,7 +91,7 @@ class TestModelSelector:
         assert selector.selection_result is not None
         assert selector.selection_result["best_model_name"] == "XGBoost"
 
-    def test_select_ranking_is_sorted(self, comparison_data, trained_models):
+    def test_select_ranking_is_sorted(self, comparison_data, trained_models) -> None:
         """Test ranking DataFrame is sorted by metric descending."""
         selector = ModelSelector(metric="PR-AUC")
         result = selector.select(comparison_data, trained_models)
@@ -99,7 +99,7 @@ class TestModelSelector:
         ranking = result["ranking"]
         assert ranking.iloc[0]["PR-AUC"] >= ranking.iloc[1]["PR-AUC"]
 
-    def test_select_with_lower_is_better(self, trained_models):
+    def test_select_with_lower_is_better(self, trained_models) -> None:
         """Test select picks lowest metric when higher_is_better is False."""
         data = pd.DataFrame(
             {
@@ -113,14 +113,14 @@ class TestModelSelector:
 
         assert result["best_model_name"] == "ModelB"  # Lower MSE is better
 
-    def test_select_metric_not_found(self, comparison_data, trained_models):
+    def test_select_metric_not_found(self, comparison_data, trained_models) -> None:
         """Test select raises ValueError when metric column is missing."""
         selector = ModelSelector(metric="nonexistent")
 
         with pytest.raises(ValueError, match="Metric 'nonexistent' not found"):
             selector.select(comparison_data, trained_models)
 
-    def test_select_model_not_in_dict(self, comparison_data):
+    def test_select_model_not_in_dict(self, comparison_data) -> None:
         """Test select raises KeyError when best model not in trained_models."""
         selector = ModelSelector(metric="PR-AUC")
         empty_models = {}
@@ -128,7 +128,7 @@ class TestModelSelector:
         with pytest.raises(KeyError, match="not found in trained_models"):
             selector.select(comparison_data, empty_models)
 
-    def test_select_single_model(self, trained_models):
+    def test_select_single_model(self, trained_models) -> None:
         """Test select works with only one model."""
         data = pd.DataFrame(
             {
@@ -144,7 +144,7 @@ class TestModelSelector:
 
     def test_select_reasoning_includes_description(
         self, comparison_data, trained_models
-    ):
+    ) -> None:
         """Test reasoning includes the selection rule description."""
         selector = ModelSelector(metric="PR-AUC")
         result = selector.select(comparison_data, trained_models)
@@ -152,7 +152,7 @@ class TestModelSelector:
         assert "PR-AUC" in result["reasoning"]
         assert "XGBoost" in result["reasoning"]
 
-    def test_save_best_model_raises_before_select(self):
+    def test_save_best_model_raises_before_select(self) -> None:
         """Test save_best_model raises if select() hasn't been called."""
         selector = ModelSelector()
         with pytest.raises(ValueError, match="No selection result"):
@@ -160,7 +160,7 @@ class TestModelSelector:
 
     def test_save_best_model_creates_file(
         self, comparison_data, trained_models, tmp_path
-    ):
+    ) -> None:
         """Test save_best_model writes a pickle file."""
         save_path = str(tmp_path / "best_model.pkl")
         selector = ModelSelector(metric="PR-AUC")
@@ -172,13 +172,13 @@ class TestModelSelector:
         assert actual_path == save_path
         assert (tmp_path / "best_model.pkl").exists()
 
-    def test_get_selection_summary_before_select(self):
+    def test_get_selection_summary_before_select(self) -> None:
         """Test get_selection_summary returns 'not selected' message."""
         selector = ModelSelector()
         summary = selector.get_selection_summary()
         assert summary == "No model selected yet."
 
-    def test_get_selection_summary_after_select(self, comparison_data, trained_models):
+    def test_get_selection_summary_after_select(self, comparison_data, trained_models) -> None:
         """Test get_selection_summary returns formatted string after selection."""
         selector = ModelSelector(metric="PR-AUC")
         selector.select(comparison_data, trained_models)
@@ -188,7 +188,7 @@ class TestModelSelector:
         assert "0.8800" in summary or "0.88" in summary
         assert "Selection Metric" in summary
 
-    def test_mlflow_tracking_when_not_available(self, comparison_data, trained_models):
+    def test_mlflow_tracking_when_not_available(self, comparison_data, trained_models) -> None:
         """Test selection works when MLflow is not available."""
         with patch("src.fraudlens.models.model_selection.MLFLOW_AVAILABLE", False):
             selector = ModelSelector(metric="PR-AUC")

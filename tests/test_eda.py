@@ -32,7 +32,7 @@ def sample_df():
 class TestEDAFunctions:
     """Smoke tests for EDA figure generation functions."""
 
-    def test_plot_class_imbalance_returns_figure(self, sample_df):
+    def test_plot_class_imbalance_returns_figure(self, sample_df) -> None:
         """Test that plot_class_imbalance returns a matplotlib Figure."""
         from src.fraudlens.analysis.eda import plot_class_imbalance
 
@@ -42,7 +42,7 @@ class TestEDAFunctions:
         assert isinstance(fig, plt.Figure)
         plt.close(fig)
 
-    def test_plot_amount_distribution_returns_figure(self, sample_df):
+    def test_plot_amount_distribution_returns_figure(self, sample_df) -> None:
         """Test that plot_amount_distribution returns a matplotlib Figure."""
         from src.fraudlens.analysis.eda import plot_amount_distribution
 
@@ -52,7 +52,7 @@ class TestEDAFunctions:
         assert isinstance(fig, plt.Figure)
         plt.close(fig)
 
-    def test_plot_time_distribution_returns_figure(self, sample_df):
+    def test_plot_time_distribution_returns_figure(self, sample_df) -> None:
         """Test that plot_time_distribution returns a matplotlib Figure."""
         from src.fraudlens.analysis.eda import plot_time_distribution
 
@@ -62,7 +62,7 @@ class TestEDAFunctions:
         assert isinstance(fig, plt.Figure)
         plt.close(fig)
 
-    def test_plot_correlation_heatmap_returns_figure(self, sample_df):
+    def test_plot_correlation_heatmap_returns_figure(self, sample_df) -> None:
         """Test that plot_correlation_heatmap returns a matplotlib Figure."""
         from src.fraudlens.analysis.eda import plot_correlation_heatmap
 
@@ -72,7 +72,7 @@ class TestEDAFunctions:
         assert isinstance(fig, plt.Figure)
         plt.close(fig)
 
-    def test_plot_feature_separability_returns_figure(self, sample_df):
+    def test_plot_feature_separability_returns_figure(self, sample_df) -> None:
         """Test that plot_feature_separability returns a matplotlib Figure."""
         from src.fraudlens.analysis.eda import plot_feature_separability
 
@@ -82,7 +82,7 @@ class TestEDAFunctions:
         assert isinstance(fig, plt.Figure)
         plt.close(fig)
 
-    def test_plot_feature_distributions_returns_figure(self, sample_df):
+    def test_plot_feature_distributions_returns_figure(self, sample_df) -> None:
         """Test that plot_feature_distributions returns a matplotlib Figure."""
         from src.fraudlens.analysis.eda import plot_feature_distributions
 
@@ -142,7 +142,7 @@ class TestEDARun:
                 assert fpath.exists(), f"Expected EDA figure not created: {fpath}"
                 assert fpath.stat().st_size > 0, f"EDA figure is empty: {fpath}"
 
-    def test_save_fig_creates_file(self, sample_df):
+    def test_save_fig_creates_file(self, sample_df) -> None:
         """Test that _save_fig writes a file."""
         from src.fraudlens.analysis.eda import plot_class_imbalance
 
@@ -161,7 +161,7 @@ class TestEDARun:
 class TestFeatureImportance:
     """Tests for feature importance computation."""
 
-    def test_feature_importance_returns_top_features(self, sample_df):
+    def test_feature_importance_returns_top_features(self, sample_df) -> None:
         """Test that feature importance identifies top discriminative features."""
         from src.fraudlens.analysis.eda import _get_feature_importances
 
@@ -177,7 +177,7 @@ class TestFeatureImportance:
 class TestFeatureImportanceCache:
     """Tests for the _FEATURE_IMPORTANCE_CACHE global cache."""
 
-    def test_cache_miss_populates_and_returns(self, sample_df):
+    def test_cache_miss_populates_and_returns(self, sample_df) -> None:
         """Cache miss -> populates cache, returns computed value."""
         from src.fraudlens.analysis import eda
 
@@ -223,7 +223,7 @@ class TestFeatureImportanceCache:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 28
 
-    def test_cache_invalidation_on_run_eda(self, sample_df):
+    def test_cache_invalidation_on_run_eda(self, sample_df) -> None:
         """Calling run_eda() resets and recomputes the cache.
 
         The cache is reset to None at the start of run_eda() and then

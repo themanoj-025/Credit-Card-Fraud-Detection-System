@@ -45,14 +45,14 @@ def mock_session():
 class TestPredictionRepository:
     """Tests for PredictionRepository."""
 
-    def test_init(self, mock_session):
+    def test_init(self, mock_session) -> None:
         """Test repository initialization."""
         repo = PredictionRepository(mock_session)
         assert repo.session == mock_session
         assert repo.model_class == PredictionModel
 
     @pytest.mark.asyncio
-    async def test_create_prediction(self, mock_session):
+    async def test_create_prediction(self, mock_session) -> None:
         """Test creating a prediction record."""
         repo = PredictionRepository(mock_session)
 
@@ -71,7 +71,7 @@ class TestPredictionRepository:
         assert isinstance(result, PredictionModel)
 
     @pytest.mark.asyncio
-    async def test_create_prediction_minimal(self, mock_session):
+    async def test_create_prediction_minimal(self, mock_session) -> None:
         """Test creating a prediction with only required fields."""
         repo = PredictionRepository(mock_session)
 
@@ -87,7 +87,7 @@ class TestPredictionRepository:
         assert result.decision == "LEGITIMATE"
 
     @pytest.mark.asyncio
-    async def test_get_recent_without_filter(self, mock_session):
+    async def test_get_recent_without_filter(self, mock_session) -> None:
         """Test get_recent with no decision filter."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -102,7 +102,7 @@ class TestPredictionRepository:
         mock_session.execute.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_get_recent_with_filter(self, mock_session):
+    async def test_get_recent_with_filter(self, mock_session) -> None:
         """Test get_recent filtered by decision."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -116,7 +116,7 @@ class TestPredictionRepository:
         assert len(results) == 1
 
     @pytest.mark.asyncio
-    async def test_get_statistics(self, mock_session):
+    async def test_get_statistics(self, mock_session) -> None:
         """Test get_statistics returns expected shape."""
         mock_row = MagicMock()
         mock_row.total = 100
@@ -137,7 +137,7 @@ class TestPredictionRepository:
         assert stats["avg_latency_ms"] == 15.0
 
     @pytest.mark.asyncio
-    async def test_get_statistics_empty(self, mock_session):
+    async def test_get_statistics_empty(self, mock_session) -> None:
         """Test get_statistics with no data returns zeros."""
         mock_row = MagicMock()
         mock_row.total = 0
@@ -157,7 +157,7 @@ class TestPredictionRepository:
         assert stats["avg_latency_ms"] == 0.0
 
     @pytest.mark.asyncio
-    async def test_get_statistics_with_since(self, mock_session):
+    async def test_get_statistics_with_since(self, mock_session) -> None:
         """Test get_statistics with a since filter."""
         mock_row = MagicMock()
         mock_row.total = 50
@@ -180,13 +180,13 @@ class TestPredictionRepository:
 class TestFeedbackRepository:
     """Tests for FeedbackRepository."""
 
-    def test_init(self, mock_session):
+    def test_init(self, mock_session) -> None:
         """Test repository initialization."""
         repo = FeedbackRepository(mock_session)
         assert repo.model_class == FeedbackModel
 
     @pytest.mark.asyncio
-    async def test_create_feedback(self, mock_session):
+    async def test_create_feedback(self, mock_session) -> None:
         """Test creating a feedback record."""
         repo = FeedbackRepository(mock_session)
         pred_id = uuid.uuid4()
@@ -202,7 +202,7 @@ class TestFeedbackRepository:
         assert result.confirmed_fraud is True
 
     @pytest.mark.asyncio
-    async def test_get_by_prediction_found(self, mock_session):
+    async def test_get_by_prediction_found(self, mock_session) -> None:
         """Test get_by_prediction when feedback exists."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = FeedbackModel(
@@ -217,7 +217,7 @@ class TestFeedbackRepository:
         assert result.confirmed_fraud is True
 
     @pytest.mark.asyncio
-    async def test_get_by_prediction_not_found(self, mock_session):
+    async def test_get_by_prediction_not_found(self, mock_session) -> None:
         """Test get_by_prediction when no feedback exists."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None
@@ -229,7 +229,7 @@ class TestFeedbackRepository:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_get_recent_feedback(self, mock_session):
+    async def test_get_recent_feedback(self, mock_session) -> None:
         """Test get_recent_feedback without filter."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -243,7 +243,7 @@ class TestFeedbackRepository:
         assert len(results) == 1
 
     @pytest.mark.asyncio
-    async def test_get_recent_feedback_confirmed_only(self, mock_session):
+    async def test_get_recent_feedback_confirmed_only(self, mock_session) -> None:
         """Test get_recent_feedback with confirmed_only filter."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = []
@@ -255,7 +255,7 @@ class TestFeedbackRepository:
         assert len(results) == 0
 
     @pytest.mark.asyncio
-    async def test_get_statistics(self, mock_session):
+    async def test_get_statistics(self, mock_session) -> None:
         """Test get_statistics returns expected values."""
         mock_row = MagicMock()
         mock_row.total = 50
@@ -278,13 +278,13 @@ class TestFeedbackRepository:
 class TestDriftEventRepository:
     """Tests for DriftEventRepository."""
 
-    def test_init(self, mock_session):
+    def test_init(self, mock_session) -> None:
         """Test repository initialization."""
         repo = DriftEventRepository(mock_session)
         assert repo.model_class == DriftEventModel
 
     @pytest.mark.asyncio
-    async def test_create_event(self, mock_session):
+    async def test_create_event(self, mock_session) -> None:
         """Test creating a drift event."""
         repo = DriftEventRepository(mock_session)
 
@@ -302,7 +302,7 @@ class TestDriftEventRepository:
         assert result.alert_type == "CRITICAL"
 
     @pytest.mark.asyncio
-    async def test_get_recent_events(self, mock_session):
+    async def test_get_recent_events(self, mock_session) -> None:
         """Test get_recent_events without filter."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -316,7 +316,7 @@ class TestDriftEventRepository:
         assert len(results) == 1
 
     @pytest.mark.asyncio
-    async def test_get_recent_events_filtered(self, mock_session):
+    async def test_get_recent_events_filtered(self, mock_session) -> None:
         """Test get_recent_events filtered by alert_type."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -330,7 +330,7 @@ class TestDriftEventRepository:
         assert len(results) == 1
 
     @pytest.mark.asyncio
-    async def test_get_events_since(self, mock_session):
+    async def test_get_events_since(self, mock_session) -> None:
         """Test get_events_since returns events after timestamp."""
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [
@@ -347,7 +347,7 @@ class TestDriftEventRepository:
         assert results[0].drift_score == 0.75
 
     @pytest.mark.asyncio
-    async def test_get_statistics(self, mock_session):
+    async def test_get_statistics(self, mock_session) -> None:
         """Test get_statistics returns event count."""
         mock_result = MagicMock()
         mock_result.scalar.return_value = 25
@@ -365,13 +365,13 @@ class TestDriftEventRepository:
 class TestApiKeyRepository:
     """Tests for ApiKeyRepository."""
 
-    def test_init(self, mock_session):
+    def test_init(self, mock_session) -> None:
         """Test repository initialization."""
         repo = ApiKeyRepository(mock_session)
         assert repo.model_class == ApiKeyModel
 
     @pytest.mark.asyncio
-    async def test_get_by_key_hash_found(self, mock_session):
+    async def test_get_by_key_hash_found(self, mock_session) -> None:
         """Test get_by_key_hash when key exists."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = ApiKeyModel(
@@ -386,7 +386,7 @@ class TestApiKeyRepository:
         assert result.role == "admin"
 
     @pytest.mark.asyncio
-    async def test_get_by_key_hash_not_found(self, mock_session):
+    async def test_get_by_key_hash_not_found(self, mock_session) -> None:
         """Test get_by_key_hash when key doesn't exist."""
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None
@@ -398,7 +398,7 @@ class TestApiKeyRepository:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_create_key(self, mock_session):
+    async def test_create_key(self, mock_session) -> None:
         """Test creating an API key."""
         repo = ApiKeyRepository(mock_session)
 
@@ -413,7 +413,7 @@ class TestApiKeyRepository:
         assert result.role == "readonly"
 
     @pytest.mark.asyncio
-    async def test_update_last_used(self, mock_session):
+    async def test_update_last_used(self, mock_session) -> None:
         """Test updating last_used_at timestamp."""
         key = ApiKeyModel(id=uuid.uuid4(), key_hash="abc123")
         repo = ApiKeyRepository(mock_session)
@@ -424,7 +424,7 @@ class TestApiKeyRepository:
             mock_session.flush.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_deactivate_key_success(self, mock_session):
+    async def test_deactivate_key_success(self, mock_session) -> None:
         """Test deactivating an existing key."""
         key = ApiKeyModel(id=uuid.uuid4(), key_hash="abc123", is_active=True)
         repo = ApiKeyRepository(mock_session)
@@ -435,7 +435,7 @@ class TestApiKeyRepository:
             assert key.is_active is False
 
     @pytest.mark.asyncio
-    async def test_deactivate_key_not_found(self, mock_session):
+    async def test_deactivate_key_not_found(self, mock_session) -> None:
         """Test deactivating a non-existent key returns False."""
         repo = ApiKeyRepository(mock_session)
 

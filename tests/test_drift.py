@@ -61,18 +61,18 @@ def detector(reference_data) -> DriftDetector:
 class TestDetectorInit:
     """Tests for DriftDetector initialization."""
 
-    def test_default_initialization(self, reference_data):
+    def test_default_initialization(self, reference_data) -> None:
         """Test default constructor."""
         detector = DriftDetector(reference_data)
         assert detector.significance_level == 0.05
         assert len(detector.feature_names) > 0
 
-    def test_custom_significance_level(self, reference_data):
+    def test_custom_significance_level(self, reference_data) -> None:
         """Test custom significance level."""
         detector = DriftDetector(reference_data, significance_level=0.01)
         assert detector.significance_level == 0.01
 
-    def test_computes_reference_stats(self, reference_data):
+    def test_computes_reference_stats(self, reference_data) -> None:
         """Test that reference stats are computed on init."""
         detector = DriftDetector(reference_data)
         assert "V1" in detector.ref_stats
@@ -87,19 +87,19 @@ class TestDetectorInit:
 class TestDetectDrift:
     """Tests for detect_drift method."""
 
-    def test_no_drift_with_same_distribution(self, detector, reference_data):
+    def test_no_drift_with_same_distribution(self, detector, reference_data) -> None:
         """Test that unshifted data does not trigger drift."""
         results = detector.detect_drift(reference_data)
         for _feat, result in results.items():
             assert result["alert"] == "OK"
 
-    def test_drift_detected_with_shifted_data(self, detector, drifted_data):
+    def test_drift_detected_with_shifted_data(self, detector, drifted_data) -> None:
         """Test that shifted data triggers drift alerts."""
         results = detector.detect_drift(drifted_data)
         drifted_features = [f for f, r in results.items() if r["alert"] != "OK"]
         assert len(drifted_features) > 0
 
-    def test_critical_drift_high_shift(self, reference_data):
+    def test_critical_drift_high_shift(self, reference_data) -> None:
         """Test that a very large shift triggers CRITICAL."""
         huge_shift = reference_data.copy()
         huge_shift["V1"] = huge_shift["V1"] + 10.0  # Extreme shift
@@ -109,7 +109,7 @@ class TestDetectDrift:
         results = detector.detect_drift(huge_shift)
         assert results["V1"]["alert"] == "CRITICAL"
 
-    def test_ok_for_identical_data(self, reference_data):
+    def test_ok_for_identical_data(self, reference_data) -> None:
         """Test that identical data returns OK for all features."""
         detector = DriftDetector(
             reference_data, feature_names=["V1"], significance_level=0.05
@@ -125,19 +125,19 @@ class TestDetectDrift:
 class TestDriftScore:
     """Tests for get_overall_drift_score method."""
 
-    def test_zero_score_no_drift(self, detector, reference_data):
+    def test_zero_score_no_drift(self, detector, reference_data) -> None:
         """Test score is 0 when no drift detected."""
         results = detector.detect_drift(reference_data)
         score = detector.get_overall_drift_score(results)
         assert score == 0.0
 
-    def test_nonzero_score_with_drift(self, detector, drifted_data):
+    def test_nonzero_score_with_drift(self, detector, drifted_data) -> None:
         """Test score is > 0 when drift detected."""
         results = detector.detect_drift(drifted_data)
         score = detector.get_overall_drift_score(results)
         assert score > 0.0
 
-    def test_max_score_one(self, detector):
+    def test_max_score_one(self, detector) -> None:
         """Test score can reach 1.0 with all features critical."""
         all_critical = {
             "V1": {"alert": "CRITICAL"},
@@ -154,7 +154,7 @@ class TestDriftScore:
 class TestReport:
     """Tests for generate_report method."""
 
-    def test_report_contains_keywords(self, detector, drifted_data):
+    def test_report_contains_keywords(self, detector, drifted_data) -> None:
         """Test that report contains expected sections."""
         results = detector.detect_drift(drifted_data)
         report = detector.generate_report(results)
@@ -162,7 +162,7 @@ class TestReport:
         assert "Overall Score" in report
         assert "RECOMMENDATION" in report
 
-    def test_report_identifies_drifted_features(self, detector, drifted_data):
+    def test_report_identifies_drifted_features(self, detector, drifted_data) -> None:
         """Test that report names drifted features."""
         results = detector.detect_drift(drifted_data)
         report = detector.generate_report(results)
@@ -176,13 +176,13 @@ class TestReport:
 class TestDriftHistory:
     """Tests for drift history tracking."""
 
-    def test_history_records_detection(self, detector, reference_data, drifted_data):
+    def test_history_records_detection(self, detector, reference_data, drifted_data) -> None:
         """Test that drift history records each detection call."""
         detector.detect_drift(reference_data)
         detector.detect_drift(drifted_data)
         assert len(detector.drift_history) == 2
 
-    def test_history_contains_metadata(self, detector, drifted_data):
+    def test_history_contains_metadata(self, detector, drifted_data) -> None:
         """Test that drift history entries contain expected fields."""
         detector.detect_drift(drifted_data)
         entry = detector.drift_history[0]
@@ -198,20 +198,20 @@ class TestDriftHistory:
 class TestSimulateDrift:
     """Tests for simulate_drift helper function."""
 
-    def test_simulate_drift_returns_dataframe(self, reference_data):
+    def test_simulate_drift_returns_dataframe(self, reference_data) -> None:
         """Test that simulate_drift returns a DataFrame."""
         result = simulate_drift(reference_data)
         assert isinstance(result, pd.DataFrame)
         assert result.shape == reference_data.shape
 
-    def test_simulate_drift_shifts_features(self, reference_data):
+    def test_simulate_drift_shifts_features(self, reference_data) -> None:
         """Test that simulate_drift actually shifts the data."""
         original_mean = reference_data["V1"].mean()
         drifted = simulate_drift(reference_data, drift_magnitude=1.0)
         # Mean should have shifted
         assert abs(drifted["V1"].mean() - original_mean) > 0.1
 
-    def test_simulate_drift_zero_magnitude(self, reference_data):
+    def test_simulate_drift_zero_magnitude(self, reference_data) -> None:
         """Test that zero magnitude returns nearly original data."""
         drifted = simulate_drift(reference_data, drift_magnitude=0.0)
         # Should be very close to original
@@ -226,14 +226,14 @@ class TestSimulateDrift:
 class TestEdgeCases:
     """Edge case tests for DriftDetector."""
 
-    def test_empty_new_data(self, detector):
+    def test_empty_new_data(self, detector) -> None:
         """Test detection with empty DataFrame."""
         empty = pd.DataFrame(columns=["V1", "V14", "Amount"])
         results = detector.detect_drift(empty)
         # Should not crash, but results will be empty since no data
         assert isinstance(results, dict)
 
-    def test_single_feature_detector(self, reference_data):
+    def test_single_feature_detector(self, reference_data) -> None:
         """Test detector with single feature."""
         detector = DriftDetector(
             reference_data, feature_names=["V1"], significance_level=0.05
@@ -242,7 +242,7 @@ class TestEdgeCases:
         assert "V1" in results
         assert results["V1"]["alert"] == "OK"
 
-    def test_missing_feature_in_new_data(self, detector):
+    def test_missing_feature_in_new_data(self, detector) -> None:
         """Test detection when new data is missing a feature."""
         partial = pd.DataFrame({"V1": np.random.randn(100)})
         results = detector.detect_drift(partial)

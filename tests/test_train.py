@@ -22,7 +22,7 @@ from src.fraudlens.models.train import FraudTrainer
 
 
 @pytest.fixture
-def small_dataset():
+def small_dataset() -> tuple[object, ...]:
     """A small labeled dataset for fast training tests."""
     np.random.seed(42)
     n = 500
@@ -40,13 +40,13 @@ def small_dataset():
 class TestFraudTrainerInit:
     """Tests for FraudTrainer initialization."""
 
-    def test_default_initialization(self):
+    def test_default_initialization(self) -> None:
         """Test default constructor."""
         trainer = FraudTrainer()
         assert len(trainer.models_to_train) > 0
         assert all(m in trainer.configs for m in trainer.models_to_train)
 
-    def test_custom_models(self):
+    def test_custom_models(self) -> None:
         """Test with specific models to train."""
         trainer = FraudTrainer(models_to_train=["logistic_regression", "random_forest"])
         assert trainer.models_to_train == ["logistic_regression", "random_forest"]
@@ -58,7 +58,7 @@ class TestFraudTrainerInit:
 class TestTraining:
     """Tests for training methods."""
 
-    def test_train_single_model(self, small_dataset):
+    def test_train_single_model(self, small_dataset) -> None:
         """Test training a single model by name."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
@@ -66,7 +66,7 @@ class TestTraining:
         assert model is not None
         assert "logistic_regression" in trainer.trained_models
 
-    def test_train_all_returns_dict(self, small_dataset):
+    def test_train_all_returns_dict(self, small_dataset) -> None:
         """Test that train_all returns a dict of trained models."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression", "random_forest"])
@@ -75,14 +75,14 @@ class TestTraining:
         assert "logistic_regression" in models
         assert "random_forest" in models
 
-    def test_train_all_populates_trained_models(self, small_dataset):
+    def test_train_all_populates_trained_models(self, small_dataset) -> None:
         """Test that train_all populates the trained_models dict."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
         trainer.train_all(X, y)
         assert len(trainer.trained_models) == 1
 
-    def test_training_results_contains_metadata(self, small_dataset):
+    def test_training_results_contains_metadata(self, small_dataset) -> None:
         """Test that training_results contains expected metadata."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
@@ -101,7 +101,7 @@ class TestTraining:
 class TestCrossValidation:
     """Tests for cross_validate method."""
 
-    def test_cross_validate_returns_results(self, small_dataset):
+    def test_cross_validate_returns_results(self, small_dataset) -> None:
         """Test that cross_validate returns results dict."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
@@ -109,7 +109,7 @@ class TestCrossValidation:
         assert isinstance(results, dict)
         assert "logistic_regression" in results
 
-    def test_cv_result_has_expected_keys(self, small_dataset):
+    def test_cv_result_has_expected_keys(self, small_dataset) -> None:
         """Test that CV result has expected keys."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
@@ -127,7 +127,7 @@ class TestCrossValidation:
 class TestModelPersistence:
     """Tests for saving and loading models."""
 
-    def test_save_model_creates_file(self, small_dataset):
+    def test_save_model_creates_file(self, small_dataset) -> None:
         """Test that save_model writes a file."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
@@ -136,7 +136,7 @@ class TestModelPersistence:
             path = trainer.save_model("logistic_regression", f"{tmpdir}/model.pkl")
             assert Path(path).exists()
 
-    def test_save_then_load_round_trip(self, small_dataset):
+    def test_save_then_load_round_trip(self, small_dataset) -> None:
         """Test that saved model can be loaded back."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
@@ -148,7 +148,7 @@ class TestModelPersistence:
             loaded = trainer2.load_model("logistic_regression", path)
             assert loaded is not None
 
-    def test_save_missing_model_raises(self):
+    def test_save_missing_model_raises(self) -> None:
         """Test that saving untrained model raises ValueError."""
         trainer = FraudTrainer()
         with pytest.raises(ValueError):
@@ -161,7 +161,7 @@ class TestModelPersistence:
 class TestEdgeCases:
     """Edge case tests for FraudTrainer."""
 
-    def test_scale_pos_weight_computation(self, small_dataset):
+    def test_scale_pos_weight_computation(self, small_dataset) -> None:
         """Test scale_pos_weight computation for XGBoost."""
         _, y = small_dataset
         trainer = FraudTrainer()
@@ -171,14 +171,14 @@ class TestEdgeCases:
         expected = n_neg / n_pos
         assert weight == pytest.approx(expected)
 
-    def test_train_only_selected_models(self, small_dataset):
+    def test_train_only_selected_models(self, small_dataset) -> None:
         """Test that only requested models are trained."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["xgboost"])
         models = trainer.train_all(X, y)
         assert list(models.keys()) == ["xgboost"]
 
-    def test_training_time_logged(self, small_dataset):
+    def test_training_time_logged(self, small_dataset) -> None:
         """Test that training time is recorded."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])

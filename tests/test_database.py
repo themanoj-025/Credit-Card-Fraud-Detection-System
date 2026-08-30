@@ -13,7 +13,7 @@ pytestmark = pytest.mark.slow
 class TestDatabaseEngine:
     """Test database engine configuration."""
 
-    def test_sqlite_default(self):
+    def test_sqlite_default(self) -> None:
         """Test that default DATABASE_URL uses SQLite."""
         with patch.dict("os.environ", {}, clear=True):
             # Re-import to pick up default
@@ -24,7 +24,7 @@ class TestDatabaseEngine:
             importlib.reload(db)
             assert "sqlite" in db._DATABASE_URL
 
-    def test_postgres_via_env(self):
+    def test_postgres_via_env(self) -> None:
         """Test that DATABASE_URL env var overrides default."""
         with patch.dict(
             "os.environ",
@@ -43,7 +43,7 @@ class TestGetSession:
     """Test the get_session context manager."""
 
     @pytest.mark.asyncio
-    async def test_session_commit_on_success(self):
+    async def test_session_commit_on_success(self) -> None:
         """Test session commits on successful yield."""
         mock_session = AsyncMock()
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
@@ -67,7 +67,7 @@ class TestGetSession:
         # after the for loop body completes.
 
     @pytest.mark.asyncio
-    async def test_session_rollback_on_error(self):
+    async def test_session_rollback_on_error(self) -> None:
         """Test session rolls back on exception."""
         mock_session = AsyncMock()
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
@@ -92,7 +92,7 @@ class TestInitDb:
     """Test init_db table creation."""
 
     @pytest.mark.asyncio
-    async def test_init_db_creates_tables(self, tmp_path):
+    async def test_init_db_creates_tables(self, tmp_path) -> None:
         """Test init_db calls create_all on the metadata.
 
         Uses a temporary database file to avoid side effects on the

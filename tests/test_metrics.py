@@ -16,7 +16,7 @@ from src.fraudlens.evaluation.metrics import FraudEvaluator, print_evaluation_su
 
 
 @pytest.fixture
-def synthetic_data():
+def synthetic_data() -> tuple[object, ...]:
     """Create synthetic labels and predictions for deterministic tests."""
     np.random.seed(42)
     n = 500
@@ -31,7 +31,7 @@ def synthetic_data():
 
 
 @pytest.fixture
-def perfect_data():
+def perfect_data() -> tuple[object, ...]:
     """Perfect predictions (all probabilities match labels exactly)."""
     np.random.seed(42)
     n = 200
@@ -45,7 +45,7 @@ def perfect_data():
 
 
 @pytest.fixture
-def multiple_models_data():
+def multiple_models_data() -> tuple[object, ...]:
     """Generate data for compare_models tests with multiple models."""
     np.random.seed(42)
     n = 500
@@ -79,19 +79,19 @@ def multiple_models_data():
 class TestFraudEvaluator:
     """Tests for FraudEvaluator."""
 
-    def test_init_defaults(self):
+    def test_init_defaults(self) -> None:
         """Test default initialization with config values."""
         evaluator = FraudEvaluator()
         assert evaluator.avg_fraud_loss == 150.0
         assert evaluator.review_cost == 5.0
 
-    def test_init_custom(self):
+    def test_init_custom(self) -> None:
         """Test custom initialization values."""
         evaluator = FraudEvaluator(avg_fraud_loss=200.0, review_cost=10.0)
         assert evaluator.avg_fraud_loss == 200.0
         assert evaluator.review_cost == 10.0
 
-    def test_compute_metrics_basic(self, synthetic_data):
+    def test_compute_metrics_basic(self, synthetic_data) -> None:
         """Test compute_metrics returns all expected fields."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -107,7 +107,7 @@ class TestFraudEvaluator:
         assert "confusion_matrix" in metrics
         assert metrics["threshold"] == 0.5
 
-    def test_compute_metrics_types(self, synthetic_data):
+    def test_compute_metrics_types(self, synthetic_data) -> None:
         """Test all metrics are within valid ranges."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -117,7 +117,7 @@ class TestFraudEvaluator:
         for key in ["pr_auc", "roc_auc", "f1", "precision", "recall"]:
             assert 0.0 <= metrics[key] <= 1.0, f"{key} out of range"
 
-    def test_compute_metrics_threshold_at_zero(self, synthetic_data):
+    def test_compute_metrics_threshold_at_zero(self, synthetic_data) -> None:
         """Test with threshold=0 (all predicted positive)."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -126,7 +126,7 @@ class TestFraudEvaluator:
 
         assert metrics["recall"] == 1.0  # All positives caught
 
-    def test_compute_metrics_threshold_at_one(self, synthetic_data):
+    def test_compute_metrics_threshold_at_one(self, synthetic_data) -> None:
         """Test with threshold=1 (all predicted negative)."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -135,7 +135,7 @@ class TestFraudEvaluator:
 
         assert metrics["recall"] == 0.0  # No positives caught
 
-    def test_compute_metrics_empty_positive(self):
+    def test_compute_metrics_empty_positive(self) -> None:
         """Test with no positive samples."""
         y_true = np.zeros(100)
         y_proba = np.random.uniform(0, 1, 100)
@@ -144,7 +144,7 @@ class TestFraudEvaluator:
         metrics = evaluator.compute_metrics(y_true, y_proba)
         assert metrics["pr_auc"] >= 0.0
 
-    def test_compute_metrics_confusion_matrix_shape(self, synthetic_data):
+    def test_compute_metrics_confusion_matrix_shape(self, synthetic_data) -> None:
         """Test confusion matrix is 2x2."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -153,7 +153,7 @@ class TestFraudEvaluator:
         cm = np.array(metrics["confusion_matrix"])
         assert cm.shape == (2, 2)
 
-    def test_evaluate_model_with_business_cost(self, synthetic_data):
+    def test_evaluate_model_with_business_cost(self, synthetic_data) -> None:
         """Test evaluate_model includes business cost data."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -175,7 +175,7 @@ class TestFraudEvaluator:
         assert result["model_name"] == "TestModel"
         assert result["business"]["net_benefit_usd"] == 4700
 
-    def test_evaluate_model_without_business_cost(self, synthetic_data):
+    def test_evaluate_model_without_business_cost(self, synthetic_data) -> None:
         """Test evaluate_model works without business cost data."""
         y_true, y_proba = synthetic_data
         evaluator = FraudEvaluator()
@@ -184,7 +184,7 @@ class TestFraudEvaluator:
 
         assert result["business"] == {}
 
-    def test_compare_models_sorting(self, multiple_models_data):
+    def test_compare_models_sorting(self, multiple_models_data) -> None:
         """Test compare_models sorts by PR-AUC descending."""
         y_true, predictions, thresholds, business_costs = multiple_models_data
         evaluator = FraudEvaluator()
@@ -196,7 +196,7 @@ class TestFraudEvaluator:
         assert comparison.iloc[0]["PR-AUC"] >= comparison.iloc[1]["PR-AUC"]
         assert comparison.iloc[0]["Model"] == "Model_A"
 
-    def test_compare_models_columns(self, multiple_models_data):
+    def test_compare_models_columns(self, multiple_models_data) -> None:
         """Test compare_models has expected columns."""
         y_true, predictions, thresholds, business_costs = multiple_models_data
         evaluator = FraudEvaluator()
@@ -220,7 +220,7 @@ class TestFraudEvaluator:
         for col in expected_columns:
             assert col in comparison.columns
 
-    def test_compare_models_default_threshold(self, multiple_models_data):
+    def test_compare_models_default_threshold(self, multiple_models_data) -> None:
         """Test compare_models uses default threshold when none provided."""
         y_true, predictions, _, _ = multiple_models_data
         evaluator = FraudEvaluator()
@@ -231,7 +231,7 @@ class TestFraudEvaluator:
         assert len(comparison) == 2
         assert comparison.iloc[0]["Threshold"] == 0.5
 
-    def test_plot_precision_recall_curve(self, multiple_models_data):
+    def test_plot_precision_recall_curve(self, multiple_models_data) -> None:
         """Test plot_precision_recall_curve creates figure."""
         y_true, predictions, _, _ = multiple_models_data
         evaluator = FraudEvaluator()
@@ -240,7 +240,7 @@ class TestFraudEvaluator:
 
         assert fig is not None
 
-    def test_plot_precision_recall_curve_saves(self, multiple_models_data, tmp_path):
+    def test_plot_precision_recall_curve_saves(self, multiple_models_data, tmp_path) -> None:
         """Test plot_precision_recall_curve saves to file."""
         y_true, predictions, _, _ = multiple_models_data
         evaluator = FraudEvaluator()
@@ -250,7 +250,7 @@ class TestFraudEvaluator:
 
         assert (tmp_path / "pr_curve.png").exists()
 
-    def test_plot_confusion_matrices(self, multiple_models_data):
+    def test_plot_confusion_matrices(self, multiple_models_data) -> None:
         """Test plot_confusion_matrices creates figure."""
         y_true, predictions, _, _ = multiple_models_data
         evaluator = FraudEvaluator()
@@ -259,7 +259,7 @@ class TestFraudEvaluator:
 
         assert fig is not None
 
-    def test_plot_confusion_matrices_single_model(self):
+    def test_plot_confusion_matrices_single_model(self) -> None:
         """Test plot_confusion_matrices with a single model."""
         np.random.seed(42)
         y_true = np.random.choice([0, 1], size=100, p=[0.9, 0.1])
@@ -276,7 +276,7 @@ class TestFraudEvaluator:
 class TestPrintEvaluationSummary:
     """Tests for print_evaluation_summary utility function."""
 
-    def test_print_summary_format(self):
+    def test_print_summary_format(self) -> None:
         """Test print_evaluation_summary returns formatted string."""
         results = {
             "model_name": "XGBoost",
@@ -303,7 +303,7 @@ class TestPrintEvaluationSummary:
         assert "$ 12,445.00" in output
         assert "$ 13,200.00" in output
 
-    def test_print_summary_has_section_breaks(self):
+    def test_print_summary_has_section_breaks(self) -> None:
         """Test print_evaluation_summary has proper section formatting."""
         results = {
             "model_name": "Test",
