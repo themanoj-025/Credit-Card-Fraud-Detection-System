@@ -227,6 +227,17 @@ app = FastAPI(
         {
             "name": "admin-models",
             "description": "Model registry management (list, compare, promote models)",
+
+# --- OpenTelemetry distributed tracing (OTEL_ENABLED=true) ---
+try:
+    from fraudlens.tracing import setup_tracing
+    _otel_ok = setup_tracing("ccfd-api")
+    if _otel_ok:
+        from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+        FastAPIInstrumentor.instrument_app(app)
+except ImportError:
+    pass
+
         },
     ],
 )
