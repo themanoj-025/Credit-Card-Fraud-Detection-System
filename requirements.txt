@@ -15,7 +15,7 @@ shap>=0.41.0,<1.0.0
 
 # ─── LLM Features ──────────────────────────────────────────────
 anthropic>=1.0.0,<2.0.0       # LLM case narrator + analyst copilot
-faiss-cpu>=1.7.0,<2.0.0        # RAG similar-case retrieval
+faiss-cpu>=1.15.0,<2.0.0        # RAG similar-case retrieval
 
 # ─── Database & Persistence ───────────────────────────────────
 sqlalchemy[asyncio]>=2.0.52,<3.0.0
