@@ -34,7 +34,7 @@ def simple_model() -> tuple[object, ...]:
 
 
 @pytest.fixture
-def predictor(simple_model):
+def predictor(simple_model) -> None:
     """FraudPredictor with a trained model."""
     model, _X = simple_model
     return FraudPredictor(
@@ -45,7 +45,7 @@ def predictor(simple_model):
 
 
 @pytest.fixture
-def sample_transaction():
+def sample_transaction() -> None:
     """A transaction with known V14 signal (fraud-like)."""
     tx = {f"V{i}": 0.0 for i in range(1, 29)}
     tx["V14"] = -5.0  # Strong fraud signal

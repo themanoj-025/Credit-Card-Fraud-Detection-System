@@ -13,7 +13,7 @@ from src.fraudlens.models.anomaly import IsolationForestDetector
 
 
 @pytest.fixture
-def normal_data():
+def normal_data() -> None:
     """Create a small dataset of normal (legitimate) transactions."""
     np.random.seed(42)
     n = 100

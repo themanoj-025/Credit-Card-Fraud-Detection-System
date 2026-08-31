@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 @pytest.fixture(scope="module")
-def sample_df():
+def sample_df() -> None:
     """Create a small synthetic dataset for EDA testing."""
     np.random.seed(42)
     n = 500
@@ -96,7 +96,7 @@ class TestEDAFunctions:
 class TestEDARun:
     """Tests for the run_eda pipeline function."""
 
-    def test_run_eda_creates_figures(self, sample_df):
+    def test_run_eda_creates_figures(self, sample_df) -> None:
         """Test that run_eda saves figures to output directory.
 
         Uses mock to inject sample_df instead of loading the real dataset
@@ -190,7 +190,7 @@ class TestFeatureImportanceCache:
         # Cache should now be populated
         assert eda._FEATURE_IMPORTANCE_CACHE is not None
 
-    def test_cache_hit_reuses_cached(self, sample_df):
+    def test_cache_hit_reuses_cached(self, sample_df) -> None:
         """Cache hit -> returns cached value without recomputing.
 
         We mock the underlying RandomForestClassifier to prove that

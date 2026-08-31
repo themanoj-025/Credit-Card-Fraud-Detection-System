@@ -387,7 +387,7 @@ class TestMockedAnthropicEdgeCases:
 
     def test_empty_response_falls_back_gracefully(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """
         Mock the client to return an empty response (content: []),
         verify the narrator falls back instead of crashing with index error.
@@ -423,7 +423,7 @@ class TestMockedAnthropicEdgeCases:
 
     def test_malformed_response_falls_back_gracefully(
         self, sample_transaction, sample_shap_explanation
-    ):
+    ) -> None:
         """
         Mock the client to return a malformed response missing expected fields,
         verify the narrator fails closed to the fallback.

@@ -13,7 +13,7 @@ from src.fraudlens.models.model_selection import ModelSelector
 
 
 @pytest.fixture
-def comparison_data():
+def comparison_data() -> None:
     """Create a mock comparison DataFrame with two models."""
     return pd.DataFrame(
         {

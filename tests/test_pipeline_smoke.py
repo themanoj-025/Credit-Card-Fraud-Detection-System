@@ -153,7 +153,7 @@ class TestPipelineSummarySmoke:
         assert "Business Impact" not in output
 
     @pytest.fixture
-    def tiny_synthetic_data(self):
+    def tiny_synthetic_data(self) -> None:
         """Generate a tiny synthetic dataset for mini pipeline test."""
         np.random.seed(42)
         n = 200

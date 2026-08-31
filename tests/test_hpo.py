@@ -28,7 +28,7 @@ def sample_data() -> tuple[object, ...]:
 
 
 @pytest.fixture
-def mock_optuna_module():
+def mock_optuna_module() -> None:
     """
     Create a fully mocked optuna module.
 
@@ -262,7 +262,7 @@ class TestHPOFailurePath:
         # Verify _cv_score was attempted (the test ran the code path)
         assert call_count[0] >= 1, "_cv_score was never called!"
 
-    def test_optuna_import_error_fallback(self, sample_data):
+    def test_optuna_import_error_fallback(self, sample_data) -> None:
         """
         When optuna is not importable, tune_xgboost should return
         sensible default parameters instead of crashing.
@@ -296,7 +296,7 @@ class TestHPOFailurePath:
 class TestHPOBestParamsPassThrough:
     """Tests that tuned best_params actually reach the model constructor."""
 
-    def test_best_params_appear_in_model_kwargs(self, sample_data):
+    def test_best_params_appear_in_model_kwargs(self, sample_data) -> None:
         """
         After a study completes, mock the XGBClassifier constructor
         and verify it receives the best_params as kwargs.
