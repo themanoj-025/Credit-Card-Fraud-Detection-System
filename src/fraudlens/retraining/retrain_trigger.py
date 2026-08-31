@@ -639,7 +639,7 @@ def run_retraining_pipeline() -> None:
         "candidate_metrics": result.candidate_metrics,
         "error": result.error,
     }
-    print(json.dumps(summary, indent=2))
+    logger.info("Retraining summary:\n%s", json.dumps(summary, indent=2))
 
 
 if __name__ == "__main__":
