@@ -49,7 +49,7 @@ fail_under = 80
 skip_empty = true
 
 [tool.pytest.ini_options]
-addopts = "-m 'not slow'"
+addopts = "-m 'not slow' --cov --cov-fail-under=50"
 markers = [
     "slow: integration tests (database, HTTP, ML models) — excluded from default run; use pytest -m slow"
 ]
