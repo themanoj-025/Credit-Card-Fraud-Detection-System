@@ -30,7 +30,7 @@ from src.fraudlens.data.download import (
 
 
 @pytest.fixture
-def tmp_data_dir(tmp_path):
+def tmp_data_dir(tmp_path) -> None:
     """Create a temporary data directory."""
     data_dir = tmp_path / "data" / "raw"
     data_dir.mkdir(parents=True)
@@ -38,7 +38,7 @@ def tmp_data_dir(tmp_path):
 
 
 @pytest.fixture
-def valid_csv(tmp_data_dir):
+def valid_csv(tmp_data_dir) -> None:
     """Create a valid synthetic creditcard.csv for testing."""
     target = tmp_data_dir / "creditcard.csv"
     rng = np.random.RandomState(42)
