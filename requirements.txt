@@ -35,7 +35,7 @@ scipy>=1.10.0,<2.0.0
 
 # ─── API ───────────────────────────────────────────────────────
 fastapi>=0.116.0,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
-uvicorn>=0.22.0,<1.0.0
+uvicorn>=0.52.4,<1.0.0
 pydantic>=2.0.0
 pydantic-settings>=2.15.0,<3.0.0
 httpx>=0.24.0,<1.0.0
