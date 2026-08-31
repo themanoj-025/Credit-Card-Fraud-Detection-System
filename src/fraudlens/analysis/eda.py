@@ -53,8 +53,8 @@ def _load_data() -> pd.DataFrame:
     loader = DataLoader()
     df = loader.load()
     stats = loader.get_basic_stats()
-    print(f"\nDataset: {df.shape[0]:,} transactions, {df.shape[1]} columns")
-    print(f"Fraud rate: {stats['fraud_rate_pct']:.4f}% ({stats['n_fraud']:,} frauds)")
+    logger.info("Dataset: %s transactions, %s columns", f"{df.shape[0]:,}", df.shape[1])
+    logger.info("Fraud rate: %.4f%% (%s frauds)", stats['fraud_rate_pct'], f"{stats['n_fraud']:,}")
     return df
 
 
@@ -63,7 +63,7 @@ def _save_fig(fig: plt.Figure, name: str, output_dir: Path = FIGURES_DIR) -> Non
     path = output_dir / name
     fig.savefig(path, dpi=DPI, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print(f"  [OK] Saved: {path}")
+    logger.info("Saved: %s", path)
 
 
 def plot_class_imbalance(df: pd.DataFrame) -> plt.Figure:
@@ -209,7 +209,7 @@ def plot_tsne_projection(df: pd.DataFrame, sample_size: int = 10000) -> plt.Figu
     else:
         df_sample = df
 
-    print(f"  Running t-SNE on {len(df_sample):,} samples...")
+    logger.info("Running t-SNE on %s samples...", f"{len(df_sample):,}")
     X = df_sample[PCA_FEATURES].fillna(0).values
     y = df_sample["Class"].values
 
@@ -266,7 +266,7 @@ def plot_umap_projection(df: pd.DataFrame, sample_size: int = 10000) -> plt.Figu
         else:
             df_sample = df
 
-        print(f"  Running UMAP on {len(df_sample):,} samples...")
+        logger.info("Running UMAP on %s samples...", f"{len(df_sample):,}")
         X = df_sample[PCA_FEATURES].fillna(0).values
         y = df_sample["Class"].values
 
@@ -301,7 +301,7 @@ def plot_umap_projection(df: pd.DataFrame, sample_size: int = 10000) -> plt.Figu
         plt.tight_layout()
         return fig
     except ImportError:
-        print("  [SKIP] UMAP not installed. Install with: pip install umap-learn")
+        logger.warning("UMAP not installed. Install with: pip install umap-learn")
         fig, ax = plt.subplots(figsize=(8, 4))
         ax.text(
             0.5,
@@ -357,7 +357,7 @@ def _get_feature_importances(df: pd.DataFrame) -> pd.DataFrame:
 
     from sklearn.ensemble import RandomForestClassifier
 
-    print("  Computing feature importances (RF, cached)...")
+    logger.info("Computing feature importances (RF, cached)...")
     X = df[PCA_FEATURES].fillna(0).values
     y = df["Class"].values
 
@@ -377,8 +377,7 @@ def plot_feature_separability(df: pd.DataFrame) -> plt.Figure:
     """Chart 7: Single-feature separability check — box plots of top 6 features."""
     importances = _get_feature_importances(df)
     top_features = importances.head(6)["feature"].tolist()
-    print(f"  Top features: {top_features}")
-    print(f"  Top features: {top_features}")
+    logger.info("Top features: %s", top_features)
 
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     axes = axes.flatten()
@@ -461,7 +460,7 @@ def plot_pairplot_top_features(df: pd.DataFrame, sample_size: int = 5000) -> plt
 
     top_4 = importances.head(4)["feature"].tolist()
 
-    print(f"  Generating pairplot of {top_4}...")
+    logger.info("Generating pairplot of %s...", top_4)
     df_plot = df_sample[top_4 + ["Class"]].copy()
     df_plot["Class"] = df_plot["Class"].map(LABELS)
 
@@ -496,28 +495,28 @@ def run_eda(output_dir: Path = FIGURES_DIR) -> None:
     global _FEATURE_IMPORTANCE_CACHE
     _FEATURE_IMPORTANCE_CACHE = None  # Reset cache
 
-    print("=" * 70)
-    print("  FRAUDLENS — Enhanced Exploratory Data Analysis")
-    print("=" * 70)
+    logger.info("=" * 70)
+    logger.info("FRAUDLENS — Enhanced Exploratory Data Analysis")
+    logger.info("=" * 70)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    print(f"\nOutput directory: {output_dir}\n")
+    logger.info("Output directory: %s", output_dir)
 
     # Load data
     try:
         df = _load_data()
     except FileNotFoundError as e:
-        print(f"\n  ❌ {e}")
-        print(
-            "  Download the dataset from: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"
+        logger.error("%s", e)
+        logger.error(
+            "Download the dataset from: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud"
         )
-        print("  Place it at: data/raw/creditcard.csv")
+        logger.error("Place it at: data/raw/creditcard.csv")
         return
 
     # Basic info
-    print(f"\n  Columns: {list(df.columns)}")
-    print(f"  Missing values: {df.isnull().sum().sum()}")
-    print(f"  Memory: {df.memory_usage(deep=True).sum() / 1024**2:.1f} MB\n")
+    logger.info("Columns: %s", list(df.columns))
+    logger.info("Missing values: %s", df.isnull().sum().sum())
+    logger.info("Memory: %.1f MB", df.memory_usage(deep=True).sum() / 1024**2)
 
     # ─── Generate all charts ────────────────────────────────────────
     charts = [
@@ -536,14 +535,14 @@ def run_eda(output_dir: Path = FIGURES_DIR) -> None:
         _save_fig(fig, name, output_dir)
 
     # ─── Summary ─────────────────────────────────────────────────────
-    print(f"\n{'=' * 70}")
-    print(f"  EDA COMPLETE — {len(charts)} charts saved to {output_dir}")
-    print(f"{'=' * 70}")
-    print("\n  Generated charts:")
+    logger.info("=" * 70)
+    logger.info("EDA COMPLETE — %d charts saved to %s", len(charts), output_dir)
+    logger.info("=" * 70)
+    logger.info("Generated charts:")
     for name, _ in charts:
         path = output_dir / name
         size_kb = path.stat().st_size / 1024 if path.exists() else 0
-        print(f"    📊 {name} ({size_kb:.0f} KB)")
+        logger.info("  %s (%.0f KB)", name, size_kb)
 
     # Save a summary of findings
     summary = {
@@ -561,8 +560,7 @@ def run_eda(output_dir: Path = FIGURES_DIR) -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
-    print(f"\n  Summary saved to: {summary_path}")
-    print()
+    logger.info("Summary saved to: %s", summary_path)
 
 
 if __name__ == "__main__":
