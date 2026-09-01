@@ -41,7 +41,7 @@ class DriftEventRepository(BaseRepository[DriftEventModel]):
         self,
         limit: int = 50,
         alert_type: str | None = None,
-    ) -> list[DriftEventModel] -> None:
+    ) -> list[DriftEventModel]:
         """Get recent drift events, optionally filtered by type."""
         stmt = select(DriftEventModel).order_by(DriftEventModel.created_at.desc())
         if alert_type:
@@ -54,7 +54,7 @@ class DriftEventRepository(BaseRepository[DriftEventModel]):
         self,
         since: datetime,
         feature_name: str | None = None,
-    ) -> list[DriftEventModel] -> None:
+    ) -> list[DriftEventModel]:
         """Get events since a timestamp, optionally for a specific feature."""
         stmt = (
             select(DriftEventModel)

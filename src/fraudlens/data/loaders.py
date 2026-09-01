@@ -148,7 +148,7 @@ class DataLoader:
 
 def load_data(
     data_path: str | None = None,
-) -> tuple[pd.DataFrame, dict] -> None:
+) -> tuple[pd.DataFrame, dict]:
     """
     Convenience function to load data and get stats.
 

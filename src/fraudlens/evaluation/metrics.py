@@ -60,7 +60,7 @@ class FraudEvaluator:
         y_true: np.ndarray,
         y_proba: np.ndarray,
         threshold: float = 0.5,
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         """
         Compute standard ML metrics.
 
@@ -91,7 +91,7 @@ class FraudEvaluator:
         threshold: float | None = None,
         model_name: str = "model",
         business_cost: dict | None = None,
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         """
         Comprehensive model evaluation.
 
@@ -129,7 +129,7 @@ class FraudEvaluator:
         predictions: dict[str, np.ndarray],
         thresholds: dict[str, float] | None = None,
         business_costs: dict[str, dict] | None = None,
-    ) -> pd.DataFrame -> None:
+    ) -> pd.DataFrame:
         """
         Compare multiple models side by side.
 
@@ -172,7 +172,7 @@ class FraudEvaluator:
         y_true: np.ndarray,
         predictions: dict[str, np.ndarray],
         save_path: str | None = None,
-    ) -> plt.Figure -> None:
+    ) -> plt.Figure:
         """
         Plot precision-recall curves for multiple models.
 
@@ -223,7 +223,7 @@ class FraudEvaluator:
         predictions: dict[str, np.ndarray],
         top_n: int = 3,
         save_path: str | None = None,
-    ) -> plt.Figure -> None:
+    ) -> plt.Figure:
         """
         Plot confusion matrices for top N models.
 

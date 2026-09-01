@@ -93,7 +93,7 @@ class RetrainingTrigger:
 
     def check_drift_condition(
         self, recent_drift_events: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         if recent_drift_events is None:
             return self._check_drift_from_report()
 
@@ -169,7 +169,7 @@ class RetrainingTrigger:
 
     def check_feedback_condition(
         self, new_feedback_count: int | None = None
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         if new_feedback_count is None:
             last_train_time = self._get_last_training_time()
             if last_train_time is None:
@@ -207,7 +207,7 @@ class RetrainingTrigger:
         self,
         recent_drift_events: list[dict[str, Any]] | None = None,
         new_feedback_count: int | None = None,
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         drift = self.check_drift_condition(recent_drift_events)
         feedback = self.check_feedback_condition(new_feedback_count)
 
