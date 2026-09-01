@@ -256,7 +256,7 @@ class CostTracker:
     def merge_summaries(
         memory_summary: dict[str, Any],
         db_summary: dict[str, Any],
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] -> None:
         """
         Merge in-memory and database summaries for a complete picture.
 

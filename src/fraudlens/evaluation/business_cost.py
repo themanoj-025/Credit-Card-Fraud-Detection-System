@@ -44,7 +44,7 @@ class BusinessCostCalculator:
         self,
         y_true: np.ndarray,
         y_pred: np.ndarray,
-    ) -> dict[str, float]:
+    ) -> dict[str, float] -> None:
         """
         Compute the business cost of a set of predictions.
 
@@ -80,7 +80,7 @@ class BusinessCostCalculator:
         y_true: np.ndarray,
         y_proba: np.ndarray,
         n_thresholds: int = N_THRESHOLDS,
-    ) -> tuple[float, dict]:
+    ) -> tuple[float, dict] -> None:
         """
         Find the threshold that minimizes total business cost.
 
@@ -119,7 +119,7 @@ class BusinessCostCalculator:
         y_proba: np.ndarray,
         model_name: str = "model",
         save_path: str | None = None,
-    ) -> plt.Figure:
+    ) -> plt.Figure -> None:
         """
         Plot total cost and net benefit as a function of threshold.
 
@@ -173,7 +173,7 @@ class BusinessCostCalculator:
         self,
         y_true: np.ndarray,
         predictions: dict[str, np.ndarray],
-    ) -> dict[str, dict]:
+    ) -> dict[str, dict] -> None:
         """
         Find optimal thresholds and business costs for all models.
 

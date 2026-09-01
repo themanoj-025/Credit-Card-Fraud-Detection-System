@@ -61,7 +61,7 @@ def _verify_api_key(api_key: str) -> str | None:
 
 async def require_api_key(
     api_key: str | None = Security(api_key_header),
-) -> str | None:
+) -> None:
     """
     Dependency that requires a valid API key (any role).
 

@@ -50,7 +50,7 @@ class PredictionRepository(BaseRepository[PredictionModel]):
         self,
         limit: int = 50,
         decision: str | None = None,
-    ) -> list[PredictionModel]:
+    ) -> list[PredictionModel] -> None:
         """Get recent predictions, optionally filtered by decision."""
         stmt = select(PredictionModel).order_by(PredictionModel.created_at.desc())
         if decision:
@@ -62,7 +62,7 @@ class PredictionRepository(BaseRepository[PredictionModel]):
     async def get_statistics(
         self,
         since: datetime | None = None,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] -> None:
         """Get prediction statistics for monitoring."""
         stmt = select(
             func.count(PredictionModel.id).label("total"),

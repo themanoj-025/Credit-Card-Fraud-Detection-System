@@ -59,7 +59,7 @@ class FraudPreprocessor:
 
     def split_data(
         self, df: pd.DataFrame
-    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series] -> None:
         """
         Split data into train and test sets BEFORE any resampling.
 
@@ -185,7 +185,7 @@ class Resampler:
         X_train: pd.DataFrame,
         y_train: pd.Series,
         strategy: str = "smote",
-    ) -> tuple[pd.DataFrame, pd.Series]:
+    ) -> tuple[pd.DataFrame, pd.Series] -> None:
         """
         Apply a resampling strategy to training data.
 
@@ -241,7 +241,7 @@ class Resampler:
         X_train: pd.DataFrame,
         y_train: pd.Series,
         strategies: list[str] | None = None,
-    ) -> dict[str, tuple[pd.DataFrame, pd.Series]]:
+    ) -> dict[str, tuple[pd.DataFrame, pd.Series]] -> None:
         """
         Apply multiple resampling strategies for comparison.
 

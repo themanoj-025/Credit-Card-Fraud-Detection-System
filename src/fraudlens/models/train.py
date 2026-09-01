@@ -392,7 +392,7 @@ class FraudTrainer:
         y: pd.Series,
         cv: int = CROSS_VALIDATION_FOLDS,
         scoring: str = CROSS_VALIDATION_SCORING,
-    ) -> dict[str, dict]:
+    ) -> dict[str, dict] -> None:
         """
         Cross-validate all models.
 

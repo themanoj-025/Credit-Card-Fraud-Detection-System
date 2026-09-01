@@ -44,7 +44,7 @@ class BaseRepository(Generic[ModelType]):
         limit: int = 100,
         order_by: str | None = "created_at",
         descending: bool = True,
-    ) -> list[ModelType]:
+    ) -> list[ModelType] -> None:
         """List records with pagination."""
         stmt = select(self.model_class)
 
