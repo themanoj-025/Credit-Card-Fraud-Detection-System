@@ -55,7 +55,7 @@ class ModelCandidateRepository(BaseRepository[ModelCandidateModel]):
         status: str | None = None,
         limit: int = 50,
         offset: int = 0,
-    ) -> list[ModelCandidateModel] -> None:
+    ) -> list[ModelCandidateModel]:
         """Get model candidates, optionally filtered by status."""
         stmt = select(ModelCandidateModel).order_by(
             ModelCandidateModel.created_at.desc()

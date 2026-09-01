@@ -55,7 +55,7 @@ class ModelSelector:
         self,
         comparison_df: pd.DataFrame,
         trained_models: dict[str, Any],
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         """
         Select the best model from a comparison table.
 
