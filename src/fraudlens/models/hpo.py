@@ -110,7 +110,7 @@ class HyperparameterOptimizer:
         X: pd.DataFrame,
         y: pd.Series,
         n_trials: int | None = None,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] -> None:
         """
         Tune XGBoost hyperparameters using Optuna.
 
@@ -199,7 +199,7 @@ class HyperparameterOptimizer:
         X: pd.DataFrame,
         y: pd.Series,
         n_trials: int | None = None,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] -> None:
         """
         Tune LightGBM hyperparameters using Optuna.
 
@@ -290,7 +290,7 @@ class HyperparameterOptimizer:
         X: pd.DataFrame,
         y: pd.Series,
         n_trials: int | None = None,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] -> None:
         """
         Tune CatBoost hyperparameters using Optuna (if CatBoost is installed).
 

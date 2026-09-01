@@ -43,7 +43,7 @@ class FeedbackRepository(BaseRepository[FeedbackModel]):
         self,
         limit: int = 100,
         confirmed_only: bool = False,
-    ) -> list[FeedbackModel]:
+    ) -> list[FeedbackModel] -> None:
         """Get recent feedback entries."""
         stmt = select(FeedbackModel).order_by(FeedbackModel.created_at.desc())
         if confirmed_only:

@@ -204,7 +204,7 @@ class DriftDetector:
 
 def simulate_drift(
     reference: pd.DataFrame, drift_magnitude: float = 0.5
-) -> pd.DataFrame:
+) -> pd.DataFrame -> None:
     """
     Simulate data drift by shifting distributions.
 

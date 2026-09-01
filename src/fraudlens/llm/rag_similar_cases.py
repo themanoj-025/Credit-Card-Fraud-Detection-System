@@ -196,7 +196,7 @@ class SimilarCaseRetriever:
         historical_data: pd.DataFrame,
         outcome_column: str = "Class",
         feature_columns: list[str] | None = None,
-    ) -> "SimilarCaseRetriever":
+    ) -> "SimilarCaseRetriever" -> None:
         """
         Build the FAISS index from historical transaction data.
 
@@ -263,7 +263,7 @@ class SimilarCaseRetriever:
         self,
         transaction: dict[str, Any],
         top_k: int | None = None,
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[str, Any]] -> None:
         """
         Retrieve similar historical cases for a given transaction.
 

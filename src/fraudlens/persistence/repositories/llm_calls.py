@@ -44,7 +44,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
         self,
         limit: int = 100,
         offset: int = 0,
-    ) -> list[LlmCallModel]:
+    ) -> list[LlmCallModel] -> None:
         """Get recent LLM calls ordered by time (newest first)."""
         stmt = (
             select(LlmCallModel)
@@ -58,7 +58,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
     async def get_calls_since(
         self,
         since: datetime,
-    ) -> list[LlmCallModel]:
+    ) -> list[LlmCallModel] -> None:
         """Get all LLM calls since a specific timestamp."""
         stmt = (
             select(LlmCallModel)
@@ -71,7 +71,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
     async def get_period_summary(
         self,
         since: datetime,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] -> None:
         """
         Get aggregated cost summary for a time period.
 

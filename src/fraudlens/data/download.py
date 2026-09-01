@@ -219,7 +219,7 @@ def ensure_data_ready(
     target_path: Path | None = None,
     force_synthetic: bool = False,
     force_download: bool = False,
-) -> pd.DataFrame:
+) -> pd.DataFrame -> None:
     """
     Ensure the credit card fraud dataset is available.
 
@@ -263,7 +263,7 @@ def ensure_data_ready(
 def get_or_create_data(
     data_path: str | None = None,
     force_synthetic: bool = False,
-) -> pd.DataFrame:
+) -> pd.DataFrame -> None:
     """
     Convenience wrapper for DataLoader integration.
 
