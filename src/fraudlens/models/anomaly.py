@@ -51,7 +51,7 @@ class IsolationForestDetector:
 
     def fit(
         self, X_train: pd.DataFrame, y_train: pd.Series | None = None
-    ) -> "IsolationForestDetector" -> None:
+    ) -> "IsolationForestDetector":
         """
         Fit on legitimate transactions only.
 

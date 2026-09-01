@@ -121,7 +121,7 @@ class FraudPredictor:
         transaction: dict[str, Any],
         return_shap: bool = True,
         X_background: pd.DataFrame | None = None,
-    ) -> dict[str, Any] -> None:
+    ) -> dict[str, Any]:
         """
         Predict fraud for a single transaction with explanation.
 
@@ -205,7 +205,7 @@ class FraudPredictor:
         self,
         X: pd.DataFrame,
         threshold: float | None = None,
-    ) -> pd.DataFrame -> None:
+    ) -> pd.DataFrame:
         """
         Predict fraud for a batch of transactions (no SHAP).
 
