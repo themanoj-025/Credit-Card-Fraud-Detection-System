@@ -45,7 +45,7 @@ class ShapExplanation:
         top_features: list[tuple[str, float]],
         raw_transaction: dict[str, Any],
         max_features: int = 10,
-    ) -> "ShapExplanation":
+    ) -> "ShapExplanation" -> None:
         """Create a ShapExplanation from raw feature importance tuples."""
         top = top_features[:max_features]
         features = [
@@ -159,7 +159,7 @@ class ShapExplainer:
         self,
         X_sample: pd.DataFrame,
         feature_names: list[str],
-    ) -> pd.DataFrame:
+    ) -> pd.DataFrame -> None:
         """
         Compute global feature importance using SHAP.
 

@@ -14,7 +14,7 @@ Usage:
     @router.post("/predict")
     async def predict(predictor: FraudPredictor = Depends(get_predictor)): ...
 
-    # As plain function call (backward-compatible):
+    # As plain function call (backward-compatible) -> None:
     pred = get_predictor()
 """
 
@@ -230,7 +230,7 @@ class FraudPredictor:
         self,
         X: "pd.DataFrame",
         threshold: float | None = None,
-    ) -> "pd.DataFrame":
+    ) -> "pd.DataFrame" -> None:
         """Predict fraud for a batch of transactions (no SHAP).
 
         Still uses DataFrame for batch since the overhead is amortized
