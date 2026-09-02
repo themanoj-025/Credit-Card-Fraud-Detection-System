@@ -17,10 +17,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.fraudlens.persistence.models import (
-
 pytestmark = pytest.mark.integration
-
+from src.fraudlens.persistence.models import (
     ApiKeyModel,
     DriftEventModel,
     FeedbackModel,
