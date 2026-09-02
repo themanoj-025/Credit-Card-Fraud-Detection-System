@@ -14,6 +14,9 @@ import pytest
 
 from src.fraudlens.models.hpo import HyperparameterOptimizer
 
+pytestmark = pytest.mark.unit
+
+
 
 @pytest.fixture
 def sample_data() -> tuple[object, ...]:
