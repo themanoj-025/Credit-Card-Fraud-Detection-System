@@ -11,6 +11,9 @@ import pytest
 
 from src.fraudlens.models.model_selection import ModelSelector
 
+pytestmark = pytest.mark.unit
+
+
 
 @pytest.fixture
 def comparison_data() -> None:

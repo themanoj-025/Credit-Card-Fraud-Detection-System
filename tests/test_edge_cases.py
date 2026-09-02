@@ -15,6 +15,9 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
+pytestmark = pytest.mark.integration
+
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from api.schemas import TransactionInput
