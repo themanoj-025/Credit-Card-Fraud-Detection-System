@@ -14,6 +14,7 @@ import os
 import pytest
 
 pytestmark = pytest.mark.slow
+
 # Markers
 # This test requires Redis. On CI it always runs; locally it's skippable.
 pytestmark = [

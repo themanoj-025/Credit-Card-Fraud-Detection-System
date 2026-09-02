@@ -18,6 +18,9 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.fraudlens.persistence.models import (
+
+pytestmark = pytest.mark.integration
+
     ApiKeyModel,
     DriftEventModel,
     FeedbackModel,
