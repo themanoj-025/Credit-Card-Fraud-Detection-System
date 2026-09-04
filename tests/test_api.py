@@ -5,7 +5,6 @@ Covers health check, prediction, batch prediction, and error handling.
 Uses FastAPI's TestClient for fast, dependency-free testing.
 """
 
-import sys
 from pathlib import Path
 
 import numpy as np
@@ -16,7 +15,6 @@ pytestmark = pytest.mark.unit
 
 
 pytestmark = pytest.mark.slow
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from api.main import app
 

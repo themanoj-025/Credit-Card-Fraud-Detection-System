@@ -10,10 +10,8 @@ These tests should be updated when the API is intentionally versioned.
 The `openapi.json` snapshot is checked in for diff-review in CI.
 """
 
-import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 # Required endpoints (enforced on every test run)

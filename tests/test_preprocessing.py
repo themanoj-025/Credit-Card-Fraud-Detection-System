@@ -9,14 +9,12 @@ Critical test cases:
 - Edge cases: no fraud in sample, empty data
 """
 
-import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.config import ALL_FEATURES
 from src.fraudlens.data.preprocessing import FraudPreprocessor, Resampler

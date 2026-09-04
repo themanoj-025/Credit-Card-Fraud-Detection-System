@@ -5,7 +5,6 @@ Verifies figure-generation functions run without error and produce
 files at the expected path with non-zero size.
 """
 
-import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -17,7 +16,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 @pytest.fixture(scope="module")
