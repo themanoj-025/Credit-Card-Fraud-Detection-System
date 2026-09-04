@@ -16,9 +16,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import structlog
 
 warnings.filterwarnings("ignore")
 matplotlib.use("Agg")
+
+logger = structlog.get_logger("train_and_compare")
 
 from src.fraudlens.config import (
     AVG_FRAUD_LOSS,
@@ -40,12 +43,12 @@ plt.rcParams["figure.figsize"] = (12, 6)
 os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-print("=" * 70)
-print("  FRAUDLENS — Comprehensive ML Training & Comparison")
-print("=" * 70)
+logger.info("=" * 70)
+logger.info("  FRAUDLENS — Comprehensive ML Training & Comparison")
+logger.info("=" * 70)
 
 # STAGE 1: Load and preprocess
-print("\n[1/6] Loading and preprocessing data...")
+logger.info("[1/6] Loading and preprocessing data...")
 df, stats = DataLoader().load(), None
 loader = DataLoader()
 df = loader.load()
@@ -55,11 +58,12 @@ data = preprocessor.full_preprocess(df)
 X_train, X_test = data["X_train"], data["X_test"]
 y_train, y_test = data["y_train"], data["y_test"]
 
-print(f"  Train: {len(X_train)} samples, Test: {len(X_test)} samples")
-print(f"  Fraud in train: {y_train.sum()} ({y_train.mean() * 100:.4f}%)")
+logger.info("train_samples", count=len(X_train))
+logger.info("test_samples", count=len(X_test))
+logger.info("fraud_in_train", count=int(y_train.sum()), rate=f"{y_train.mean() * 100:.4f}%")
 
 # STAGE 2: Train all models
-print("\n[2/6] Training all ML models...")
+logger.info("[2/6] Training all ML models...")
 trainer = FraudTrainer()
 t_start = time.time()
 models = trainer.train_all(X_train, y_train)
@@ -68,10 +72,10 @@ iso_detector = IsolationForestDetector(contamination=0.005, n_estimators=200)
 iso_detector.fit(X_train, y_train)
 t_total = time.time() - t_start
 
-print(f"  Training completed in {t_total:.1f}s")
+logger.info("training_completed", elapsed_s=round(t_total, 1))
 for name in models:
-    print(f"    - {name}")
-print("    - isolation_forest (unsupervised)")
+    logger.info("model_trained", model=name)
+logger.info("model_trained", model="isolation_forest")
 
 # Save models
 trainer.save_all_models(str(MODELS_DIR))
@@ -79,7 +83,7 @@ preprocessor.save_scaler(str(MODELS_DIR / "scaler.pkl"))
 joblib.dump(iso_detector.model, MODELS_DIR / "anomaly_detector.pkl")
 
 # STAGE 3: Evaluate
-print("\n[3/6] Evaluating all models...")
+logger.info("[3/6] Evaluating all models...")
 evaluator = FraudEvaluator(avg_fraud_loss=AVG_FRAUD_LOSS, review_cost=REVIEW_COST)
 cost_calc = BusinessCostCalculator(
     avg_fraud_loss=AVG_FRAUD_LOSS, review_cost=REVIEW_COST
@@ -105,25 +109,22 @@ thresholds["Isolation Forest"] = th_if
 business_costs["Isolation Forest"] = biz_if
 
 comparison = evaluator.compare_models(y_test, predictions, thresholds, business_costs)
-print("\n=== MODEL COMPARISON ===")
-print(comparison.to_string(index=False))
+logger.info("model_comparison", table=comparison.to_string(index=False))
 
 # STAGE 4: Auto-Select Best Model
-print("\n[4/6] Auto-selecting best model...")
+logger.info("[4/6] Auto-selecting best model...")
 all_models = {**models, "Isolation Forest": iso_detector.model}
 selector = ModelSelector(metric="PR-AUC")
 selection = selector.select(comparison, all_models)
 selector.save_best_model(str(MODELS_DIR / "best_fraud_model.pkl"))
-print(
-    f"  Best: {selection['best_model_name']} (PR-AUC={selection['metric_value']:.4f})"
-)
+logger.info("best_model_selected", model=selection['best_model_name'], pr_auc=round(selection['metric_value'], 4))
 
 best_threshold = thresholds.get(selection["best_model_name"], 0.5)
 with open(MODELS_DIR / "threshold.txt", "w") as f:
     f.write(str(best_threshold))
 
 # STAGE 5: Generate Charts
-print("\n[5/6] Generating comparison charts...")
+logger.info("[5/6] Generating comparison charts...")
 
 fig, axes = plt.subplots(2, 3, figsize=(20, 12))
 models_list = comparison["Model"].values
@@ -237,27 +238,20 @@ plt.savefig(
     bbox_inches="tight",
 )
 plt.close()
-print("  [OK] Comprehensive comparison chart saved")
+logger.info("chart_saved", path=str(PROCESSED_DATA_DIR / "comprehensive_comparison.png"))
 
 # STAGE 6: Summary
-print("\n[6/6] Final Summary")
-print("=" * 70)
-print("  TRAINING COMPLETE")
-print("=" * 70)
-print(f"\n  Models Trained: {len(models) + 1}")
-print(f"  Best Model:     {selection['best_model_name']}")
-print(f"  PR-AUC:         {selection['metric_value']:.4f}")
-print(f"  Threshold:      {best_threshold:.4f}")
+logger.info("[6/6] Final Summary")
+logger.info("=" * 70)
+logger.info("  TRAINING COMPLETE")
+logger.info("=" * 70)
+logger.info("models_trained", count=len(models) + 1)
+logger.info("best_model", name=selection['best_model_name'], pr_auc=round(selection['metric_value'], 4), threshold=round(best_threshold, 4))
 biz = business_costs.get(selection["best_model_name"], {})
 if biz:
-    print("\n  Business Impact:")
-    print(f"    Fraud Caught:  ${biz.get('fraud_caught_usd', 0):,.2f}")
-    print(f"    Fraud Missed:  ${biz.get('fraud_missed_usd', 0):,.2f}")
-    print(f"    Review Costs:  ${biz.get('review_costs_usd', 0):,.2f}")
-    print(f"    Net Benefit:   ${biz.get('net_benefit_usd', 0):,.2f}")
-print(f"\n  Charts saved to: {PROCESSED_DATA_DIR}")
-print(f"  Models saved to: {MODELS_DIR}")
-print("=" * 70)
+    logger.info("business_impact", fraud_caught_usd=biz.get('fraud_caught_usd', 0), fraud_missed_usd=biz.get('fraud_missed_usd', 0), review_costs_usd=biz.get('review_costs_usd', 0), net_benefit_usd=biz.get('net_benefit_usd', 0))
+logger.info("artifacts_saved", charts_dir=str(PROCESSED_DATA_DIR), models_dir=str(MODELS_DIR))
+logger.info("=" * 70)
 
 # Save final results
 final_results = {
