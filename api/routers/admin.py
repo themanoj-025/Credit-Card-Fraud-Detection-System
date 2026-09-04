@@ -162,12 +162,12 @@ async def get_llm_usage(
     # Step 2: Persist pending records to DB so they survive restarts
     db_summary = None
     try:
-        from datetime import datetime
+        from datetime import UTC, datetime
 
         from src.fraudlens.persistence import get_session
         from src.fraudlens.persistence.repositories import LlmCallRepository
 
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         if period == "today":
             since = now.replace(hour=0, minute=0, second=0, microsecond=0)
         elif period == "month":
