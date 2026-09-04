@@ -2,7 +2,7 @@
 FraudLens — API Key Repository
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,7 +41,7 @@ class ApiKeyRepository(BaseRepository[ApiKeyModel]):
         """Update the last_used_at timestamp for a key."""
         key = await self.get(key_id)
         if key:
-            key.last_used_at = datetime.utcnow()
+            key.last_used_at = datetime.now(UTC)
             await self.session.flush()
 
     async def deactivate(self, key_id: str) -> bool:
