@@ -5,6 +5,7 @@ warnings.filterwarnings("ignore")
 
 import joblib
 import pandas as pd
+import structlog
 from sklearn.metrics import (
     average_precision_score,
     f1_score,
@@ -15,12 +16,14 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+logger = structlog.get_logger("evaluate_saved_models")
+
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
 FEATURES = [f"V{i}" for i in range(1, 29)] + ["Time", "Amount"]
 
 df = pd.read_csv("data/raw/creditcard.csv")
-print("dataset rows:", len(df), "| fraud rate: %.4f%%" % (100 * df["Class"].mean()))
+logger.info("dataset_loaded", rows=len(df), fraud_rate=f"{100 * df['Class'].mean():.4f}%")
 
 X = df[FEATURES].copy()
 y = df["Class"].copy()
@@ -32,7 +35,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 scaler = StandardScaler()
 X_train[["Time", "Amount"]] = scaler.fit_transform(X_train[["Time", "Amount"]])
 X_test[["Time", "Amount"]] = scaler.transform(X_test[["Time", "Amount"]])
-print("test set rows:", len(X_test), "| fraud in test:", int(y_test.sum()))
+logger.info("test_set", rows=len(X_test), fraud=int(y_test.sum()))
 
 models = {
     "best_fraud_model": "models/best_fraud_model.pkl",
@@ -50,7 +53,7 @@ for name, path in models.items():
         model = joblib.load(path)
         proba = model.predict_proba(X_test)[:, 1]
     except (FileNotFoundError, ValueError, OSError) as exc:  # missing dependency or artifact
-        print(f"SKIP {name}: {exc}")
+        logger.warning("model_skipped", model=name, error=str(exc))
         continue
     pred = (proba >= 0.5).astype(int)
     rows.append({
@@ -64,6 +67,6 @@ for name, path in models.items():
 
 res = pd.DataFrame(rows).sort_values("PR-AUC", ascending=False)
 pd.set_option("display.width", 200)
-print(res.to_string(index=False))
+logger.info("evaluation_results", table=res.to_string(index=False))
 res.to_csv("reports/model_evaluation.csv", index=False)
-print("saved -> reports/model_evaluation.csv")
+logger.info("evaluation_saved", path="reports/model_evaluation.csv")

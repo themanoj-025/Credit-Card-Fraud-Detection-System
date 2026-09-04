@@ -32,9 +32,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import structlog
 
 warnings.filterwarnings("ignore")
 matplotlib.use("Agg")
+
+logger = structlog.get_logger("run_pipeline")
 
 from src.fraudlens.config import (
     AVG_FRAUD_LOSS,
@@ -57,10 +60,10 @@ try:
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
     HAS_MLFLOW = True
-    print(f"  MLflow tracking: enabled (URI={MLFLOW_TRACKING_URI})")
+    logger.info("mlflow_tracking", uri=MLFLOW_TRACKING_URI)
 except (ImportError, Exception) as e:
     HAS_MLFLOW = False
-    print(f"  MLflow tracking: disabled ({e})")
+    logger.warning("mlflow_tracking_disabled", error=str(e))
 from src.fraudlens.data.loaders import DataLoader
 from src.fraudlens.data.preprocessing import FraudPreprocessor, Resampler
 from src.fraudlens.evaluation.business_cost import BusinessCostCalculator
@@ -77,85 +80,67 @@ os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
-print("=" * 70)
-print("  FRAUDLENS — Rigorous Model Comparison Pipeline")
-print("  Stage 4: 6 Supervised + 1 Unsupervised Model")
-print("=" * 70)
+logger.info("=" * 70)
+logger.info("  FRAUDLENS — Rigorous Model Comparison Pipeline")
+logger.info("  Stage 4: 6 Supervised + 1 Unsupervised Model")
+logger.info("=" * 70)
 
 # STAGE 1: Data Loading
-print("\n" + "-" * 70)
-print("  [1/6] Data Loading")
-print("-" * 70)
+logger.info("[1/6] Data Loading")
 
 loader = DataLoader()
 try:
     df = loader.load()
 except FileNotFoundError as e:
-    print(f"\n  ❌ {e}")
-    print("  Download from: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud")
-    print("  Place at: data/raw/creditcard.csv")
+    logger.error("data_not_found", error=str(e), download_url="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud", place_at="data/raw/creditcard.csv")
     sys.exit(1)
 
 stats = loader.get_basic_stats()
 for k, v in stats.items():
-    print(f"    {k}: {v}")
+    logger.info("data_stats", metric=k, value=v)
 
 # STAGE 2: Preprocessing
-print("\n" + "-" * 70)
-print("  [2/6] Preprocessing (No Data Leakage)")
-print("-" * 70)
+logger.info("[2/6] Preprocessing (No Data Leakage)")
 
 preprocessor = FraudPreprocessor(test_size=0.2, random_state=42)
 data = preprocessor.full_preprocess(df)
 X_train, X_test = data["X_train"], data["X_test"]
 y_train, y_test = data["y_train"], data["y_test"]
 
-print(
-    f"    Train: {X_train.shape[0]} samples ({y_train.sum()} fraud, {y_train.mean() * 100:.4f}%)"
-)
-print(
-    f"    Test:  {X_test.shape[0]} samples ({y_test.sum()} fraud, {y_test.mean() * 100:.4f}%)"
-)
+logger.info("train_split", samples=X_train.shape[0], fraud=int(y_train.sum()), fraud_rate=f"{y_train.mean() * 100:.4f}%")
+logger.info("test_split", samples=X_test.shape[0], fraud=int(y_test.sum()), fraud_rate=f"{y_test.mean() * 100:.4f}%")
 
 preprocessor.save_scaler(str(MODELS_DIR / "scaler.pkl"))
 
 # STAGE 3: Resampling Comparison
-print("\n" + "-" * 70)
-print("  [3/6] Resampling Strategy Comparison")
-print("-" * 70)
+logger.info("[3/6] Resampling Strategy Comparison")
 
 resampler = Resampler(random_state=42)
 strategies = ["none", "random_under", "smote", "adasyn", "smote_tomek"]
 resampled = resampler.compare_strategies(X_train, y_train, strategies)
 
 for strat, (X_r, y_r) in resampled.items():
-    print(
-        f"    {strat:<20}: {len(X_r):>8} samples, {int(y_r.sum()):>5} fraud ({y_r.mean() * 100:.2f}%)"
-    )
+    logger.info("resampling_strategy", strategy=strat, samples=len(X_r), fraud=int(y_r.sum()), fraud_rate=f"{y_r.mean() * 100:.2f}%")
 
 # STAGE 3.5: Hyperparameter Optimization (Optuna) — optional
-print("\n" + "-" * 70)
-print("  [3.5/6] Hyperparameter Optimization (Optuna)")
-print("-" * 70)
+logger.info("[3.5/6] Hyperparameter Optimization (Optuna)")
 
 custom_configs = {}
 if HPO_ENABLED:
     hpo = HyperparameterOptimizer(n_trials=HPO_N_TRIALS, cv_folds=HPO_CV_FOLDS)
     if "xgboost" in HPO_MODELS:
-        print("  Tuning XGBoost hyperparameters...")
+        logger.info("tuning_xgboost")
         xgb_params = hpo.tune_xgboost(X_train, y_train)
         custom_configs["xgboost"] = {"params": xgb_params}
     if "lightgbm" in HPO_MODELS:
-        print("  Tuning LightGBM hyperparameters...")
+        logger.info("tuning_lightgbm")
         lgb_params = hpo.tune_lightgbm(X_train, y_train)
         custom_configs["lightgbm"] = {"params": lgb_params}
 else:
-    print("  HPO disabled (set HPO_ENABLED=True to enable)")
+    logger.info("hpo_disabled")
 
 # STAGE 4: Train All Models (6 Supervised + 2 Unsupervised)
-print("\n" + "-" * 70)
-print("  [4/6] Training All Models")
-print("-" * 70)
+logger.info("[4/6] Training All Models")
 
 t_start = time.time()
 
@@ -164,22 +149,19 @@ trainer = FraudTrainer(custom_configs=custom_configs if custom_configs else None
 models = trainer.train_all(X_train, y_train)
 
 # 4b. Cross-validate supervised models
-print("\n  Running 5-fold CV on supervised models...")
+logger.info("running_5fold_cv")
 cv_results = trainer.cross_validate(X_train, y_train)
 for name, result in cv_results.items():
-    print(
-        f"    {name:<22}: PR-AUC = {result['mean_score']:.4f} ± {result['std_score']:.4f}"
-    )
+    logger.info("cv_result", model=name, pr_auc=round(result['mean_score'], 4), std=round(result['std_score'], 4))
 
 # 4c. Isolation Forest (unsupervised, trained on legit only)
 iso_detector = IsolationForestDetector(contamination=0.005, n_estimators=200)
 iso_detector.fit(X_train, y_train)
 iso_trained = iso_detector.model
-print(f"    Isolation Forest{'':<9}: trained on legitimate transactions only")
+logger.info("isolation_forest_trained")
 
 t_train = time.time() - t_start
-print(f"\n  Training completed in {t_train:.1f}s")
-print(f"  Models trained: {len(models) + 1}")
+logger.info("training_completed", elapsed_s=round(t_train, 1), models_trained=len(models) + 1)
 
 # Save all model artifacts
 trainer.save_all_models(str(MODELS_DIR))
@@ -187,9 +169,7 @@ joblib.dump(iso_trained, MODELS_DIR / "anomaly_detector.pkl")
 
 
 # STAGE 5: Evaluation & Comparison
-print("\n" + "-" * 70)
-print("  [5/6] Evaluation & Comparison")
-print("-" * 70)
+logger.info("[5/6] Evaluation & Comparison")
 
 evaluator = FraudEvaluator(avg_fraud_loss=AVG_FRAUD_LOSS, review_cost=REVIEW_COST)
 cost_calc = BusinessCostCalculator(
@@ -210,7 +190,7 @@ for name, model in models.items():
     result = evaluator.evaluate_model(
         y_test, y_proba, threshold=threshold, model_name=name, business_cost=biz_cost
     )
-    print(print_evaluation_summary(result))
+    logger.info("model_evaluated", model=name, summary=print_evaluation_summary(result))
 
 # Evaluate Isolation Forest
 iso_probas = iso_detector.predict_proba_as_fraud(X_test)
@@ -225,25 +205,20 @@ result_if = evaluator.evaluate_model(
     model_name="Isolation Forest",
     business_cost=biz_if,
 )
-print(print_evaluation_summary(result_if))
+logger.info("isolation_forest_evaluated", summary=print_evaluation_summary(result_if))
 
 # Build comparison table
 comparison = evaluator.compare_models(y_test, predictions, thresholds, business_costs)
 
-print("\n=== FINAL MODEL COMPARISON (sorted by PR-AUC) ===")
-print(comparison.to_string(index=False))
+logger.info("final_model_comparison", table=comparison.to_string(index=False))
 
 # Save comparison CSV to both locations
 comparison.to_csv(REPORTS_DIR / "model_comparison_fraud.csv", index=False)
 comparison.to_csv(PROCESSED_DATA_DIR / "model_comparison.csv", index=False)
-print("\n  Comparison saved to:")
-print("    reports/model_comparison_fraud.csv")
-print("    data/processed/model_comparison.csv")
+logger.info("comparison_saved", reports=str(REPORTS_DIR / "model_comparison_fraud.csv"), processed=str(PROCESSED_DATA_DIR / "model_comparison.csv"))
 
 # STAGE 6: Auto-Select Best Model
-print("\n" + "-" * 70)
-print("  [6/6] Auto-Select Best Model + Generate Charts")
-print("-" * 70)
+logger.info("[6/6] Auto-Select Best Model + Generate Charts")
 
 selector = ModelSelector(metric="PR-AUC")
 all_trained: dict[str, Any] = {**models, "Isolation Forest": iso_trained}
@@ -251,7 +226,7 @@ all_trained: dict[str, Any] = {**models, "Isolation Forest": iso_trained}
 selection = selector.select(comparison, all_trained)
 selector.save_best_model(str(MODELS_DIR / "best_fraud_model.pkl"))
 
-print(f"\n  {selector.get_selection_summary()}")
+logger.info("model_selection", summary=selector.get_selection_summary())
 
 # Save optimal threshold
 best_threshold = thresholds.get(selection["best_model_name"], 0.5)
@@ -259,7 +234,7 @@ with open(MODELS_DIR / "threshold.txt", "w") as f:
     f.write(str(best_threshold))
 
 # STAGE 7: Generate Comprehensive Charts
-print("\n  Generating comparison charts...")
+logger.info("generating_charts")
 
 from pipeline_charts import plot_comprehensive_comparison
 
@@ -271,36 +246,25 @@ cost_calc.plot_cost_vs_threshold(y_test, predictions[selection["best_model_name"
 evaluator.plot_confusion_matrices(y_test, predictions, top_n=3, save_path=str(charts_dir / "confusion_matrices.png"))
 
 # Multi-panel comparison chart
-print("    Comprehensive comparison chart...")
+logger.info("comprehensive_comparison_chart")
 plot_comprehensive_comparison(comparison, predictions, y_test, str(charts_dir))
 
 # FINAL SUMMARY
-print("\n" + "=" * 70)
-print("  PIPELINE COMPLETE — Summary")
-print("=" * 70)
-print(f"\n  Best Model:      {selection['best_model_name']}")
-print(f"  PR-AUC:          {selection['metric_value']:.4f}")
-print(f"  Threshold:       {best_threshold:.4f}")
-print(
-    f"  CV Score:        {cv_results.get(selection['best_model_name'], {}).get('mean_score', 'N/A')}"
-)
-print(f"  Selection:       {selection['reasoning']}")
+logger.info("=" * 70)
+logger.info("  PIPELINE COMPLETE — Summary")
+logger.info("=" * 70)
+logger.info("best_model", name=selection['best_model_name'], pr_auc=round(selection['metric_value'], 4), threshold=round(best_threshold, 4))
+cv_score = cv_results.get(selection['best_model_name'], {}).get('mean_score', 'N/A')
+cv_std = cv_results.get(selection['best_model_name'], {}).get('std_score', 'N/A')
+logger.info("cv_score", mean=cv_score, std=cv_std)
+logger.info("selection_reasoning", reasoning=selection['reasoning'])
 
 biz = business_costs.get(selection["best_model_name"], {})
 if biz:
-    print("\n  Business Impact (Best Model):")
-    print(f"    Fraud Caught:    ${biz.get('fraud_caught_usd', 0):,.2f}")
-    print(f"    Fraud Missed:    ${biz.get('fraud_missed_usd', 0):,.2f}")
-    print(f"    Review Costs:    ${biz.get('review_costs_usd', 0):,.2f}")
-    print(f"    Net Benefit:     ${biz.get('net_benefit_usd', 0):,.2f}")
+    logger.info("business_impact", fraud_caught_usd=biz.get('fraud_caught_usd', 0), fraud_missed_usd=biz.get('fraud_missed_usd', 0), review_costs_usd=biz.get('review_costs_usd', 0), net_benefit_usd=biz.get('net_benefit_usd', 0))
 
-print("\n  Saved Artifacts:")
-print("    Best model:       models/best_fraud_model.pkl")
-print("    Anomaly detector: models/anomaly_detector.pkl")
-print("    Threshold:        models/threshold.txt")
-print("    Comparison CSV:   reports/model_comparison_fraud.csv")
-print("    Charts:           data/processed/*.png")
-print("=" * 70)
+logger.info("saved_artifacts", best_model="models/best_fraud_model.pkl", anomaly_detector="models/anomaly_detector.pkl", threshold="models/threshold.txt", comparison_csv="reports/model_comparison_fraud.csv", charts="data/processed/*.png")
+logger.info("=" * 70)
 
 # Save summary JSON
 final_results = {
