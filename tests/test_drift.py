@@ -5,14 +5,12 @@ Verifies KS-test correctly flags a shifted distribution,
 correctly passes an unshifted one, and alert level thresholds behave.
 """
 
-import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.monitoring.drift import DriftDetector, simulate_drift
 

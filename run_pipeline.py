@@ -36,8 +36,6 @@ import seaborn as sns
 warnings.filterwarnings("ignore")
 matplotlib.use("Agg")
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 from src.fraudlens.config import (
     AVG_FRAUD_LOSS,
     HPO_CV_FOLDS,

@@ -5,7 +5,6 @@ Verifies index build/save/load round-trips correctly,
 retrieve top-k returns correct count and sane similarity ordering.
 """
 
-import sys
 import tempfile
 from pathlib import Path
 
@@ -13,7 +12,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.llm.rag_similar_cases import SimilarCaseRetriever, create_retriever
 

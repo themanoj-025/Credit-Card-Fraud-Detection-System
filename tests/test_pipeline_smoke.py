@@ -11,7 +11,6 @@ pipeline) does not crash. It does this by constructing a minimal set of
 pipeline outputs and running the code block that was broken.
 """
 
-import sys
 from pathlib import Path
 
 import numpy as np
@@ -21,7 +20,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 class TestPipelineSummarySmoke:

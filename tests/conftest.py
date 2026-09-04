@@ -5,7 +5,6 @@ Provides reusable fixtures for integration tests, API tests,
 and mock external services (Anthropic, etc.).
 """
 
-import sys
 from collections.abc import Generator
 from pathlib import Path
 
@@ -14,7 +13,6 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 @pytest.fixture(scope="session")

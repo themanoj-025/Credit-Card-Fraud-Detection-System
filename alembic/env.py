@@ -9,7 +9,6 @@ SQLAlchemy models to auto-detect schema changes.
 import asyncio
 import logging
 import os
-import sys
 from logging.config import fileConfig
 from pathlib import Path
 
@@ -17,9 +16,6 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-
-# Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.persistence.database import Base
 from src.fraudlens.persistence.models import (

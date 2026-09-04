@@ -11,13 +11,11 @@ narrator by default, no live LLM call required. A nightly job with a real
 LLM can use the same assertions with actual LLM-generated narratives.
 """
 
-import sys
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.llm.case_narrator import CaseNarrator
 

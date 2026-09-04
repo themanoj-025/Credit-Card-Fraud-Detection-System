@@ -5,7 +5,6 @@ Verifies the full training loop runs end-to-end on a small dataset,
 produces a non-empty comparison table, and saves model artifacts.
 """
 
-import sys
 import tempfile
 from pathlib import Path
 
@@ -15,7 +14,6 @@ import pytest
 
 pytestmark = pytest.mark.slow
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.models.train import FraudTrainer
 

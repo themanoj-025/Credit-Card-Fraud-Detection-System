@@ -15,7 +15,6 @@ Test scenarios:
 8. check_and_trigger() convenience function
 """
 
-import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
@@ -25,7 +24,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.retraining.retrain_trigger import (
     RetrainingTrigger,

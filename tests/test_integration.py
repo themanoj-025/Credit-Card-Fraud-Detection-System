@@ -15,14 +15,12 @@ These tests use a fixture that trains a small logistic regression model
 on synthetic data — no GPU, no disk artifacts required.
 """
 
-import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 pytestmark = pytest.mark.slow
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 # Integration: Training → Prediction → Evaluation

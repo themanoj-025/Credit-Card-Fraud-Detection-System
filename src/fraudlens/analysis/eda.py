@@ -18,11 +18,7 @@ Outputs:
 """
 
 import logging
-import sys
 from pathlib import Path
-
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
 import matplotlib
 import matplotlib.pyplot as plt
