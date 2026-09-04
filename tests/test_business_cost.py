@@ -5,13 +5,11 @@ Verifies cost computation, optimal threshold finding, and edge cases
 for the BusinessCostCalculator class.
 """
 
-import sys
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.fraudlens.evaluation.business_cost import BusinessCostCalculator
 

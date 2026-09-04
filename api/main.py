@@ -21,7 +21,6 @@ Observability:
 """
 
 import os
-import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -30,9 +29,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # Observability — initialize structlog before anything else
 from api.logging_config import get_logger, setup_structlog

@@ -1,3 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "credit-card-fraud-detection"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.ruff]
 line-length = 120
 
@@ -50,6 +62,7 @@ skip_empty = true
 
 [tool.pytest.ini_options]
 addopts = "-m 'not slow' --cov --cov-fail-under=50"
+pythonpath = [".", "src"]
 markers = [
     "unit: marks pure unit tests (deselect with '-m \"not unit\"')",
     "integration: marks tests requiring external services (deselect with '-m \"not integration\"')",

@@ -8,13 +8,9 @@ A production-grade fraud-ops monitoring tool with 4 pages:
 4. Analyst Copilot — AI-powered chat assistant
 """
 
-import sys
 from pathlib import Path
 
 import streamlit as st
-
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # Page config must be the first Streamlit command
 st.set_page_config(
