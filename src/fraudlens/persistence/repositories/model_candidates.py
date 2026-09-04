@@ -6,7 +6,7 @@ These are the "waiting for human review" entries created by
 the automated retraining trigger.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import func, select
@@ -84,7 +84,7 @@ class ModelCandidateRepository(BaseRepository[ModelCandidateModel]):
             return None  # Already promoted or rejected
 
         candidate.status = "promoted"
-        candidate.promoted_at = datetime.utcnow()
+        candidate.promoted_at = datetime.now(UTC)
         await self.session.commit()
         await self.session.refresh(candidate)
         return candidate

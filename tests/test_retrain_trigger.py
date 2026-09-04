@@ -15,7 +15,7 @@ Test scenarios:
 8. check_and_trigger() convenience function
 """
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -45,7 +45,7 @@ def trigger() -> RetrainingTrigger:
 @pytest.fixture
 def recent_critical_drift_events() -> list:
     """Simulated drift events: 3 CRITICAL, 1 WARNING, timestamps in window."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return [
         {
             "feature_name": "V14",
@@ -77,7 +77,7 @@ def recent_critical_drift_events() -> list:
 @pytest.fixture
 def few_critical_drift_events() -> list:
     """Only 1 CRITICAL event (below threshold of 2)."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return [
         {
             "feature_name": "V14",
@@ -97,7 +97,7 @@ def few_critical_drift_events() -> list:
 @pytest.fixture
 def old_drift_events() -> list:
     """CRITICAL events outside the 7-day window."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return [
         {
             "feature_name": "V14",
@@ -117,7 +117,7 @@ def old_drift_events() -> list:
 @pytest.fixture
 def drift_events_with_string_alerts() -> list:
     """Events using 'alert' key instead of 'alert_type' (backward compat)."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return [
         {
             "feature_name": "V14",
@@ -137,7 +137,7 @@ def drift_events_with_string_alerts() -> list:
 @pytest.fixture
 def drift_events_with_datetime_objects() -> list:
     """Events with datetime objects (not strings) for created_at."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return [
         {
             "feature_name": "V14",

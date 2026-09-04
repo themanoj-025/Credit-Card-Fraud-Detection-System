@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -97,7 +97,7 @@ class RetrainingTrigger:
         if recent_drift_events is None:
             return self._check_drift_from_report()
 
-        cutoff = datetime.utcnow() - timedelta(days=self.drift_window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=self.drift_window_days)
         critical_events = [
             e
             for e in recent_drift_events
@@ -358,7 +358,7 @@ class RetrainingTrigger:
         return None
 
     def generate_candidate_version(self) -> str:
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         return now.strftime("v%Y%m%d_%H%M%S")
 
     def trigger(
