@@ -115,7 +115,7 @@ async def predict_single(
     except (ValueError, TypeError, KeyError) as e:
         logger.error("Prediction failed: %s", e)
         raise HTTPException(
-            status_code=500, detail=f"Model prediction failed: {e!s}"
+            status_code=500, detail="Model prediction failed"
         )
 
 
@@ -175,4 +175,4 @@ async def predict_batch(
         return BatchResponse(predictions=predictions, summary=summary)
     except (ValueError, TypeError, KeyError) as e:
         logger.error("Batch prediction failed: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Batch prediction failed")

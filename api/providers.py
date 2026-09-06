@@ -361,4 +361,5 @@ def get_database_health(request: Request | None = None) -> dict:
             return {"status": "ok"}
         return {"status": "unknown"}
     except (OSError, SQLAlchemyError) as e:
-        return {"status": "error", "detail": str(e)}
+        logger.warning("Database health check failed: %s", e)
+        return {"status": "error", "detail": "Database health check failed"}
