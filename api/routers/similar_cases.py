@@ -96,4 +96,6 @@ async def get_similar_cases(
         )
     except (ValueError, TypeError, OSError) as e:
         logger.error("Similar cases retrieval failed: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500, detail="Similar cases retrieval failed"
+        )
