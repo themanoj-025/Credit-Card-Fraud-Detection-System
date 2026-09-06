@@ -113,4 +113,4 @@ async def explain_transaction(
         logger.error("Explanation failed: %s", e)
         if circuit_breaker is not None:
             circuit_breaker.record_failure()
-        raise PredictionError(detail=str(e), original=e)
+        raise PredictionError(detail="Explanation generation failed", original=e)

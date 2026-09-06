@@ -138,8 +138,11 @@ class FraudLensAPI:
                     continue
                 break
 
+        logger.error(
+            "%s failed after %d retries: %s", label, self.max_retries, last_error
+        )
         raise FraudLensAPIError(
-            f"{label} failed after {self.max_retries} retries: {last_error}"
+            f"{label} failed after {self.max_retries} retries"
         )
 
     def check_health(self) -> dict:
@@ -154,7 +157,8 @@ class FraudLensAPI:
                     return response.json()
                 except (requests.RequestException, ValueError):
                     pass
-            return {"status": "error", "detail": str(e)}
+            logger.error("Health check failed: %s", e)
+            return {"status": "error", "detail": "Health check failed"}
 
     def predict(self, transaction: dict, explain: bool = False) -> dict:
         """Predict fraud for a single transaction."""
@@ -307,8 +311,11 @@ class FraudLensAPI:
                         continue
                     break
 
+        logger.error(
+            "%s failed after %d retries: %s", label, self.max_retries, last_error
+        )
         raise FraudLensAPIError(
-            f"{label} failed after {self.max_retries} retries: {last_error}"
+            f"{label} failed after {self.max_retries} retries"
         )
 
     def close(self) -> None:
