@@ -31,7 +31,7 @@ plotly>=5.13.0,<6.0.0
 
 # ─── Dimensionality Reduction ──────────────────────────────────
 umap-learn>=0.5.3,<1.0.0
-scipy>=1.10.0,<2.0.0
+scipy>=1.15.3,<2.0.0
 
 # ─── API ───────────────────────────────────────────────────────
 fastapi>=0.116.0,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
