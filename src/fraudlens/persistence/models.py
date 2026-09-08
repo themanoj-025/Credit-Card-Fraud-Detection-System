@@ -17,7 +17,7 @@ Usage:
 """
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import (
@@ -35,6 +35,14 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 # Use appropriate types for SQLite vs PostgreSQL compatibility
+
+
+def _utcnow() -> datetime:
+    """Return the current UTC time as a timezone-aware datetime.
+
+    Column-default callable replacing the deprecated ``datetime.utcnow``.
+    """
+    return datetime.now(UTC)
 
 
 def _uuid_column() -> Any:
@@ -84,7 +92,7 @@ class PredictionModel(Base):
     features = _json_column()
     shap_values = _json_column()
     anomaly_score = Column(Float, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, nullable=False, default=_utcnow, index=True)
 
     # Relationships
     feedback = relationship("FeedbackModel", back_populates="prediction", uselist=False)
@@ -103,7 +111,7 @@ class ApiKeyModel(Base):
     role = Column(String(32), nullable=False, default="readonly")  # admin or readonly
     description = Column(String(255), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=_utcnow)
     last_used_at = Column(DateTime, nullable=True)
 
     def __repr__(self) -> str:
@@ -127,7 +135,7 @@ class FeedbackModel(Base):
     confirmed_fraud = Column(Boolean, nullable=False)  # True if analyst confirms fraud
     analyst_notes = Column(Text, nullable=True)
     reviewed_by = Column(String(128), nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=_utcnow)
 
     # Relationships
     prediction = relationship("PredictionModel", back_populates="feedback")
@@ -152,7 +160,7 @@ class LlmCallModel(Base):
     output_tokens = Column(Integer, nullable=False, default=0)
     cost_usd = Column(Float, nullable=False, default=0.0)
     status = Column(String(16), nullable=False, default="success")  # success, error
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, nullable=False, default=_utcnow, index=True)
 
     def __repr__(self) -> str:
         return (
@@ -185,7 +193,7 @@ class ModelCandidateModel(Base):
     status = Column(
         String(32), nullable=False, default="candidate"
     )  # candidate, promoted, rejected
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, nullable=False, default=_utcnow, index=True)
     evaluated_at = Column(DateTime, nullable=True)
     promoted_at = Column(DateTime, nullable=True)
 
@@ -210,7 +218,7 @@ class DriftEventModel(Base):
     )  # drift, warning, alert
     window_size = Column(Integer, nullable=True)
     details = _json_column()
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, nullable=False, default=_utcnow, index=True)
 
     def __repr__(self) -> str:
         return f"<DriftEvent {self.feature_name} score={self.drift_score:.4f}>"
