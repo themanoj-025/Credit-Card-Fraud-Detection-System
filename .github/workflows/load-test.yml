@@ -50,6 +50,9 @@ jobs:
           joblib.dump(pipe, "models/best_fraud_model.pkl")
           joblib.dump(pipe.named_steps["scaler"], "models/scaler.pkl")
           Path("models/threshold.txt").write_text("0.5")
+          import hashlib
+          p = Path("models/best_fraud_model.pkl")
+          p.with_suffix(".pkl.sha256").write_text(hashlib.sha256(p.read_bytes()).hexdigest())
           print("stub model trained")
           PYEOF
 
