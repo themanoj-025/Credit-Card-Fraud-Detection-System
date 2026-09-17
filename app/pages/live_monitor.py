@@ -7,6 +7,7 @@ drift detection alerts, and a rolling count of flags over the last N transaction
 
 import random
 import time
+from typing import Any
 
 import numpy as np
 import pandas as pd

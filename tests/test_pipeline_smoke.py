@@ -11,6 +11,7 @@ pipeline) does not crash. It does this by constructing a minimal set of
 pipeline outputs and running the code block that was broken.
 """
 
+import sys
 from pathlib import Path
 
 import numpy as np

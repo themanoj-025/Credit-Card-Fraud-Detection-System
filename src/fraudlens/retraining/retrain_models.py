@@ -41,13 +41,20 @@ class TriggerResult:
 
 @dataclass
 class CandidateInfo:
-    """Information about a candidate model."""
+    """Information about a model candidate registered for review."""
 
     version: str
     trigger: str
     trigger_detail: str
-    metrics: dict[str, float]
-    mlflow_run_id: str | None = None
+    pr_auc: float
+    f1_score: float
+    precision: float
+    recall: float
+    threshold: float
+    mlflow_run_id: str | None
+    model_path: str
+    status: str = "candidate"
+    created_at: str = ""
 
 
 class RetrainingTrigger:
