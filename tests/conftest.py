@@ -6,13 +6,12 @@ and mock external services (Anthropic, etc.).
 """
 
 from collections.abc import Generator
-from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
-
 
 
 @pytest.fixture(scope="session")
@@ -133,3 +132,61 @@ def trained_engineer(small_training_data) -> Any:
     engineer = FeatureEngineer(create_interactions=True, create_bins=True)
     X_eng = engineer.transform(X)
     return engineer, X_eng.shape[1]
+
+
+@pytest.fixture
+def recent_critical_drift_events() -> list:
+    """Simulated drift events: 3 CRITICAL, 1 WARNING, timestamps in window."""
+    from datetime import UTC, datetime, timedelta
+
+    now = datetime.now(UTC)
+    return [
+        {
+            "feature_name": "V14",
+            "drift_score": 0.89,
+            "alert_type": "CRITICAL",
+            "created_at": (now - timedelta(hours=1)).isoformat(),
+        },
+        {
+            "feature_name": "V4",
+            "drift_score": 0.76,
+            "alert_type": "CRITICAL",
+            "created_at": (now - timedelta(hours=2)).isoformat(),
+        },
+        {
+            "feature_name": "V12",
+            "drift_score": 0.92,
+            "alert_type": "CRITICAL",
+            "created_at": (now - timedelta(hours=3)).isoformat(),
+        },
+        {
+            "feature_name": "Amount",
+            "drift_score": 0.45,
+            "alert_type": "WARNING",
+            "created_at": (now - timedelta(hours=4)).isoformat(),
+        },
+    ]
+
+
+@pytest.fixture
+def trigger():
+    """A RetrainingTrigger with low thresholds for easy testing."""
+    from src.fraudlens.retraining.retrain_models import RetrainingTrigger
+
+    return RetrainingTrigger(
+        feedback_threshold=5,
+        drift_critical_threshold=2,
+        drift_window_days=7,
+    )
+
+
+@pytest.fixture
+def sample_shap_explanation() -> list:
+    """A list of SHAP feature contributions."""
+    return [
+        {"feature": "V14", "value": -5.23, "shap_value": 0.34, "impact": "increases"},
+        {"feature": "V4", "value": 4.12, "shap_value": 0.22, "impact": "increases"},
+        {"feature": "V12", "value": -3.89, "shap_value": 0.18, "impact": "increases"},
+        {"feature": "V10", "value": 0.09, "shap_value": 0.11, "impact": "increases"},
+        {"feature": "V17", "value": 0.21, "shap_value": -0.03, "impact": "decreases"},
+    ]
