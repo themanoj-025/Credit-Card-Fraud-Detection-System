@@ -23,7 +23,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          grep -vE '^(locust|pytest)' requirements.txt > /tmp/reqs.txt
+          pip install -r /tmp/reqs.txt uvicorn
 
       - name: Start API
         run: |
