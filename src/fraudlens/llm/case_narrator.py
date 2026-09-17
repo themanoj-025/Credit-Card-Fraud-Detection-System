@@ -146,7 +146,7 @@ class CaseNarrator:
             narrative = response.content[0].text.strip()
             logger.info("LLM narrative generated (%d chars)", len(narrative))
             return narrative
-        except (RuntimeError, ValueError, OSError) as e:
+        except Exception as e:  # any failure (timeout, malformed/empty response, SDK error) must fall back, never crash
             logger.warning("LLM call failed after retries: %s", e)
             if self._circuit_breaker is not None:
                 self._circuit_breaker.record_failure()

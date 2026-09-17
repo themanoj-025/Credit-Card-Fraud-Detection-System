@@ -240,12 +240,12 @@ class FraudTrainer:
                 # Log training metadata
                 mlflow.log_param("model_name", name)
                 n_samples = (
-                    len(self.training_results.get(name, {}).get("n_samples", 0))
+                    self.training_results.get(name, {}).get("n_samples", 0)
                     if name in self.training_results
                     else 0
                 )
                 n_features = (
-                    len(self.training_results.get(name, {}).get("n_features", 0))
+                    self.training_results.get(name, {}).get("n_features", 0)
                     if name in self.training_results
                     else 0
                 )
