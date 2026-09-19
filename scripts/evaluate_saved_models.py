@@ -1,4 +1,5 @@
 """Honest evaluation of FraudLens saved models on a held-out split of the real Kaggle dataset."""
+
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -23,7 +24,9 @@ TEST_SIZE = 0.2
 FEATURES = [f"V{i}" for i in range(1, 29)] + ["Time", "Amount"]
 
 df = pd.read_csv("data/raw/creditcard.csv")
-logger.info("dataset_loaded", rows=len(df), fraud_rate=f"{100 * df['Class'].mean():.4f}%")
+logger.info(
+    "dataset_loaded", rows=len(df), fraud_rate=f"{100 * df['Class'].mean():.4f}%"
+)
 
 X = df[FEATURES].copy()
 y = df["Class"].copy()
@@ -52,18 +55,24 @@ for name, path in models.items():
     try:
         model = joblib.load(path)
         proba = model.predict_proba(X_test)[:, 1]
-    except (FileNotFoundError, ValueError, OSError) as exc:  # missing dependency or artifact
+    except (
+        FileNotFoundError,
+        ValueError,
+        OSError,
+    ) as exc:  # missing dependency or artifact
         logger.warning("model_skipped", model=name, error=str(exc))
         continue
     pred = (proba >= 0.5).astype(int)
-    rows.append({
-        "Model": name,
-        "Precision@0.5": round(precision_score(y_test, pred), 4),
-        "Recall@0.5": round(recall_score(y_test, pred), 4),
-        "F1@0.5": round(f1_score(y_test, pred), 4),
-        "PR-AUC": round(average_precision_score(y_test, proba), 4),
-        "ROC-AUC": round(roc_auc_score(y_test, proba), 4),
-    })
+    rows.append(
+        {
+            "Model": name,
+            "Precision@0.5": round(precision_score(y_test, pred), 4),
+            "Recall@0.5": round(recall_score(y_test, pred), 4),
+            "F1@0.5": round(f1_score(y_test, pred), 4),
+            "PR-AUC": round(average_precision_score(y_test, proba), 4),
+            "ROC-AUC": round(roc_auc_score(y_test, proba), 4),
+        }
+    )
 
 res = pd.DataFrame(rows).sort_values("PR-AUC", ascending=False)
 pd.set_option("display.width", 200)

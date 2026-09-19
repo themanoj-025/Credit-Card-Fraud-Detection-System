@@ -13,19 +13,10 @@ Resilience:
 import logging
 
 from fastapi import APIRouter, Depends, Request
-from tenacity import (
-    before_sleep_log,
-    retry,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
 from api.auth import require_api_key
-from api.exceptions import (
-    LLMServiceUnavailable,
-    ModelNotLoadedError,
-    PredictionError,
-)
+from api.exceptions import LLMServiceUnavailable, ModelNotLoadedError, PredictionError
 from api.providers import get_case_narrator, get_predictor
 from api.rate_limit import limiter
 from api.schemas import ExplanationResponse, TransactionInput

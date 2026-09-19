@@ -5,8 +5,6 @@ Covers health check, prediction, batch prediction, and error handling.
 Uses FastAPI's TestClient for fast, dependency-free testing.
 """
 
-from pathlib import Path
-
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
@@ -70,7 +68,9 @@ class TestHealth:
 class TestPrediction:
     """Tests for the /v1/predict endpoint."""
 
-    def test_predict_endpoint_accepts_valid_data(self, sample_transaction: dict) -> None:
+    def test_predict_endpoint_accepts_valid_data(
+        self, sample_transaction: dict
+    ) -> None:
         """Test that /v1/predict returns 200 for valid input."""
         response = client.post("/v1/predict", json=sample_transaction)
         # Note: May return 503 if model isn't loaded in test env
@@ -167,7 +167,9 @@ class TestModelInfo:
 class TestExplainEndpoint:
     """Tests for the /v1/explain endpoint."""
 
-    def test_explain_endpoint_accepts_valid_data(self, sample_transaction: dict) -> None:
+    def test_explain_endpoint_accepts_valid_data(
+        self, sample_transaction: dict
+    ) -> None:
         """Test that /v1/explain returns 200 or 503 for valid input."""
         response = client.post("/v1/explain", json=sample_transaction)
         assert response.status_code in (200, 503)

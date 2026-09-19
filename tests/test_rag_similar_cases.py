@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-
 from src.fraudlens.llm.rag_similar_cases import SimilarCaseRetriever, create_retriever
 
 # Fixtures
@@ -111,7 +110,9 @@ class TestRetrieve:
         results = retriever.retrieve(query_transaction, top_k=3)
         assert len(results) == 3
 
-    def test_retrieve_less_than_total(self, sample_historical_data, query_transaction) -> None:
+    def test_retrieve_less_than_total(
+        self, sample_historical_data, query_transaction
+    ) -> None:
         """Test retrieving fewer results than total cases."""
         retriever = SimilarCaseRetriever()
         retriever.build_index(sample_historical_data)
@@ -154,7 +155,9 @@ class TestRetrieve:
 class TestSaveLoad:
     """Tests for saving and loading the FAISS index."""
 
-    def test_save_load_round_trip(self, sample_historical_data, query_transaction) -> None:
+    def test_save_load_round_trip(
+        self, sample_historical_data, query_transaction
+    ) -> None:
         """Test that save/load round-trip preserves retrieval behavior."""
         # Build and save
         retriever1 = SimilarCaseRetriever(top_k=3)

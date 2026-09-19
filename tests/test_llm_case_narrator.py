@@ -6,8 +6,6 @@ and the create_case_narrator factory function.
 Does NOT require an Anthropic API key — tests the fallback path.
 """
 
-from pathlib import Path
-
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -107,7 +105,9 @@ class TestCaseNarratorInit:
 class TestFallbackNarrative:
     """Tests for fallback (template-based) narrative generation."""
 
-    def test_fraud_fallback_narrative(self, narrator_no_key, sample_shap_explanation) -> None:
+    def test_fraud_fallback_narrative(
+        self, narrator_no_key, sample_shap_explanation
+    ) -> None:
         """Test fallback narrative for flagged fraud transaction."""
         narrative = narrator_no_key._fallback_narrative(
             sample_shap_explanation, 0.94, True
@@ -170,7 +170,9 @@ class TestPromptBuilding:
         assert "V14" in prompt
         assert "V4" in prompt
 
-    def test_prompt_limits_to_five_features(self, narrator_no_key, sample_transaction) -> None:
+    def test_prompt_limits_to_five_features(
+        self, narrator_no_key, sample_transaction
+    ) -> None:
         """Test that prompt only includes top 5 SHAP features."""
         long_shap = [
             {"feature": f"V{i}", "shap_value": 0.1, "impact": "increases"}
@@ -183,7 +185,9 @@ class TestPromptBuilding:
         assert "V14" not in prompt
         assert "V1" in prompt  # First feature should be there
 
-    def test_prompt_time_conversion(self, narrator_no_key, sample_shap_explanation) -> None:
+    def test_prompt_time_conversion(
+        self, narrator_no_key, sample_shap_explanation
+    ) -> None:
         """Test that raw Time is converted to hours in the prompt."""
         tx = {"Time": 100000.0, "Amount": 100.0}
         prompt = narrator_no_key._build_prompt(tx, 0.5, sample_shap_explanation, False)
@@ -281,7 +285,9 @@ class TestEdgeCases:
         )
         assert isinstance(result, str)
 
-    def test_missing_transaction_fields(self, narrator_no_key, sample_shap_explanation) -> None:
+    def test_missing_transaction_fields(
+        self, narrator_no_key, sample_shap_explanation
+    ) -> None:
         """Test handling of transaction with missing fields."""
         result = narrator_no_key.narrate({}, 0.60, sample_shap_explanation, False)
         assert isinstance(result, str)
@@ -339,4 +345,3 @@ class TestMockedAnthropicPath:
         )
         assert isinstance(result, str)
         assert len(result) > 0
-

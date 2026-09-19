@@ -314,9 +314,8 @@ class SimilarCaseRetriever:
                         "confirmed_fraud" if case["is_fraud"] else "false_positive"
                     ),
                     "features": {
-                        col: round(float(case[col]), 4)
-                        for col in features[:5]  # Top 5 features for display
-                    },
+                        col: round(float(case[col]), 4) for col in features[:5]
+                    },  # Top 5 features for display
                 }
             )
 

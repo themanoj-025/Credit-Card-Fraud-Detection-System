@@ -16,12 +16,7 @@ import logging
 import os
 from typing import Any
 
-from tenacity import (
-    before_sleep_log,
-    retry,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
 from src.fraudlens.config import LLM_MAX_TOKENS, LLM_MODEL, LLM_TEMPERATURE
 from src.fraudlens.llm.cost_tracker import cost_tracker
@@ -146,7 +141,7 @@ class CaseNarrator:
             narrative = response.content[0].text.strip()
             logger.info("LLM narrative generated (%d chars)", len(narrative))
             return narrative
-        except Exception as e:  # any failure (timeout, malformed/empty response, SDK error) must fall back, never crash
+        except Exception as e:  # any failure must fall back, never crash
             logger.warning("LLM call failed after retries: %s", e)
             if self._circuit_breaker is not None:
                 self._circuit_breaker.record_failure()

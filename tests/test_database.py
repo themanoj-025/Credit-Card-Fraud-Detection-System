@@ -13,6 +13,8 @@ pytestmark = pytest.mark.integration
 
 
 pytestmark = pytest.mark.slow
+
+
 class TestDatabaseEngine:
     """Test database engine configuration."""
 
@@ -104,7 +106,6 @@ class TestInitDb:
         import importlib
 
         from src.fraudlens.persistence import database as db
-
 
         # Override DB URL to use temp file
         db_path = tmp_path / "test_fraudlens.db"

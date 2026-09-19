@@ -31,10 +31,7 @@ import logging
 import os
 import sys
 
-from src.fraudlens.retraining.retrain_models import (
-    RetrainingTrigger,
-    TriggerResult,
-)
+from src.fraudlens.retraining.retrain_models import RetrainingTrigger, TriggerResult
 
 logger = logging.getLogger(__name__)
 

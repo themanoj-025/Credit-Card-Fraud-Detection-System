@@ -9,12 +9,9 @@ Critical test cases:
 - Edge cases: no fraud in sample, empty data
 """
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
-
 
 from src.fraudlens.config import ALL_FEATURES
 from src.fraudlens.data.preprocessing import FraudPreprocessor, Resampler
@@ -103,7 +100,9 @@ class TestFraudPreprocessor:
         assert hasattr(preprocessor.scaler, "mean_")
         assert len(preprocessor.scaler.mean_)
 
-    def test_full_preprocess_returns_correct_shape(self, sample_data: pd.DataFrame) -> None:
+    def test_full_preprocess_returns_correct_shape(
+        self, sample_data: pd.DataFrame
+    ) -> None:
         """Test that full_preprocess returns correctly shaped splits."""
         preprocessor = FraudPreprocessor(test_size=0.2, random_state=42)
         data = preprocessor.full_preprocess(sample_data)
@@ -209,7 +208,9 @@ class TestResampler:
         with pytest.raises(ValueError):
             resampler.resample(data["X_train"], data["y_train"], "invalid_strategy")
 
-    def test_class_weight_strategy_does_not_resample(self, sample_data: pd.DataFrame) -> None:
+    def test_class_weight_strategy_does_not_resample(
+        self, sample_data: pd.DataFrame
+    ) -> None:
         """Test that 'class_weight' returns data unchanged."""
         preprocessor = FraudPreprocessor(test_size=0.2, random_state=42)
         data = preprocessor.full_preprocess(sample_data)

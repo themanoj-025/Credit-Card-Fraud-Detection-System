@@ -17,6 +17,8 @@ pytestmark = pytest.mark.integration
 
 
 pytestmark = pytest.mark.slow
+
+
 @pytest.fixture
 def mock_session() -> None:
     """Create a mocked async session."""

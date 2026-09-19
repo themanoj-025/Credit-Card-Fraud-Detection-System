@@ -21,8 +21,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
-
 class TestPipelineSummarySmoke:
     """Smoke tests for the run_pipeline.py summary section."""
 

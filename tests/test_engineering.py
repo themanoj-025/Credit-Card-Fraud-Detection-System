@@ -5,12 +5,9 @@ Verifies engineered features produce expected columns/dtypes
 and handle edge cases without raising.
 """
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
-
 
 from src.fraudlens.features.engineering import FeatureEngineer
 

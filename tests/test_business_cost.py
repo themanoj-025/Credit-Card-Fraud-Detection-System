@@ -5,11 +5,8 @@ Verifies cost computation, optimal threshold finding, and edge cases
 for the BusinessCostCalculator class.
 """
 
-from pathlib import Path
-
 import numpy as np
 import pytest
-
 
 from src.fraudlens.evaluation.business_cost import BusinessCostCalculator
 
@@ -226,7 +223,9 @@ class TestFindOptimalThreshold:
 
         assert 0.0 <= threshold <= 1.0
 
-    def test_optimal_threshold_is_not_default(self, calculator, sample_probabilities) -> None:
+    def test_optimal_threshold_is_not_default(
+        self, calculator, sample_probabilities
+    ) -> None:
         """Test that optimal threshold differs from default 0.5 for imbalanced data."""
         y_true, y_proba = sample_probabilities
         threshold, _cost = calculator.find_optimal_threshold(y_true, y_proba)
@@ -249,7 +248,9 @@ class TestFindOptimalThreshold:
             # (Note: not strictly true due to discrete thresholds, but close)
             assert best_cost["total_cost_usd"] <= cost["total_cost_usd"] + 1.0
 
-    def test_threshold_returns_cost_dict(self, calculator, sample_probabilities) -> None:
+    def test_threshold_returns_cost_dict(
+        self, calculator, sample_probabilities
+    ) -> None:
         """Test that find_optimal_threshold returns valid cost dict."""
         y_true, y_proba = sample_probabilities
         _threshold, cost = calculator.find_optimal_threshold(y_true, y_proba)
