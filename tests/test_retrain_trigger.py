@@ -16,7 +16,6 @@ Test scenarios:
 """
 
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -24,10 +23,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
-from src.fraudlens.retraining.retrain_trigger import (
-    RetrainingTrigger,
-)
+from src.fraudlens.retraining.retrain_trigger import RetrainingTrigger
 
 # Fixtures
 
@@ -273,7 +269,9 @@ class TestCheckDriftCondition:
         assert result["met"] is True
         assert result["count"] == 2
 
-    def test_datetime_objects(self, trigger, drift_events_with_datetime_objects) -> None:
+    def test_datetime_objects(
+        self, trigger, drift_events_with_datetime_objects
+    ) -> None:
         """Events with datetime objects (not strings) should work."""
         result = trigger.check_drift_condition(drift_events_with_datetime_objects)
         assert result["met"] is True
@@ -377,4 +375,3 @@ class TestCheckConditions:
 
 
 # Tests: trigger (dry-run mode)
-

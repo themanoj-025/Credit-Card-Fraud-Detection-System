@@ -17,7 +17,6 @@ from src.fraudlens.models.hpo import HyperparameterOptimizer
 pytestmark = pytest.mark.unit
 
 
-
 @pytest.fixture
 def sample_data() -> tuple[object, ...]:
     """Create a small labeled dataset for HPO tests."""
@@ -131,7 +130,9 @@ class TestHyperparameterOptimizer:
         optimizer = HyperparameterOptimizer()
         assert optimizer.get_trials_dataframe() is None
 
-    def test_tune_xgboost_with_mocked_optuna(self, sample_data, mock_optuna_module) -> None:
+    def test_tune_xgboost_with_mocked_optuna(
+        self, sample_data, mock_optuna_module
+    ) -> None:
         """
         Test tune_xgboost with mock optuna to verify param assembly.
 
@@ -166,7 +167,9 @@ class TestHyperparameterOptimizer:
         assert params["random_state"] == 42
         assert optimizer.best_score == 0.85
 
-    def test_tune_lightgbm_with_mocked_optuna(self, sample_data, mock_optuna_module) -> None:
+    def test_tune_lightgbm_with_mocked_optuna(
+        self, sample_data, mock_optuna_module
+    ) -> None:
         """Test tune_lightgbm with mock optuna to verify param assembly."""
         X, y = sample_data
         mock_optuna_module.create_study.return_value.best_params = {
@@ -196,7 +199,9 @@ class TestHyperparameterOptimizer:
         assert params["random_state"] == 42
         assert optimizer.best_score == 0.82
 
-    def test_get_trials_dataframe_with_study(self, sample_data, mock_optuna_module) -> None:
+    def test_get_trials_dataframe_with_study(
+        self, sample_data, mock_optuna_module
+    ) -> None:
         """Test get_trials_dataframe returns DataFrame after tuning."""
         X, y = sample_data
 

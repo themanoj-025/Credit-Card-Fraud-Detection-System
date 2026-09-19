@@ -5,13 +5,10 @@ Verifies FraudPredictor produces SHAP values of expected shape,
 explanations include expected top features, and edge cases.
 """
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
-
 
 from src.fraudlens.explainability.shap_utils import FraudPredictor
 
@@ -83,7 +80,9 @@ class TestFraudPredictorInit:
 class TestPrediction:
     """Tests for predict_single and predict_batch."""
 
-    def test_predict_single_returns_expected_keys(self, predictor, sample_transaction) -> None:
+    def test_predict_single_returns_expected_keys(
+        self, predictor, sample_transaction
+    ) -> None:
         """Test that predict_single returns all expected keys."""
         result = predictor.predict_single(sample_transaction, return_shap=False)
         assert "fraud_probability" in result
@@ -101,7 +100,9 @@ class TestPrediction:
         assert "top_features" in result["explanation"]
         assert len(result["explanation"]["top_features"]) <= predictor.max_shap_features
 
-    def test_explanation_contains_feature_details(self, predictor, sample_transaction) -> None:
+    def test_explanation_contains_feature_details(
+        self, predictor, sample_transaction
+    ) -> None:
         """Test that each feature explanation has required fields."""
         result = predictor.predict_single(sample_transaction, return_shap=True)
         for feat in result["explanation"]["top_features"]:

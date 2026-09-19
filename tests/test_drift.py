@@ -5,12 +5,9 @@ Verifies KS-test correctly flags a shifted distribution,
 correctly passes an unshifted one, and alert level thresholds behave.
 """
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
-
 
 from src.fraudlens.monitoring.drift import DriftDetector, simulate_drift
 
@@ -174,7 +171,9 @@ class TestReport:
 class TestDriftHistory:
     """Tests for drift history tracking."""
 
-    def test_history_records_detection(self, detector, reference_data, drifted_data) -> None:
+    def test_history_records_detection(
+        self, detector, reference_data, drifted_data
+    ) -> None:
         """Test that drift history records each detection call."""
         detector.detect_drift(reference_data)
         detector.detect_drift(drifted_data)

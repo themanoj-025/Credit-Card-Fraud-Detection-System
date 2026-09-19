@@ -67,7 +67,13 @@ def plot_comprehensive_comparison(
     ax.set_xlabel("PR-AUC")
     ax.set_title("PR-AUC (higher is better)", fontsize=13, fontweight="bold")
     for bar, val in zip(bars, pr_aucs):
-        ax.text(val + 0.005, bar.get_y() + bar.get_height() / 2, f"{val:.4f}", va="center", fontsize=9)
+        ax.text(
+            val + 0.005,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.4f}",
+            va="center",
+            fontsize=9,
+        )
     ax.set_xlim(0, max(pr_aucs) * 1.15)
 
     # Panel 4: Business Impact
@@ -79,13 +85,33 @@ def plot_comprehensive_comparison(
     ax.set_xlabel("Net Benefit ($)")
     ax.set_title("Business Impact", fontsize=13, fontweight="bold")
     for bar, val in zip(bars, net_benefits):
-        ax.text(val + 100, bar.get_y() + bar.get_height() / 2, f"${val:,.0f}", va="center", fontsize=9)
+        ax.text(
+            val + 100,
+            bar.get_y() + bar.get_height() / 2,
+            f"${val:,.0f}",
+            va="center",
+            fontsize=9,
+        )
 
     # Panel 5: Precision vs Recall Scatter
     ax = axes[1, 1]
-    scatter = ax.scatter(recalls, precisions, s=200, c=pr_aucs, cmap="RdYlGn", edgecolors="black", zorder=5)
+    scatter = ax.scatter(
+        recalls,
+        precisions,
+        s=200,
+        c=pr_aucs,
+        cmap="RdYlGn",
+        edgecolors="black",
+        zorder=5,
+    )
     for i, name in enumerate(models_list):
-        ax.annotate(name, (recalls[i], precisions[i]), textcoords="offset points", xytext=(5, 5), fontsize=8)
+        ax.annotate(
+            name,
+            (recalls[i], precisions[i]),
+            textcoords="offset points",
+            xytext=(5, 5),
+            fontsize=8,
+        )
     ax.set_xlabel("Recall")
     ax.set_ylabel("Precision")
     ax.set_title("Precision vs Recall", fontsize=13, fontweight="bold")
@@ -101,9 +127,22 @@ def plot_comprehensive_comparison(
     ax.set_ylabel("F1 Score")
     ax.set_title("F1 Score", fontsize=13, fontweight="bold")
     for bar, val in zip(bars, f1_scores):
-        ax.text(bar.get_x() + bar.get_width() / 2, val + 0.01, f"{val:.4f}", ha="center", fontsize=9)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            val + 0.01,
+            f"{val:.4f}",
+            ha="center",
+            fontsize=9,
+        )
 
-    plt.suptitle("FraudLens — Comprehensive Model Comparison", fontsize=16, fontweight="bold", y=1.02)
+    plt.suptitle(
+        "FraudLens — Comprehensive Model Comparison",
+        fontsize=16,
+        fontweight="bold",
+        y=1.02,
+    )
     plt.tight_layout()
-    plt.savefig(f"{charts_dir}/comprehensive_comparison.png", dpi=150, bbox_inches="tight")
+    plt.savefig(
+        f"{charts_dir}/comprehensive_comparison.png", dpi=150, bbox_inches="tight"
+    )
     plt.close()

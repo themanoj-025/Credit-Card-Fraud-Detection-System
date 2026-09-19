@@ -269,7 +269,9 @@ class TestIntegrationScenarios:
         assert result.triggered is False
         assert result.candidate_version is None
 
-    def test_scenario_drift_detected(self, trigger, recent_critical_drift_events) -> None:
+    def test_scenario_drift_detected(
+        self, trigger, recent_critical_drift_events
+    ) -> None:
         """
         Scenario: 3 CRITICAL drift events detected (threshold=2).
         Expected: Retraining triggered by drift, candidate version generated.
@@ -299,7 +301,9 @@ class TestIntegrationScenarios:
         assert "Feedback volume" in result.reason
         assert result.candidate_version is not None
 
-    def test_scenario_both_conditions(self, trigger, recent_critical_drift_events) -> None:
+    def test_scenario_both_conditions(
+        self, trigger, recent_critical_drift_events
+    ) -> None:
         """
         Scenario: Both drift (3 CRITICAL) AND feedback (50 labels) present.
         Expected: Retraining triggered with combined reason.

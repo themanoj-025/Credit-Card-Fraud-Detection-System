@@ -129,9 +129,7 @@ async def list_candidates(
     """
     try:
         from src.fraudlens.persistence import get_session
-        from src.fraudlens.persistence.repositories import (
-            ModelCandidateRepository,
-        )
+        from src.fraudlens.persistence.repositories import ModelCandidateRepository
 
         async for session in get_session():
             repo = ModelCandidateRepository(session)
@@ -174,9 +172,7 @@ async def get_candidate(
     """
     try:
         from src.fraudlens.persistence import get_session
-        from src.fraudlens.persistence.repositories import (
-            ModelCandidateRepository,
-        )
+        from src.fraudlens.persistence.repositories import ModelCandidateRepository
 
         candidate = None
         async for session in get_session():
@@ -224,9 +220,7 @@ async def promote_candidate(
     try:
         from src.fraudlens.config import MODELS_DIR
         from src.fraudlens.persistence import get_session
-        from src.fraudlens.persistence.repositories import (
-            ModelCandidateRepository,
-        )
+        from src.fraudlens.persistence.repositories import ModelCandidateRepository
 
         promoted = None
         candidate = None
@@ -311,9 +305,7 @@ async def reject_candidate(
     """
     try:
         from src.fraudlens.persistence import get_session
-        from src.fraudlens.persistence.repositories import (
-            ModelCandidateRepository,
-        )
+        from src.fraudlens.persistence.repositories import ModelCandidateRepository
 
         async for session in get_session():
             repo = ModelCandidateRepository(session)
@@ -371,9 +363,7 @@ async def compare_candidate(
     """
     try:
         from src.fraudlens.persistence import get_session
-        from src.fraudlens.persistence.repositories import (
-            ModelCandidateRepository,
-        )
+        from src.fraudlens.persistence.repositories import ModelCandidateRepository
 
         candidate = None
         production = None

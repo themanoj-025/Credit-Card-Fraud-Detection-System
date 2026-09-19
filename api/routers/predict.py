@@ -114,9 +114,7 @@ async def predict_single(
         )
     except (ValueError, TypeError, KeyError) as e:
         logger.error("Prediction failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail="Model prediction failed"
-        )
+        raise HTTPException(status_code=500, detail="Model prediction failed")
 
 
 @router.post("/predict/batch", response_model=BatchResponse)

@@ -155,7 +155,6 @@ def show() -> None:
 # Tab: Pending Candidates
 
 
-
 from app.pages.governance_tabs import (
     _show_about_tab,
     _show_demo_content,

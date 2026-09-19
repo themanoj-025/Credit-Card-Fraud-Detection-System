@@ -87,7 +87,9 @@ class InvalidInputError(HTTPException):
     Automatically produces HTTP 422.
     """
 
-    def __init__(self, detail: str = "Invalid input", errors: list | None = None) -> Any:
+    def __init__(
+        self, detail: str = "Invalid input", errors: list | None = None
+    ) -> Any:
         self.errors = errors or []
         super().__init__(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail

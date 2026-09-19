@@ -240,7 +240,9 @@ class TestFraudEvaluator:
 
         assert fig is not None
 
-    def test_plot_precision_recall_curve_saves(self, multiple_models_data, tmp_path) -> None:
+    def test_plot_precision_recall_curve_saves(
+        self, multiple_models_data, tmp_path
+    ) -> None:
         """Test plot_precision_recall_curve saves to file."""
         y_true, predictions, _, _ = multiple_models_data
         evaluator = FraudEvaluator()

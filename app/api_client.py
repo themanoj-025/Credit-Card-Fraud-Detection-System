@@ -141,9 +141,7 @@ class FraudLensAPI:
         logger.error(
             "%s failed after %d retries: %s", label, self.max_retries, last_error
         )
-        raise FraudLensAPIError(
-            f"{label} failed after {self.max_retries} retries"
-        )
+        raise FraudLensAPIError(f"{label} failed after {self.max_retries} retries")
 
     def check_health(self) -> dict:
         """Check API health with per-dependency status."""
@@ -314,9 +312,7 @@ class FraudLensAPI:
         logger.error(
             "%s failed after %d retries: %s", label, self.max_retries, last_error
         )
-        raise FraudLensAPIError(
-            f"{label} failed after {self.max_retries} retries"
-        )
+        raise FraudLensAPIError(f"{label} failed after {self.max_retries} retries")
 
     def close(self) -> None:
         """Close the underlying HTTP client."""

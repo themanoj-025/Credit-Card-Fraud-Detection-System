@@ -38,19 +38,9 @@ logger = get_logger(__name__)
 
 from api.auth import is_auth_enabled
 from api.metrics import setup_metrics
-from api.providers import (
-    FraudPredictor,
-    get_predictor,
-)
+from api.providers import FraudPredictor, get_predictor
 from api.rate_limit import limiter
-from api.routers import (
-    admin,
-    chat,
-    explain,
-    models_admin,
-    predict,
-    similar_cases,
-)
+from api.routers import admin, chat, explain, models_admin, predict, similar_cases
 from src.fraudlens.config import AVG_FRAUD_LOSS, MODELS_DIR, REVIEW_COST
 from src.fraudlens.explainability.shap_explainer import ShapExplainer
 from src.fraudlens.llm.case_narrator import CaseNarrator
@@ -230,9 +220,11 @@ app = FastAPI(
 # --- OpenTelemetry distributed tracing (OTEL_ENABLED=true) ---
 try:
     from fraudlens.tracing import setup_tracing
+
     _otel_ok = setup_tracing("ccfd-api")
     if _otel_ok:
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
         FastAPIInstrumentor.instrument_app(app)
 except ImportError:
     pass
