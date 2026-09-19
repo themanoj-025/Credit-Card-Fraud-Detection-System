@@ -31,9 +31,23 @@ import logging
 import os
 import sys
 
-from src.fraudlens.retraining.retrain_models import RetrainingTrigger, TriggerResult
+from src.fraudlens.retraining.retrain_models import (
+    CandidateInfo,
+    RetrainingTrigger,
+    TriggerResult,
+)
 
 logger = logging.getLogger(__name__)
+
+# Re-exported for the public surface consumed by the package __init__
+# and `from ...retrain_trigger import CandidateInfo` call sites.
+__all__ = [
+    "CandidateInfo",
+    "RetrainingTrigger",
+    "TriggerResult",
+    "check_and_trigger",
+    "run_retraining_pipeline",
+]
 
 
 def check_and_trigger(
