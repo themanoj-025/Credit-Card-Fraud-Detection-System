@@ -92,7 +92,12 @@ loader = DataLoader()
 try:
     df = loader.load()
 except FileNotFoundError as e:
-    logger.error("data_not_found", error=str(e), download_url="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud", place_at="data/raw/creditcard.csv")
+    logger.error(
+        "data_not_found",
+        error=str(e),
+        download_url="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud",
+        place_at="data/raw/creditcard.csv",
+    )
     sys.exit(1)
 
 stats = loader.get_basic_stats()
@@ -107,8 +112,18 @@ data = preprocessor.full_preprocess(df)
 X_train, X_test = data["X_train"], data["X_test"]
 y_train, y_test = data["y_train"], data["y_test"]
 
-logger.info("train_split", samples=X_train.shape[0], fraud=int(y_train.sum()), fraud_rate=f"{y_train.mean() * 100:.4f}%")
-logger.info("test_split", samples=X_test.shape[0], fraud=int(y_test.sum()), fraud_rate=f"{y_test.mean() * 100:.4f}%")
+logger.info(
+    "train_split",
+    samples=X_train.shape[0],
+    fraud=int(y_train.sum()),
+    fraud_rate=f"{y_train.mean() * 100:.4f}%",
+)
+logger.info(
+    "test_split",
+    samples=X_test.shape[0],
+    fraud=int(y_test.sum()),
+    fraud_rate=f"{y_test.mean() * 100:.4f}%",
+)
 
 preprocessor.save_scaler(str(MODELS_DIR / "scaler.pkl"))
 
@@ -120,7 +135,13 @@ strategies = ["none", "random_under", "smote", "adasyn", "smote_tomek"]
 resampled = resampler.compare_strategies(X_train, y_train, strategies)
 
 for strat, (X_r, y_r) in resampled.items():
-    logger.info("resampling_strategy", strategy=strat, samples=len(X_r), fraud=int(y_r.sum()), fraud_rate=f"{y_r.mean() * 100:.2f}%")
+    logger.info(
+        "resampling_strategy",
+        strategy=strat,
+        samples=len(X_r),
+        fraud=int(y_r.sum()),
+        fraud_rate=f"{y_r.mean() * 100:.2f}%",
+    )
 
 # STAGE 3.5: Hyperparameter Optimization (Optuna) — optional
 logger.info("[3.5/6] Hyperparameter Optimization (Optuna)")
@@ -152,7 +173,12 @@ models = trainer.train_all(X_train, y_train)
 logger.info("running_5fold_cv")
 cv_results = trainer.cross_validate(X_train, y_train)
 for name, result in cv_results.items():
-    logger.info("cv_result", model=name, pr_auc=round(result['mean_score'], 4), std=round(result['std_score'], 4))
+    logger.info(
+        "cv_result",
+        model=name,
+        pr_auc=round(result["mean_score"], 4),
+        std=round(result["std_score"], 4),
+    )
 
 # 4c. Isolation Forest (unsupervised, trained on legit only)
 iso_detector = IsolationForestDetector(contamination=0.005, n_estimators=200)
@@ -161,7 +187,9 @@ iso_trained = iso_detector.model
 logger.info("isolation_forest_trained")
 
 t_train = time.time() - t_start
-logger.info("training_completed", elapsed_s=round(t_train, 1), models_trained=len(models) + 1)
+logger.info(
+    "training_completed", elapsed_s=round(t_train, 1), models_trained=len(models) + 1
+)
 
 # Save all model artifacts
 trainer.save_all_models(str(MODELS_DIR))
@@ -215,7 +243,11 @@ logger.info("final_model_comparison", table=comparison.to_string(index=False))
 # Save comparison CSV to both locations
 comparison.to_csv(REPORTS_DIR / "model_comparison_fraud.csv", index=False)
 comparison.to_csv(PROCESSED_DATA_DIR / "model_comparison.csv", index=False)
-logger.info("comparison_saved", reports=str(REPORTS_DIR / "model_comparison_fraud.csv"), processed=str(PROCESSED_DATA_DIR / "model_comparison.csv"))
+logger.info(
+    "comparison_saved",
+    reports=str(REPORTS_DIR / "model_comparison_fraud.csv"),
+    processed=str(PROCESSED_DATA_DIR / "model_comparison.csv"),
+)
 
 # STAGE 6: Auto-Select Best Model
 logger.info("[6/6] Auto-Select Best Model + Generate Charts")
@@ -241,9 +273,18 @@ from pipeline_charts import plot_comprehensive_comparison
 charts_dir = PROCESSED_DATA_DIR
 
 # Individual charts
-evaluator.plot_precision_recall_curve(y_test, predictions, save_path=str(charts_dir / "pr_curves.png"))
-cost_calc.plot_cost_vs_threshold(y_test, predictions[selection["best_model_name"]], model_name=selection["best_model_name"], save_path=str(charts_dir / "cost_vs_threshold.png"))
-evaluator.plot_confusion_matrices(y_test, predictions, top_n=3, save_path=str(charts_dir / "confusion_matrices.png"))
+evaluator.plot_precision_recall_curve(
+    y_test, predictions, save_path=str(charts_dir / "pr_curves.png")
+)
+cost_calc.plot_cost_vs_threshold(
+    y_test,
+    predictions[selection["best_model_name"]],
+    model_name=selection["best_model_name"],
+    save_path=str(charts_dir / "cost_vs_threshold.png"),
+)
+evaluator.plot_confusion_matrices(
+    y_test, predictions, top_n=3, save_path=str(charts_dir / "confusion_matrices.png")
+)
 
 # Multi-panel comparison chart
 logger.info("comprehensive_comparison_chart")
@@ -253,17 +294,35 @@ plot_comprehensive_comparison(comparison, predictions, y_test, str(charts_dir))
 logger.info("=" * 70)
 logger.info("  PIPELINE COMPLETE — Summary")
 logger.info("=" * 70)
-logger.info("best_model", name=selection['best_model_name'], pr_auc=round(selection['metric_value'], 4), threshold=round(best_threshold, 4))
-cv_score = cv_results.get(selection['best_model_name'], {}).get('mean_score', 'N/A')
-cv_std = cv_results.get(selection['best_model_name'], {}).get('std_score', 'N/A')
+logger.info(
+    "best_model",
+    name=selection["best_model_name"],
+    pr_auc=round(selection["metric_value"], 4),
+    threshold=round(best_threshold, 4),
+)
+cv_score = cv_results.get(selection["best_model_name"], {}).get("mean_score", "N/A")
+cv_std = cv_results.get(selection["best_model_name"], {}).get("std_score", "N/A")
 logger.info("cv_score", mean=cv_score, std=cv_std)
-logger.info("selection_reasoning", reasoning=selection['reasoning'])
+logger.info("selection_reasoning", reasoning=selection["reasoning"])
 
 biz = business_costs.get(selection["best_model_name"], {})
 if biz:
-    logger.info("business_impact", fraud_caught_usd=biz.get('fraud_caught_usd', 0), fraud_missed_usd=biz.get('fraud_missed_usd', 0), review_costs_usd=biz.get('review_costs_usd', 0), net_benefit_usd=biz.get('net_benefit_usd', 0))
+    logger.info(
+        "business_impact",
+        fraud_caught_usd=biz.get("fraud_caught_usd", 0),
+        fraud_missed_usd=biz.get("fraud_missed_usd", 0),
+        review_costs_usd=biz.get("review_costs_usd", 0),
+        net_benefit_usd=biz.get("net_benefit_usd", 0),
+    )
 
-logger.info("saved_artifacts", best_model="models/best_fraud_model.pkl", anomaly_detector="models/anomaly_detector.pkl", threshold="models/threshold.txt", comparison_csv="reports/model_comparison_fraud.csv", charts="data/processed/*.png")
+logger.info(
+    "saved_artifacts",
+    best_model="models/best_fraud_model.pkl",
+    anomaly_detector="models/anomaly_detector.pkl",
+    threshold="models/threshold.txt",
+    comparison_csv="reports/model_comparison_fraud.csv",
+    charts="data/processed/*.png",
+)
 logger.info("=" * 70)
 
 # Save summary JSON

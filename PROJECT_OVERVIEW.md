@@ -395,11 +395,11 @@ Credit Card Fraud Detection/
 
 ```python
 {
-    "prediction": int,           # 0 or 1
-    "probability": float,        # 0.0 - 1.0
-    "threshold": float,          # Decision threshold
+    "prediction": int,  # 0 or 1
+    "probability": float,  # 0.0 - 1.0
+    "threshold": float,  # Decision threshold
     "shap_values": list[float],  # Feature contributions
-    "top_features": list[dict]   # Feature name + importance
+    "top_features": list[dict],  # Feature name + importance
 }
 ```
 
@@ -411,10 +411,10 @@ Credit Card Fraud Detection/
     "transaction_id": str,
     "prediction": int,
     "probability": float,
-    "narrative": str,            # LLM-generated
-    "similar_cases": list[dict], # RAG results
+    "narrative": str,  # LLM-generated
+    "similar_cases": list[dict],  # RAG results
     "analyst_notes": str,
-    "status": str                # pending, reviewed, confirmed
+    "status": str,  # pending, reviewed, confirmed
 }
 ```
 

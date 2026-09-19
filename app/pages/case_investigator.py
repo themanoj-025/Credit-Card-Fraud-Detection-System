@@ -162,7 +162,7 @@ def show() -> None:
                         {verdict_text}
                     </span>
                     <span style="color: #a0a0a0; margin-left: 12px;">
-                        Probability: {prob:.1%} | 
+                        Probability: {prob:.1%} |
                         Amount: ${tx.get("Amount", 0):,.2f}
                     </span>
                 </div>

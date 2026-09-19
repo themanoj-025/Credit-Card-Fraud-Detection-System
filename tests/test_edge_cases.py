@@ -9,13 +9,10 @@ Verifies the API and models handle edge cases gracefully:
 - Extreme Amount values (0 and very large)
 """
 
-from pathlib import Path
-
 import pytest
 from pydantic import ValidationError
 
 pytestmark = pytest.mark.integration
-
 
 
 from api.schemas import TransactionInput

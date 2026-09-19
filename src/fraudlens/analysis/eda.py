@@ -50,7 +50,11 @@ def _load_data() -> pd.DataFrame:
     df = loader.load()
     stats = loader.get_basic_stats()
     logger.info("Dataset: %s transactions, %s columns", f"{df.shape[0]:,}", df.shape[1])
-    logger.info("Fraud rate: %.4f%% (%s frauds)", stats['fraud_rate_pct'], f"{stats['n_fraud']:,}")
+    logger.info(
+        "Fraud rate: %.4f%% (%s frauds)",
+        stats["fraud_rate_pct"],
+        f"{stats['n_fraud']:,}",
+    )
     return df
 
 

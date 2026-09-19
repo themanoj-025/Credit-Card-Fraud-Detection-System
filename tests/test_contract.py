@@ -10,10 +10,6 @@ These tests should be updated when the API is intentionally versioned.
 The `openapi.json` snapshot is checked in for diff-review in CI.
 """
 
-from pathlib import Path
-
-
-
 # Required endpoints (enforced on every test run)
 
 _REQUIRED_ENDPOINTS: set[str] = {
@@ -62,9 +58,7 @@ class TestEndpointExistence:
         for endpoint in _REQUIRED_ENDPOINTS:
             method, path = endpoint.split(" ", 1)
             assert path in paths, f"Path '{path}' not in OpenAPI spec"
-            assert (
-                method.lower() in paths[path]
-            ), f"Method '{method}' not found for path '{path}'"
+            assert method.lower() in paths[path], f"missing method {method} for {path}"
 
     @staticmethod
     def _get_registered_routes(app) -> set[str]:

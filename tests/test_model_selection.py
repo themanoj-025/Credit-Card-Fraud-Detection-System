@@ -14,7 +14,6 @@ from src.fraudlens.models.model_selection import ModelSelector
 pytestmark = pytest.mark.unit
 
 
-
 @pytest.fixture
 def comparison_data() -> None:
     """Create a mock comparison DataFrame with two models."""
@@ -86,7 +85,9 @@ class TestModelSelector:
         assert "reasoning" in result
         assert "ranking" in result
 
-    def test_select_stores_selection_result(self, comparison_data, trained_models) -> None:
+    def test_select_stores_selection_result(
+        self, comparison_data, trained_models
+    ) -> None:
         """Test select updates self.selection_result."""
         selector = ModelSelector(metric="PR-AUC")
         selector.select(comparison_data, trained_models)
@@ -181,7 +182,9 @@ class TestModelSelector:
         summary = selector.get_selection_summary()
         assert summary == "No model selected yet."
 
-    def test_get_selection_summary_after_select(self, comparison_data, trained_models) -> None:
+    def test_get_selection_summary_after_select(
+        self, comparison_data, trained_models
+    ) -> None:
         """Test get_selection_summary returns formatted string after selection."""
         selector = ModelSelector(metric="PR-AUC")
         selector.select(comparison_data, trained_models)
@@ -191,7 +194,9 @@ class TestModelSelector:
         assert "0.8800" in summary or "0.88" in summary
         assert "Selection Metric" in summary
 
-    def test_mlflow_tracking_when_not_available(self, comparison_data, trained_models) -> None:
+    def test_mlflow_tracking_when_not_available(
+        self, comparison_data, trained_models
+    ) -> None:
         """Test selection works when MLflow is not available."""
         with patch("src.fraudlens.models.model_selection.MLFLOW_AVAILABLE", False):
             selector = ModelSelector(metric="PR-AUC")

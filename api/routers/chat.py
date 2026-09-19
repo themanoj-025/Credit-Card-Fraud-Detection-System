@@ -15,12 +15,7 @@ import logging
 
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
-from tenacity import (
-    before_sleep_log,
-    retry,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
 from api.auth import require_api_key
 from api.exceptions import LLMServiceUnavailable

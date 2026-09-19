@@ -15,7 +15,6 @@ These tests use a fixture that trains a small logistic regression model
 on synthetic data — no GPU, no disk artifacts required.
 """
 
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -95,7 +94,9 @@ class TestApiWithModel:
         # May return 503 if no model is loaded in test environment
         assert response.status_code in (200, 503)
 
-    def test_prediction_schema_when_model_loaded(self, client, fraud_transaction) -> None:
+    def test_prediction_schema_when_model_loaded(
+        self, client, fraud_transaction
+    ) -> None:
         """Test the prediction response schema when model is available."""
         response = client.post("/v1/predict", json=fraud_transaction)
         if response.status_code == 200:
@@ -187,7 +188,6 @@ class TestShapOutput:
     def test_shap_values_are_bounded(self) -> None:
         """Test that SHAP values in explanation are within expected bounds."""
         from src.fraudlens.explainability.shap_explainer import ShapExplanation
-
 
         explanation = ShapExplanation.from_raw(
             [("V14", 0.5), ("Amount", -0.3)],

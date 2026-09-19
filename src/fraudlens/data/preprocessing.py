@@ -17,12 +17,7 @@ from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from src.fraudlens.config import (
-    PCA_FEATURES,
-    RANDOM_STATE,
-    SCALE_FEATURES,
-    TEST_SIZE,
-)
+from src.fraudlens.config import PCA_FEATURES, RANDOM_STATE, SCALE_FEATURES, TEST_SIZE
 
 logger = logging.getLogger(__name__)
 

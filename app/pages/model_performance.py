@@ -201,8 +201,8 @@ def show() -> None:
         <p style="color:#e0e0e0;line-height:1.6;">
         <strong>Selection Rule:</strong> Model with highest PR-AUC is selected as best.<br><br>
         <strong>Winner:</strong> <code>{best_row["Model"]}</code> with PR-AUC of {best_row["PR-AUC"]:.4f}.<br><br>
-        <strong>Why PR-AUC?</strong> With only 0.17% fraud in the dataset, ROC-AUC is misleading 
-        (a random model can score 0.5+). PR-AUC evaluates performance on the minority class 
+        <strong>Why PR-AUC?</strong> With only 0.17% fraud in the dataset, ROC-AUC is misleading
+        (a random model can score 0.5+). PR-AUC evaluates performance on the minority class
         honestly — it's the standard metric for imbalanced fraud detection.<br><br>
         <strong>Threshold:</strong> Optimized using the business cost function at $150/fraud vs $5/review.
         </p>

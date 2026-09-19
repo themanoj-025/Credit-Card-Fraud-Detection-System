@@ -18,7 +18,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 from src.fraudlens.data.download import (
     _generate_synthetic_dataset,
     _is_valid_dataset,
@@ -237,10 +236,13 @@ class TestEnsureDataReady:
         # Just verify it doesn't raise
         with patch("src.fraudlens.data.download._DATA_PATH") as mock_path:
             mock_path.return_value = Path("/tmp/test_default.csv")
-            with patch(
-                "src.fraudlens.data.download._is_valid_dataset",
-                return_value=True,
-            ), patch("pandas.read_csv") as mock_read:
+            with (
+                patch(
+                    "src.fraudlens.data.download._is_valid_dataset",
+                    return_value=True,
+                ),
+                patch("pandas.read_csv") as mock_read,
+            ):
                 mock_read.return_value = pd.DataFrame({"A": [1]})
                 df = ensure_data_ready()
                 assert isinstance(df, pd.DataFrame)
@@ -263,10 +265,13 @@ class TestGetOrCreateData:
         """Should work without specifying a path."""
         with patch("src.fraudlens.data.download._DATA_PATH") as mock_path:
             mock_path.return_value = Path("/tmp/test_get_or_create.csv")
-            with patch(
-                "src.fraudlens.data.download._is_valid_dataset",
-                return_value=True,
-            ), patch("pandas.read_csv") as mock_read:
+            with (
+                patch(
+                    "src.fraudlens.data.download._is_valid_dataset",
+                    return_value=True,
+                ),
+                patch("pandas.read_csv") as mock_read,
+            ):
                 mock_read.return_value = pd.DataFrame({"A": [1]})
                 df = get_or_create_data()
                 assert isinstance(df, pd.DataFrame)

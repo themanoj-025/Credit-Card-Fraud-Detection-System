@@ -183,7 +183,6 @@ class TestFactualityChecker:
         """
         import re
 
-
         actual_features = {f["feature"] for f in shap_features}
         mentioned_features = set(re.findall(r"V\d+", narrative))
         hallucinated = mentioned_features - actual_features

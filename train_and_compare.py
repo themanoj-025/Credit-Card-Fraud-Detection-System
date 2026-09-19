@@ -7,7 +7,6 @@ auto-selects the best model, and saves artifacts for the API/dashboard.
 
 import json
 import os
-import sys
 import time
 import warnings
 
@@ -60,7 +59,9 @@ y_train, y_test = data["y_train"], data["y_test"]
 
 logger.info("train_samples", count=len(X_train))
 logger.info("test_samples", count=len(X_test))
-logger.info("fraud_in_train", count=int(y_train.sum()), rate=f"{y_train.mean() * 100:.4f}%")
+logger.info(
+    "fraud_in_train", count=int(y_train.sum()), rate=f"{y_train.mean() * 100:.4f}%"
+)
 
 # STAGE 2: Train all models
 logger.info("[2/6] Training all ML models...")
@@ -117,7 +118,11 @@ all_models = {**models, "Isolation Forest": iso_detector.model}
 selector = ModelSelector(metric="PR-AUC")
 selection = selector.select(comparison, all_models)
 selector.save_best_model(str(MODELS_DIR / "best_fraud_model.pkl"))
-logger.info("best_model_selected", model=selection['best_model_name'], pr_auc=round(selection['metric_value'], 4))
+logger.info(
+    "best_model_selected",
+    model=selection["best_model_name"],
+    pr_auc=round(selection["metric_value"], 4),
+)
 
 best_threshold = thresholds.get(selection["best_model_name"], 0.5)
 with open(MODELS_DIR / "threshold.txt", "w") as f:
@@ -238,7 +243,9 @@ plt.savefig(
     bbox_inches="tight",
 )
 plt.close()
-logger.info("chart_saved", path=str(PROCESSED_DATA_DIR / "comprehensive_comparison.png"))
+logger.info(
+    "chart_saved", path=str(PROCESSED_DATA_DIR / "comprehensive_comparison.png")
+)
 
 # STAGE 6: Summary
 logger.info("[6/6] Final Summary")
@@ -246,11 +253,24 @@ logger.info("=" * 70)
 logger.info("  TRAINING COMPLETE")
 logger.info("=" * 70)
 logger.info("models_trained", count=len(models) + 1)
-logger.info("best_model", name=selection['best_model_name'], pr_auc=round(selection['metric_value'], 4), threshold=round(best_threshold, 4))
+logger.info(
+    "best_model",
+    name=selection["best_model_name"],
+    pr_auc=round(selection["metric_value"], 4),
+    threshold=round(best_threshold, 4),
+)
 biz = business_costs.get(selection["best_model_name"], {})
 if biz:
-    logger.info("business_impact", fraud_caught_usd=biz.get('fraud_caught_usd', 0), fraud_missed_usd=biz.get('fraud_missed_usd', 0), review_costs_usd=biz.get('review_costs_usd', 0), net_benefit_usd=biz.get('net_benefit_usd', 0))
-logger.info("artifacts_saved", charts_dir=str(PROCESSED_DATA_DIR), models_dir=str(MODELS_DIR))
+    logger.info(
+        "business_impact",
+        fraud_caught_usd=biz.get("fraud_caught_usd", 0),
+        fraud_missed_usd=biz.get("fraud_missed_usd", 0),
+        review_costs_usd=biz.get("review_costs_usd", 0),
+        net_benefit_usd=biz.get("net_benefit_usd", 0),
+    )
+logger.info(
+    "artifacts_saved", charts_dir=str(PROCESSED_DATA_DIR), models_dir=str(MODELS_DIR)
+)
 logger.info("=" * 70)
 
 # Save final results

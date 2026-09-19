@@ -11,11 +11,9 @@ narrator by default, no live LLM call required. A nightly job with a real
 LLM can use the same assertions with actual LLM-generated narratives.
 """
 
-from pathlib import Path
 from typing import Any
 
 import pytest
-
 
 from src.fraudlens.llm.case_narrator import CaseNarrator
 
@@ -122,9 +120,7 @@ class TestProbabilityAccuracy:
         narrative = narrator.narrate(
             sample_transaction, 0.94, sample_shap_features, True
         )
-        assert (
-            "94.0%" in narrative
-        ), f"Narrative should include fraud probability. Got: {narrative[:150]}"
+        assert "94.0%" in narrative, f"missing probability: {narrative[:60]}"
 
     def test_narrative_accuracy_different_probabilities(
         self, narrator, sample_transaction, sample_shap_features
@@ -157,9 +153,7 @@ class TestConsistency:
 
         # All should mention "manual review" for fraud cases
         for i, n in enumerate(narratives):
-            assert (
-                "manual review" in n.lower()
-            ), f"Narrative {i} missing 'manual review' recommendation: {n[:100]}"
+            assert "manual review" in n.lower(), f"n{i} no 'manual review': {n[:40]}"
 
     def test_consistent_legitimate_label(
         self, narrator, sample_transaction, sample_shap_features
@@ -171,9 +165,7 @@ class TestConsistency:
             narratives.append(n)
 
         for i, n in enumerate(narratives):
-            assert (
-                "legitimate" in n.lower()
-            ), f"Narrative {i} missing 'legitimate': {n[:100]}"
+            assert "legitimate" in n.lower(), f"n{i} no 'legitimate': {n[:40]}"
 
     def test_deterministic_fallback(
         self, narrator, sample_transaction, sample_shap_features
