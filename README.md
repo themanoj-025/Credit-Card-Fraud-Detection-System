@@ -37,6 +37,7 @@
 - [📡 API Endpoints](#-api-endpoints)
 - [🗺️ Roadmap](#️-roadmap)
 - [🤝 Contributing](#-contributing)
+- [📬 Support](#-support)
 - [📄 License](#-license)
 - [🙏 Acknowledgements](#-acknowledgements)
 
@@ -273,6 +274,14 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 - [FAISS](https://faiss.ai/) - Vector similarity search
 - [MLflow](https://mlflow.org/) - Experiment tracking
 - [Streamlit](https://streamlit.io/) - Dashboard framework
+
+---
+
+## 📬 Support
+
+- 🐛 [Report a bug](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/issues)
+- 💡 [Request a feature](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/issues)
+- ⭐ [Star the repository](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System)
 
 ---
 
