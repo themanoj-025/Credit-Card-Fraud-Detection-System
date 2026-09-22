@@ -43,7 +43,7 @@ What actually happened. Include error messages, stack traces, or screenshots.
 
 ## Logs
 
-```
+```text
 Paste relevant logs here (with correlation IDs if available)
 ```
 
