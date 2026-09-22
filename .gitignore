@@ -113,6 +113,7 @@ monitoring/_archived_*
 # ─── Generated Training Artifacts ───────────────────────────
 models/threshold.txt
 models/*.json
+models/*.sha256
 catboost_info/
 
 # ─── ML Model Formats (defensive) ───────────────────────────
