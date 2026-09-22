@@ -2,7 +2,7 @@
 
 ## Core package (src/fraudlens) internal dependencies
 
-```
+```text
 fraudlens.config                 ← imported by every domain module (paths, constants)
 fraudlens.data.loaders           ← used by features, prediction, retraining
 fraudlens.data.preprocessing     ← used by features.engineering, models.train
@@ -28,7 +28,7 @@ fraudlens.analysis.eda           ← depends on data.loaders (report generation)
 
 ## Interface layer → core
 
-```
+```text
 api/main.py          → src.fraudlens.* (config, prediction, explainability, llm,
                        persistence, monitoring, retraining)
 api/providers.py     → src.fraudlens.explainability, prediction (DI singletons)

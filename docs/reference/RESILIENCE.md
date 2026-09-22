@@ -8,7 +8,7 @@ a 500 error that could have been a 503 with partial functionality.
 
 ## Resilience Layers
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │                    RESILIENCE STRATEGY                           │
 ├──────────────────────────────────────────────────────────────────┤
@@ -66,7 +66,7 @@ LLM failures:
 
 **State Machine:**
 
-```
+```text
 CLOSED ──(3 failures)──→ OPEN ──(30s elapsed)──→ HALF_OPEN
   ↑                                                  │
   └──────────(success)───────────────────────────────┘
@@ -145,7 +145,7 @@ status codes are returned without requiring custom exception handlers.
 When the LLM is unavailable, the `CaseNarrator` produces a template-based
 summary that clearly states it's not an LLM-generated narrative:
 
-```
+```text
 [Automated summary — narrative generation unavailable]
 Transaction flagged as potentially fraudulent (92.3% confidence).
 Top indicators: V14 (-5.23, increases), V4 (4.12, increases).

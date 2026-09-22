@@ -10,7 +10,7 @@ audited training/inference), a REST API, and graceful-degradation resilience.
 
 ## Structure
 
-```
+```text
 docs/
 ├── README.md                      ← this index
 ├── architecture.md                system architecture

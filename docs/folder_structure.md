@@ -1,6 +1,6 @@
 # FraudLens — Folder Structure
 
-```
+```text
 Credit Card Fraud Detection/
 ├── run_pipeline.py               # CLI: end-to-end training pipeline
 ├── train_and_compare.py          # CLI: model comparison harness
