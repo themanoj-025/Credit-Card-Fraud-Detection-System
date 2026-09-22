@@ -25,7 +25,7 @@
 - Formatter: black; linter: ruff; isort.
 - Structure:
 
-```
+```text
 src/fraudlens/
   config.py         # pydantic-settings
   data/preprocessing.py

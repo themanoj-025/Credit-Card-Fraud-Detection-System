@@ -78,7 +78,7 @@ graph TD
 
 ## Data Flow (prediction path)
 
-```
+```text
 POST /predict ──► auth ──► rate_limit ──► router ──► model_loader ──► features.engineering
                                                           │
                                                           ▼

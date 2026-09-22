@@ -101,7 +101,7 @@ The system implements **6 supervised models** (Logistic Regression, Random Fores
 
 ## 4. High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Streamlit Dashboard (:8501)                 │
 │  Live Monitor │ Case Investigator │ Model Performance │ ...     │
@@ -141,7 +141,7 @@ The system follows a clean separation of concerns:
 
 ## 5. Complete Folder Structure Tree
 
-```
+```text
 Credit Card Fraud Detection/
 ├── api/
 │   ├── __init__.py
@@ -530,7 +530,7 @@ make lint           # Code quality
 
 ### Flow 1: Transaction Prediction
 
-```
+```text
 1. Client sends POST /api/v1/predict with transaction features
 2. api/routers/predict.py validates input via Pydantic schema
 3. src/fraudlens/inference/predictor.py loads best model
@@ -543,7 +543,7 @@ make lint           # Code quality
 
 ### Flow 2: Case Investigation with LLM
 
-```
+```text
 1. Analyst submits case for investigation
 2. POST /api/v1/explain generates SHAP explanation
 3. POST /api/v1/similar retrieves historical precedents
@@ -555,7 +555,7 @@ make lint           # Code quality
 
 ### Flow 3: Model Retraining
 
-```
+```text
 1. Drift detection triggers (KS-test > threshold)
 2. System collects new labeled data from feedback
 3. Optuna runs HPO with new data
@@ -571,7 +571,7 @@ make lint           # Code quality
 
 ### Internal Dependencies
 
-```
+```text
 api/main.py
   ├── api/routers/* → api/schemas.py
   ├── src/fraudlens/inference/* → src/fraudlens/models/*

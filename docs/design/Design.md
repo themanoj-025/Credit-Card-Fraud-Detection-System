@@ -54,7 +54,7 @@
 
 **Risk badge:**
 
-```
+```text
 ┌──────────┐
 │ ● HIGH   │  ← color-coded pill
 └──────────┘
