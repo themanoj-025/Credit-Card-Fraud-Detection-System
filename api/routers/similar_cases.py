@@ -60,7 +60,7 @@ async def get_similar_cases(
     try:
         # Retrieve more than needed for pagination
         retrieve_k = min(limit + 1, 50)
-        similar = case_retriever.retrieve(transaction.dict(), top_k=retrieve_k)
+        similar = case_retriever.retrieve(transaction.model_dump(), top_k=retrieve_k)
 
         # Apply cursor-based offset if cursor is provided
         offset = 0

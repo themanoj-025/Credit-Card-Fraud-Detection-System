@@ -58,7 +58,7 @@ async def explain_transaction(
     if circuit_breaker is not None and circuit_breaker.is_open():
         logger.warning("Explain rejected — LLM circuit breaker is open")
         # Still return SHAP values, just skip LLM narrative
-        result = predictor.predict_single(transaction.dict(), return_shap=True)
+        result = predictor.predict_single(transaction.model_dump(), return_shap=True)
         shap_values = {}
         if "explanation" in result:
             for f in result["explanation"]["top_features"]:
@@ -71,7 +71,7 @@ async def explain_transaction(
         )
 
     try:
-        result = predictor.predict_single(transaction.dict(), return_shap=True)
+        result = predictor.predict_single(transaction.model_dump(), return_shap=True)
 
         shap_values = {}
         if "explanation" in result:
