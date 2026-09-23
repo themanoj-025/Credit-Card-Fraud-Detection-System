@@ -5,6 +5,11 @@ All configurable values live here as a pydantic BaseSettings class.
 Loads from environment variables with sensible defaults.
 No hardcoded constants remain — everything is configurable via .env or env vars.
 
+Pydantic v2 (pydantic-settings 2.x): BaseSettings comes from pydantic_settings,
+config is declared via SettingsConfigDict, and env vars map to field names.
+CROSS_VALIDATION_* keeps its historical CV_FOLDS/CV_SCORING aliases for
+backward compatibility.
+
 Usage:
     from src.fraudlens.config import settings
     models_dir = settings.MODELS_DIR
@@ -19,17 +24,8 @@ Usage:
 
 from pathlib import Path
 
-# BaseSettings is in pydantic v1 directly, or pydantic-settings for v2+
-try:
-    from pydantic_settings import BaseSettings, SettingsConfigDict
-
-    _HAS_SETTINGS_V2 = True
-except ImportError:
-    from pydantic import BaseSettings
-
-    _HAS_SETTINGS_V2 = False
-
-from pydantic import Field
+from pydantic import AliasChoices, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -38,6 +34,12 @@ class Settings(BaseSettings):
     All values have sensible defaults. Override via .env file or
     environment variables. See .env.example for documentation.
     """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+    )
 
     # ════════════════════════════════════════════════════════════════
     # Paths (computed via @property below)
@@ -88,37 +90,34 @@ class Settings(BaseSettings):
     # ════════════════════════════════════════════════════════════════
     AVG_FRAUD_LOSS: float = Field(
         150.0,
-        env="AVG_FRAUD_LOSS",
         description="Average dollar loss per missed fraud transaction",
     )
     REVIEW_COST: float = Field(
         5.0,
-        env="REVIEW_COST",
         description="Cost to manually review a flagged transaction",
     )
 
     # ════════════════════════════════════════════════════════════════
     # Data Split
     # ════════════════════════════════════════════════════════════════
-    TEST_SIZE: float = Field(0.2, env="TEST_SIZE")
-    VAL_SIZE: float = Field(0.1, env="VAL_SIZE")
-    RANDOM_STATE: int = Field(42, env="RANDOM_STATE")
+    TEST_SIZE: float = Field(0.2)
+    VAL_SIZE: float = Field(0.1)
+    RANDOM_STATE: int = Field(42)
 
     # ════════════════════════════════════════════════════════════════
     # Features
     # ════════════════════════════════════════════════════════════════
     PCA_FEATURES: list[str] = [f"V{i}" for i in range(1, 29)]
     SCALE_FEATURES: list[str] = ["Time", "Amount"]
-    TARGET_COLUMN: str = Field("Class", env="TARGET_COLUMN")
+    TARGET_COLUMN: str = Field("Class")
 
     # ════════════════════════════════════════════════════════════════
     # Resampling
     # ════════════════════════════════════════════════════════════════
     RESAMPLING_STRATEGIES: list[str] = Field(
         ["none", "class_weight", "random_under", "smote", "adasyn", "smote_tomek"],
-        env="RESAMPLING_STRATEGIES",
     )
-    DEFAULT_RESAMPLING: str = Field("smote", env="DEFAULT_RESAMPLING")
+    DEFAULT_RESAMPLING: str = Field("smote")
 
     # ════════════════════════════════════════════════════════════════
     # Model Training
@@ -132,120 +131,117 @@ class Settings(BaseSettings):
             "lightgbm",
             "catboost",
         ],
-        env="DEFAULT_MODELS",
     )
-    MODEL_SELECTION_METRIC: str = Field("pr_auc", env="MODEL_SELECTION_METRIC")
+    MODEL_SELECTION_METRIC: str = Field("pr_auc")
     SELECTION_RULE_DESCRIPTION: str = (
         "Model with highest PR-AUC is selected as best. "
         "PR-AUC is preferred over ROC-AUC for imbalanced fraud data."
     )
 
     # Isolation Forest
-    IFOREST_CONTAMINATION: float = Field(0.01, env="IFOREST_CONTAMINATION")
-    IFOREST_N_ESTIMATORS: int = Field(200, env="IFOREST_N_ESTIMATORS")
+    IFOREST_CONTAMINATION: float = Field(0.01)
+    IFOREST_N_ESTIMATORS: int = Field(200)
 
     # CatBoost
-    CATBOOST_VERBOSE: bool = Field(False, env="CATBOOST_VERBOSE")
-    CATBOOST_ITERATIONS: int = Field(200, env="CATBOOST_ITERATIONS")
-    CATBOOST_DEPTH: int = Field(6, env="CATBOOST_DEPTH")
+    CATBOOST_VERBOSE: bool = Field(False)
+    CATBOOST_ITERATIONS: int = Field(200)
+    CATBOOST_DEPTH: int = Field(6)
 
     # ════════════════════════════════════════════════════════════════
     # Threshold Tuning
     # ════════════════════════════════════════════════════════════════
-    N_THRESHOLDS: int = Field(100, env="N_THRESHOLDS")
+    N_THRESHOLDS: int = Field(100)
 
     # ════════════════════════════════════════════════════════════════
     # SHAP
     # ════════════════════════════════════════════════════════════════
-    MAX_SHAP_FEATURES: int = Field(10, env="MAX_SHAP_FEATURES")
-    N_SHAP_BACKGROUND_SAMPLES: int = Field(100, env="N_SHAP_BACKGROUND_SAMPLES")
+    MAX_SHAP_FEATURES: int = Field(10)
+    N_SHAP_BACKGROUND_SAMPLES: int = Field(100)
 
     # ════════════════════════════════════════════════════════════════
     # LLM / Copilot
     # ════════════════════════════════════════════════════════════════
-    LLM_MODEL: str = Field("claude-sonnet-4-20250514", env="LLM_MODEL")
-    LLM_MAX_TOKENS: int = Field(1000, env="LLM_MAX_TOKENS")
-    LLM_TEMPERATURE: float = Field(0.3, env="LLM_TEMPERATURE")
+    LLM_MODEL: str = Field("claude-sonnet-4-20250514")
+    LLM_MAX_TOKENS: int = Field(1000)
+    LLM_TEMPERATURE: float = Field(0.3)
 
     # RAG
-    RAG_TOP_K: int = Field(3, env="RAG_TOP_K")
-    EMBEDDING_DIM: int = Field(30, env="EMBEDDING_DIM")
+    RAG_TOP_K: int = Field(3)
+    EMBEDDING_DIM: int = Field(30)
     RAG_USE_PROJECTION: bool = Field(
         False,
-        env="RAG_USE_PROJECTION",
         description="Apply learned PCA projection before FAISS indexing",
     )
     RAG_PROJECTION_COMPONENTS: int = Field(
         20,
-        env="RAG_PROJECTION_COMPONENTS",
         description="Target dimension for projected RAG embeddings",
     )
 
     # ════════════════════════════════════════════════════════════════
     # Drift Detection
     # ════════════════════════════════════════════════════════════════
-    DRIFT_THRESHOLD: float = Field(0.05, env="DRIFT_THRESHOLD")
-    DRIFT_ALERT_WINDOW: int = Field(1000, env="DRIFT_ALERT_WINDOW")
+    DRIFT_THRESHOLD: float = Field(0.05)
+    DRIFT_ALERT_WINDOW: int = Field(1000)
 
     # ════════════════════════════════════════════════════════════════
     # Dashboard
     # ════════════════════════════════════════════════════════════════
-    DASHBOARD_REFRESH_MS: int = Field(500, env="DASHBOARD_REFRESH_MS")
-    MAX_TRANSACTION_HISTORY: int = Field(500, env="MAX_TRANSACTION_HISTORY")
-    SIMULATION_FRAUD_RATE: float = Field(0.02, env="SIMULATION_FRAUD_RATE")
-    SIMULATION_BATCH_SIZE: int = Field(10, env="SIMULATION_BATCH_SIZE")
+    DASHBOARD_REFRESH_MS: int = Field(500)
+    MAX_TRANSACTION_HISTORY: int = Field(500)
+    SIMULATION_FRAUD_RATE: float = Field(0.02)
+    SIMULATION_BATCH_SIZE: int = Field(10)
 
     # ════════════════════════════════════════════════════════════════
     # API
     # ════════════════════════════════════════════════════════════════
-    API_URL: str = Field("http://localhost:8000", env="API_URL")
-    API_PORT: int = Field(8000, env="API_PORT")
-    DASHBOARD_PORT: int = Field(8501, env="DASHBOARD_PORT")
+    API_URL: str = Field("http://localhost:8000")
+    API_PORT: int = Field(8000)
+    DASHBOARD_PORT: int = Field(8501)
 
     # ════════════════════════════════════════════════════════════════
     # Evaluation
     # ════════════════════════════════════════════════════════════════
-    CROSS_VALIDATION_FOLDS: int = Field(5, env="CV_FOLDS")
-    CROSS_VALIDATION_SCORING: str = Field("average_precision", env="CV_SCORING")
+    CROSS_VALIDATION_FOLDS: int = Field(
+        5,
+        validation_alias=AliasChoices("CROSS_VALIDATION_FOLDS", "CV_FOLDS"),
+    )
+    CROSS_VALIDATION_SCORING: str = Field(
+        "average_precision",
+        validation_alias=AliasChoices("CROSS_VALIDATION_SCORING", "CV_SCORING"),
+    )
 
     # ════════════════════════════════════════════════════════════════
     # MLflow
     # ════════════════════════════════════════════════════════════════
-    MLFLOW_EXPERIMENT_NAME: str = Field(
-        "fraudlens_model_comparison", env="MLFLOW_EXPERIMENT_NAME"
-    )
-    MLFLOW_TRACKING_URI: str = Field("http://localhost:5000", env="MLFLOW_TRACKING_URI")
-    MLFLOW_ARTIFACT_DIR: str = Field("mlruns", env="MLFLOW_ARTIFACT_DIR")
+    MLFLOW_EXPERIMENT_NAME: str = Field("fraudlens_model_comparison")
+    MLFLOW_TRACKING_URI: str = Field("http://localhost:5000")
+    MLFLOW_ARTIFACT_DIR: str = Field("mlruns")
 
     # ════════════════════════════════════════════════════════════════
     # Hyperparameter Optimization (Optuna)
     # ════════════════════════════════════════════════════════════════
-    HPO_ENABLED: bool = Field(True, env="HPO_ENABLED")
-    HPO_N_TRIALS: int = Field(30, env="HPO_N_TRIALS")
-    HPO_CV_FOLDS: int = Field(3, env="HPO_CV_FOLDS")
-    HPO_MODELS: list[str] = Field(["xgboost", "lightgbm"], env="HPO_MODELS")
+    HPO_ENABLED: bool = Field(True)
+    HPO_N_TRIALS: int = Field(30)
+    HPO_CV_FOLDS: int = Field(3)
+    HPO_MODELS: list[str] = Field(["xgboost", "lightgbm"])
 
     # ════════════════════════════════════════════════════════════════
     # Automated Retraining
     # ════════════════════════════════════════════════════════════════
     RETRAINING_ENABLED: bool = Field(
         True,
-        env="RETRAINING_ENABLED",
         description="Enable automated retraining trigger checks",
     )
     RETRAINING_FEEDBACK_THRESHOLD: int = Field(
         100,
-        env="RETRAINING_FEEDBACK_THRESHOLD",
         description="Min new confirmed feedback labels to trigger retraining",
     )
     RETRAINING_DRIFT_CRITICAL_THRESHOLD: int = Field(
         3,
-        env="RETRAINING_DRIFT_CRITICAL_THRESHOLD",
         description="Min CRITICAL drift events to trigger retraining",
     )
     RETRAINING_DRIFT_WINDOW_DAYS: int = Field(
         7,
-        env="RETRAINING_DRIFT_WINDOW_DAYS",
         description="Lookback window for drift events (days)",
     )
 
@@ -254,27 +250,22 @@ class Settings(BaseSettings):
     # ════════════════════════════════════════════════════════════════
     FEATURE_LLM_NARRATOR: bool = Field(
         True,
-        env="FEATURE_LLM_NARRATOR",
         description="Enable LLM-powered case narration for /v1/explain",
     )
     FEATURE_ANOMALY_SCORE: bool = Field(
         True,
-        env="FEATURE_ANOMALY_SCORE",
         description="Include Isolation Forest anomaly score in predictions",
     )
     FEATURE_SHAP_EXPLANATION: bool = Field(
         True,
-        env="FEATURE_SHAP_EXPLANATION",
         description="Enable SHAP computation on the prediction path",
     )
     FEATURE_CACHE_PREDICTIONS: bool = Field(
         True,
-        env="FEATURE_CACHE_PREDICTIONS",
         description="Enable LRU cache for duplicate predictions",
     )
     FEATURE_RAG_RETRIEVAL: bool = Field(
         True,
-        env="FEATURE_RAG_RETRIEVAL",
         description="Enable RAG-based similar case retrieval",
     )
 
@@ -283,24 +274,8 @@ class Settings(BaseSettings):
     # ════════════════════════════════════════════════════════════════
     PREDICTION_THRESHOLD: float | None = Field(
         None,
-        env="PREDICTION_THRESHOLD",
         description="Override the model's optimal threshold. Null = use model default.",
     )
-
-    if _HAS_SETTINGS_V2:
-        model_config = SettingsConfigDict(
-            env_file=".env",
-            env_file_encoding="utf-8",
-            case_sensitive=True,
-        )
-    else:
-
-        class Config:
-            """Pydantic v1 config for BaseSettings."""
-
-            env_file = ".env"
-            env_file_encoding = "utf-8"
-            case_sensitive = True
 
 
 # Singleton Instance

@@ -56,7 +56,7 @@ async def predict_single(
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     try:
-        tx_dict = transaction.dict()
+        tx_dict = transaction.model_dump()
 
         # Use cache-enabled, vectorized prediction path
         if explain:
@@ -79,7 +79,7 @@ async def predict_single(
                     anomaly_det.model if hasattr(anomaly_det, "model") else anomaly_det
                 )
                 if raw_model is not None:
-                    tx_array = pred._vectorize_transaction(transaction.dict())
+                    tx_array = pred._vectorize_transaction(transaction.model_dump())
                     scores = raw_model.score_samples(tx_array)
                     min_s, max_s = scores.min(), scores.max()
                     probas = 1 - (scores - min_s) / (max_s - min_s + 1e-10)
@@ -134,7 +134,7 @@ async def predict_batch(
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     try:
-        transactions = [t.dict() for t in batch.transactions]
+        transactions = [t.model_dump() for t in batch.transactions]
         X = pd.DataFrame(transactions)
 
         # Reorder columns to match model's expected feature order
