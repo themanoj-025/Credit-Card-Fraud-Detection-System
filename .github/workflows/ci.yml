@@ -1,3 +1,9 @@
+# Cancel superseded runs of this workflow on the same ref (PR pushes).
+# Never cancels on main pushes or scheduled runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 # ════════════════════════════════════════════════════════════════
 # FraudLens — CI/CD Pipeline
 #
@@ -26,6 +32,7 @@ env:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -237,6 +244,7 @@ jobs:
   bandit:
     name: Bandit security scan
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
@@ -251,6 +259,7 @@ jobs:
   hadolint:
     name: Container lint
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
@@ -262,6 +271,7 @@ jobs:
   schemathesis-fuzz:
     name: Contract fuzzing (Schemathesis)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
