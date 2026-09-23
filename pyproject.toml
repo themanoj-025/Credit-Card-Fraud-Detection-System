@@ -48,6 +48,10 @@ ignore = [
 ]
 
 [tool.mypy]
+# NOTE: this block is NOT active — CI runs `mypy .` and mypy reads mypy.ini (repo
+# root), which shadows pyproject.toml in mypy's config discovery. Edit mypy.ini
+# instead. Kept so ad-hoc `mypy <file>` calls still resolve a config.
+python_version = "3.12"
 ignore_missing_imports = true
 warn_return_any = true
 warn_unused_configs = true

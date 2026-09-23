@@ -7,7 +7,7 @@ Pydantic models for request validation and response serialization.
 import math
 from typing import Any
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class TransactionInput(BaseModel):
@@ -47,7 +47,7 @@ class TransactionInput(BaseModel):
     V27: float = Field(default=0.0, description="PCA component V27")
     V28: float = Field(default=0.0, description="PCA component V28")
 
-    @validator("Amount")
+    @field_validator("Amount")
     def amount_must_be_finite(cls, v) -> Any:
         """Validate Amount is finite and non-negative."""
         if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
