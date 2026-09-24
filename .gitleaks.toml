@@ -1,0 +1,14 @@
+# Gitleaks configuration
+# Extends gitleaks' default ruleset with repository-specific allowlists.
+# NOTE: allowlists here are for NON-PRODUCTION test fixtures only.
+title = "gitleaks config for Credit Card Fraud Detection"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documentation placeholders (dummy values by design)"
+regexes = [
+  # app/pages/model_governance.py API-usage snippet: placeholder admin key.
+  '''your-admin-key''',
+]
