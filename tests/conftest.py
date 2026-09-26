@@ -104,7 +104,7 @@ def mock_anthropic(monkeypatch) -> Any:
             return MockMessage()
 
     class MockAnthropic:
-        def __init__(self, *args, **kwargs) -> Any:
+        def __init__(self, *args, **kwargs):
             self.messages = MockMessages()
 
     monkeypatch.setattr(anthropic, "Anthropic", MockAnthropic)

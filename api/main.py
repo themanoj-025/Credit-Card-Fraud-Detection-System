@@ -231,6 +231,9 @@ except ImportError:
 
 # Register rate limit error handler
 app.state.limiter = limiter
+# mypy union-attr / arg-type: _rate_limit_exceeded_handler accepts
+# Request[State] | WebSocket[State]; the generic handler is typed for
+# Exception. We keep the explicit signature so mypy resolves it.
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
@@ -340,13 +343,19 @@ async def health() -> Any:
     db_initialized = True  # Assume ok — init failures logged at startup
 
     # Build per-dependency breakdown
-    model_ok = pred is not None and hasattr(pred, "model") and pred.model is not None
+    # mypy union-attr: pred is FraudPredictor | None; narrow before use.
+    if pred is not None and hasattr(pred, "model") and pred.model is not None:
+        _model = pred.model
+        _threshold = pred.threshold
+    else:
+        _model = None
+        _threshold = None
     dependencies = {
         "model": {
-            "status": "ok" if model_ok else "degraded",
+            "status": "ok" if _model is not None else "degraded",
             "detail": (
-                f"{type(pred.model).__name__} (threshold={pred.threshold:.4f})"
-                if model_ok
+                f"{type(_model).__name__} (threshold={_threshold:.4f})"
+                if _model is not None
                 else "not loaded"
             ),
         },
