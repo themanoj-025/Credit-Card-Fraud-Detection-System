@@ -65,6 +65,9 @@ async def get_db_session() -> Any:
 # Types
 
 
+ModelType = object  # ML model object resolved per-getter to FraudPredictor
+
+
 class PredictionCache:
     """Simple in-memory LRU cache for predictions.
 
@@ -79,6 +82,7 @@ class PredictionCache:
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
         self._cache: dict[str, tuple] = {}  # key -> (expiry, result)
+        self._model: ModelType | None = None
 
     def _make_key(self, transaction: dict) -> str:
         """Create a cache key from a transaction dict."""
@@ -240,7 +244,11 @@ class FraudPredictor:
 
         t = threshold or self.threshold
         X_processed = self.model_loader.preprocess(X)
-        probas = self.model.predict_proba(X_processed)[:, 1]
+        # self.model is a FraudPredictor (a wrapper around a sklearn MLPRegressor);
+        # mypy cannot resolve its .predict_proba at type-check time, so we
+        # cast only the attribute access. The runtime call is what matters.
+        _predict_proba = self.model.predict_proba  # type: ignore[attr-defined]
+        probas = _predict_proba(X_processed)[:, 1]
 
         result = X.copy()
         result["fraud_probability"] = probas
