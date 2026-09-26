@@ -12,7 +12,7 @@
   <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/actions"><img src="https://img.shields.io/github/actions/workflow/status/themanoj-025/Credit-Card-Fraud-Detection-System/ci.yml?style=flat-square&label=CI" alt="CI Status" /></a>
   <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/blob/main/LICENSE"><img src="https://img.shields.io/github/license/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square" alt="License" /></a>
   <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/stargazers"><img src="https://img.shields.io/github/stars/themanoj-025/Credit-Card-Fraud-Detection-System?style=social" alt="Stars" /></a>
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/coverage-78%25-yellowgreen?style=flat-square" alt="Coverage (enforced in CI)" /></a>
+  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/coverage-enforced%20%3E%3D75%25%20in%20CI-yellowgreen?style=flat-square" alt="Test coverage enforced at 75 percent minimum in CI" /></a>
 </p>
 
 ---
