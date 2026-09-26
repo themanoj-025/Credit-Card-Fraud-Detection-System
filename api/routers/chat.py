@@ -143,6 +143,8 @@ def _call_chat_llm(client: object, messages: list) -> str:
 
     Uses tenacity for retry with exponential backoff.
     """
+    # mypy no-any-return: `client.messages.create` returns Any. Cast the
+    # Anthropic client to the real type at the call site.
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=1000,
