@@ -127,7 +127,10 @@ class TestCrossValidation:
         second = trainer.cross_validate(X, y, cv=3)
 
         assert set(first) == set(second)
-        assert first["logistic_regression"]["scores"] == second["logistic_regression"]["scores"]
+        assert (
+            first["logistic_regression"]["scores"]
+            == second["logistic_regression"]["scores"]
+        )
 
 
 # Tests: Feature Count
@@ -136,7 +139,9 @@ class TestCrossValidation:
 class TestFeatureCount:
     """Tests for feature-count alignment between training and artifact use."""
 
-    def test_trained_model_feature_count_matches_training_input(self, small_dataset) -> None:
+    def test_trained_model_feature_count_matches_training_input(
+        self, small_dataset
+    ) -> None:
         """Test that every trained model's feature vector length equals input."""
         X, y = small_dataset
         trainer = FraudTrainer(models_to_train=["logistic_regression"])
