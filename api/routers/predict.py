@@ -76,8 +76,8 @@ async def predict_single(
             anomaly_det = get_anomaly_detector()
             if anomaly_det is not None:
                 raw_model = (
-                        anomaly_det.model if hasattr(anomaly_det, "model") else anomaly_det
-                    )
+                    anomaly_det.model if hasattr(anomaly_det, "model") else anomaly_det
+                )
                 # mypy union-attr: anomaly_det is object | None; score_samples
                 # resolves at runtime on the underlying sklearn estimator.
                 if raw_model is not None:

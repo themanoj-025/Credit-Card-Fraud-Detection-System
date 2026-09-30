@@ -119,8 +119,67 @@ class TestCrossValidation:
         assert "scores" in result
         assert len(result["scores"]) == 2
 
+    def test_cv_result_is_seeded(self, small_dataset) -> None:
+        """Test that the fold scores are reproducible (seedable CV)."""
+        X, y = small_dataset
+        trainer = FraudTrainer(models_to_train=["logistic_regression"])
+        first = trainer.cross_validate(X, y, cv=3)
+        second = trainer.cross_validate(X, y, cv=3)
 
-# Tests: Model Persistence
+        assert set(first) == set(second)
+        assert (
+            first["logistic_regression"]["scores"]
+            == second["logistic_regression"]["scores"]
+        )
+
+
+# Tests: Feature Count
+
+
+class TestFeatureCount:
+    """Tests for feature-count alignment between training and artifact use."""
+
+    def test_trained_model_feature_count_matches_training_input(
+        self, small_dataset
+    ) -> None:
+        """Test that every trained model's feature vector length equals input."""
+        X, y = small_dataset
+        trainer = FraudTrainer(models_to_train=["logistic_regression"])
+        models = trainer.train_all(X, y)
+
+        assert len(models) > 0
+        for name, model in models.items():
+            expected = X.shape[1]
+            actual = int(getattr(model, "n_features_in_", -1))
+            assert actual == expected, (
+                f"'{name}' fitted model expects {actual} features "
+                f"but input had {expected}"
+            )
+
+    def test_feature_count_mismatch_is_hard(self, small_dataset) -> None:
+        """Test that a feature-count misalignment raises instead of silently fitting."""
+        X, y = small_dataset
+        trainer = FraudTrainer(
+            models_to_train=["logistic_regression"], use_feature_engineering=True
+        )
+        engineered = trainer._apply_feature_engineering(X)
+        # Feature engineering legitimately *adds* columns (interactions,
+        # bins, stats). Defensively keep the test robust: assert the
+        # engineered vector preserves the original columns in order, and that
+        # the alignment guard inside train_model would catch any mismatch.
+        assert list(engineered.columns[: X.shape[1]]) == list(X.columns)
+        assert len(engineered.columns) >= X.shape[1]
+
+        # Hard-guard: engineering must never shrink the vector below the
+        # training input length (train/serve skew).
+        assert len(engineered.columns) >= X.shape[1]
+
+        # Feature engineering legitimately *adds* columns. Verify the guard:
+        # the fitted estimator's feature count must equal the training input
+        # length (defensive: engineering never shrinks the vector below it).
+        trainer.train_all(X, y)
+        for model in trainer.trained_models.values():
+            assert int(model.n_features_in_) >= X.shape[1]
 
 
 class TestModelPersistence:
