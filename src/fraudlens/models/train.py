@@ -311,6 +311,17 @@ class FraudTrainer:
         model = config["model_class"](**params)
         model.fit(X_train, y_train)
 
+        # Hard alignment check: the fitted model's feature vector length must
+        # equal the training feature count. This catches train/serve skew at
+        # the earliest point a mismatch can be detected.
+        expected = X_train.shape[1]
+        actual = int(getattr(model, "n_features_in_", -1))
+        assert actual == expected, (
+            f"Feature-count misalignment in '{name}': fitted model expects "
+            f"{actual} features but training data has {expected} "
+            f"(a FeatureEngineer or data-pipeline configuration error)"
+        )
+
         train_time = time.time() - start_time
         logger.info("  %s trained in %.2fs", name, train_time)
 
