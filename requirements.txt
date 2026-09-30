@@ -7,7 +7,8 @@ pandas>=2.3.3,<3.0.0
 numpy>=2.5.2,<3.0.0
 scikit-learn>=1.9.0,<2.0.0
 xgboost>=1.7.0,<2.0.0
-lightgbm>=3.3.0,<4.0.0
+# >=4.6.0: PYSEC-2024-231 (fixed in 4.6.0); 4.x keeps the LGBMClassifier sklearn API
+lightgbm>=4.6.0,<5.0.0
 imbalanced-learn>=0.14.2,<1.0.0
 
 # ─── Explainability ────────────────────────────────────────────
@@ -58,7 +59,7 @@ joblib>=1.6.0,<2.0.0
 # ─── Testing ───────────────────────────────────────────────────
 # pytest>=7.3.0,<8.0.0  # widened 2026-09-23: locust>=2.46 (kept for tests/load/locustfile.py)
 #   requires pytest>=8.3.3
-pytest>=8.3.3,<9.0.0
+pytest>=9.0.3,<10.0.0  # >=9.0.3: PYSEC-2026-1845 (fixed in 9.0.3)
 pytest-cov>=7.1.0,<8.0.0
 locust>=2.46.3,<3.0.0              # Load testing
 respx>=0.23.1,<1.0.0               # HTTP mock for integration tests
