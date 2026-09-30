@@ -296,7 +296,9 @@ class RetrainingTrigger:
                 )
                 return None
 
-            runs = mlflow.search_runs(
+            # Any: mlflow's fluent search_runs returns a pandas DataFrame,
+            # but its stubs declare list[Run] | Any — duck-type the .empty/.iloc
+            runs: Any = mlflow.search_runs(
                 experiment_ids=[experiment.experiment_id],
                 order_by=["start_time DESC"],
                 max_results=1,
@@ -319,7 +321,7 @@ class RetrainingTrigger:
             logger.info(
                 "MLflow run %s tagged as candidate (trigger=%s)", run_id[:12], trigger
             )
-            return run_id
+            return str(run_id)
 
         except (RuntimeError, ValueError, OSError) as e:
             logger.warning("MLflow run registration failed: %s", e)

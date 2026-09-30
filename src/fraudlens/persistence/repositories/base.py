@@ -33,6 +33,8 @@ class BaseRepository(Generic[ModelType]):
 
     async def get(self, id: Any) -> ModelType | None:
         """Get a record by primary key."""
+        # getattr: the generic ModelType bound (Base) doesn't declare `id`
+        # statically; every concrete model defines it.
         result = await self.session.execute(
             select(self.model_class).where(self.model_class.id == id)
         )

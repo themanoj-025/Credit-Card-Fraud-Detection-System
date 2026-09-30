@@ -20,7 +20,7 @@ pytestmark = pytest.mark.slow
 
 
 @pytest.fixture
-def mock_session() -> None:
+def mock_session() -> AsyncMock:
     """Create a mocked async session."""
     session = AsyncMock(spec=AsyncSession)
     session.flush = AsyncMock()

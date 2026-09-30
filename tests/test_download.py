@@ -30,15 +30,15 @@ from src.fraudlens.data.download import (
 
 
 @pytest.fixture
-def tmp_data_dir(tmp_path) -> None:
+def tmp_data_dir(tmp_path) -> Path:
     """Create a temporary data directory."""
-    data_dir = tmp_path / "data" / "raw"
+    data_dir: Path = tmp_path / "data" / "raw"
     data_dir.mkdir(parents=True)
     return data_dir
 
 
 @pytest.fixture
-def valid_csv(tmp_data_dir) -> None:
+def valid_csv(tmp_data_dir) -> Path:
     """Create a valid synthetic creditcard.csv for testing."""
     target = tmp_data_dir / "creditcard.csv"
     rng = np.random.RandomState(42)
@@ -49,7 +49,7 @@ def valid_csv(tmp_data_dir) -> None:
     data["Class"] = np.random.choice([0, 1], n, p=[0.99, 0.01])
     df = pd.DataFrame(data)
     df.to_csv(target, index=False)
-    return target
+    return Path(target)
 
 
 # Tests: Checksum

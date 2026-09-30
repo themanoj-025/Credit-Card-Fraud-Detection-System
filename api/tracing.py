@@ -15,20 +15,24 @@ Usage:
 
 import logging
 import os
-from typing import Any
+from typing import Any, cast
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-# OTLP exporter is optional — gracefully degrade if not installed
+# OTLP exporter is optional — gracefully degrade if not installed.
+# Annotated `Any` (not None) so the fallback assignments below stay valid
+# and instrumentation calls remain duck-typed under mypy.
+OTLPSpanExporter: Any
+FastAPIInstrumentor: Any
 try:
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 
     _HAS_OTLP = True
 except ImportError:
-    OTLPSpanExporter: Any = None
+    OTLPSpanExporter = None
     _HAS_OTLP = False
 
 # FastAPI instrumentation is optional
@@ -37,7 +41,7 @@ try:
 
     _HAS_FASTAPI_INSTR = True
 except ImportError:
-    FastAPIInstrumentor: Any = None
+    FastAPIInstrumentor = None
     _HAS_FASTAPI_INSTR = False
 
 logger = logging.getLogger(__name__)
@@ -50,7 +54,7 @@ TRACE_ENABLED = os.environ.get("ENABLE_TRACING", "true").lower() == "true"
 TRACE_CONSOLE = os.environ.get("TRACE_CONSOLE", "false").lower() == "true"
 
 
-def setup_tracing(app: object) -> TracerProvider | None:
+def setup_tracing(app: Any) -> TracerProvider | None:
     """Configure OpenTelemetry tracing with Jaeger OTLP exporter.
 
     Sets up:
@@ -105,7 +109,9 @@ def setup_tracing(app: object) -> TracerProvider | None:
     # Instrument FastAPI — optional dependency
     if _HAS_FASTAPI_INSTR and FastAPIInstrumentor is not None:
         try:
-            FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
+            FastAPIInstrumentor.instrument_app(
+                cast(Any, app), tracer_provider=tracer_provider
+            )
             logger.info("FastAPI auto-instrumentation enabled")
         except (OSError, ValueError, TypeError) as e:
             logger.warning("FastAPI instrumentation failed: %s", e)

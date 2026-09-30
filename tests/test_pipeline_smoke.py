@@ -13,6 +13,7 @@ pipeline outputs and running the code block that was broken.
 
 import sys
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -33,20 +34,20 @@ class TestPipelineSummarySmoke:
         that previously crashed due to the 'has_autoencoder' dangling reference.
         """
         # ─── Build minimal pipeline outputs ───────────────────────────────
-        selection = {
+        selection: dict[str, Any] = {
             "best_model_name": "xgboost",
             "metric_value": 0.85,
             "reasoning": "Highest PR-AUC",
         }
         best_threshold = 0.45
-        cv_results = {
+        cv_results: dict[str, Any] = {
             "xgboost": {
                 "mean_score": 0.82,
                 "std_score": 0.03,
                 "scores": [0.80, 0.84, 0.82],
             },
         }
-        business_costs = {
+        business_costs: dict[str, Any] = {
             "xgboost": {
                 "fraud_caught_usd": 10000.0,
                 "fraud_missed_usd": 2000.0,
@@ -115,13 +116,13 @@ class TestPipelineSummarySmoke:
 
     def test_summary_with_empty_business_costs(self) -> None:
         """Verify summary handles missing business_costs gracefully."""
-        selection = {
+        selection: dict[str, Any] = {
             "best_model_name": "xgboost",
             "metric_value": 0.85,
             "reasoning": "Highest PR-AUC",
         }
-        cv_results = {}
-        business_costs = {}
+        cv_results: dict[str, Any] = {}
+        business_costs: dict[str, Any] = {}
 
         import io
 
@@ -153,7 +154,7 @@ class TestPipelineSummarySmoke:
         assert "Business Impact" not in output
 
     @pytest.fixture
-    def tiny_synthetic_data(self) -> None:
+    def tiny_synthetic_data(self) -> pd.DataFrame:
         """Generate a tiny synthetic dataset for mini pipeline test."""
         np.random.seed(42)
         n = 200

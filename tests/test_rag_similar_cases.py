@@ -91,6 +91,8 @@ class TestBuildIndex:
         """Test that historical_cases DataFrame stores outcomes."""
         retriever = SimilarCaseRetriever()
         retriever.build_index(sample_historical_data)
+        # build_index guarantees historical_cases is populated
+        assert retriever.historical_cases is not None
         assert "actual_outcome" in retriever.historical_cases.columns
         assert "is_fraud" in retriever.historical_cases.columns
 

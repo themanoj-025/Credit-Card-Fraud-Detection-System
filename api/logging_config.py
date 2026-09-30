@@ -79,7 +79,7 @@ def setup_structlog() -> None:
 def get_correlation_id() -> str:
     """Get the current correlation ID from structlog context vars."""
     ctx = structlog.contextvars.get_contextvars()
-    return ctx.get("correlation_id", "")
+    return str(ctx.get("correlation_id", ""))
 
 
 def set_correlation_id(cid: str) -> None:

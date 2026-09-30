@@ -453,8 +453,11 @@ def _show_demo_content() -> None:
         },
     ]
 
-    for cand in candidates:
-        status = cand.get("status", "candidate")
+    for cand_raw in candidates:
+        # Any view: dict values from the API are JSON-decoded (object);
+        # the html helpers below take str/float
+        cand: dict[str, Any] = dict(cand_raw)
+        status = str(cand.get("status", "candidate"))
         pr_auc = cand.get("pr_auc")
         is_pending = status == "candidate"
         pr_auc_str = f"  🎯 PR-AUC: {pr_auc:.4f}" if pr_auc else ""
@@ -462,29 +465,29 @@ def _show_demo_content() -> None:
         with st.expander(
             f"**{cand['model_version']}** — "
             f"{_status_chip_html(status)} "
-            f"{_trigger_chip_html(cand['trigger'])}"
+            f"{_trigger_chip_html(str(cand['trigger']))}"
             f"{pr_auc_str}",
             expanded=is_pending,
         ):
             m1, m2, m3, m4 = st.columns(4)
             with m1:
                 st.markdown(
-                    _delta_html("PR-AUC", cand["pr_auc"], 0.8810),
+                    _delta_html("PR-AUC", float(cand["pr_auc"]), 0.8810),
                     unsafe_allow_html=True,
                 )
             with m2:
                 st.markdown(
-                    _delta_html("F1", cand["f1_score"], 0.7068),
+                    _delta_html("F1", float(cand["f1_score"]), 0.7068),
                     unsafe_allow_html=True,
                 )
             with m3:
                 st.markdown(
-                    _delta_html("Precision", cand["precision"], 0.5828),
+                    _delta_html("Precision", float(cand["precision"]), 0.5828),
                     unsafe_allow_html=True,
                 )
             with m4:
                 st.markdown(
-                    _delta_html("Recall", cand["recall"], 0.8980),
+                    _delta_html("Recall", float(cand["recall"]), 0.8980),
                     unsafe_allow_html=True,
                 )
 

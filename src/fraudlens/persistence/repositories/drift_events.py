@@ -56,6 +56,8 @@ class DriftEventRepository(BaseRepository[DriftEventModel]):
         feature_name: str | None = None,
     ) -> list[DriftEventModel]:
         """Get events since a timestamp, optionally for a specific feature."""
+        # getattr: typed stubs resolve created_at as Column, not a column
+        # expression usable in where()
         stmt = (
             select(DriftEventModel)
             .where(DriftEventModel.created_at >= since)
