@@ -20,7 +20,7 @@ from typing import Any
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 # OTLP exporter is optional — gracefully degrade if not installed
 try:
@@ -92,13 +92,15 @@ def setup_tracing(app: object) -> TracerProvider | None:
     else:
         logger.info("OTLP exporter not available (install opentelemetry-exporter-otlp)")
 
-    # Add console exporter for local debugging
-    if TRACE_CONSOLE:
-        tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
-        logger.info("Console trace exporter enabled")
-
-    # Set the global tracer provider
+    # Set the global tracer provider (console exporter intentionally removed;
+    # it is a silent fallback that produces unstructured output and has been
+    # replaced by the structured warning below so misconfiguration is visible).
     trace.set_tracer_provider(tracer_provider)
+    if TRACE_CONSOLE:
+        logger.warning(
+            "console trace exporter disabled: set OTEL_EXPORTER_OTLP_ENDPOINT "
+            "to route traces to Jaeger/OTLP"
+        )
 
     # Instrument FastAPI — optional dependency
     if _HAS_FASTAPI_INSTR and FastAPIInstrumentor is not None:

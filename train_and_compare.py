@@ -69,6 +69,18 @@ trainer = FraudTrainer()
 t_start = time.time()
 models = trainer.train_all(X_train, y_train)
 
+# Hard alignment check: every trained model's fitted feature vector
+# length must equal the training feature count. A mismatch here is the
+# #1 source of train/serve skew in production ML.
+for name, model in models.items():
+    expected = X_train.shape[1]
+    actual = int(getattr(model, "n_features_in_", -1))
+    assert actual == expected, (
+        f"Feature-count misalignment in '{name}': fitted model expects "
+        f"{actual} features but training data has {expected} "
+        f"(a FeatureEngineer or data-pipeline configuration error)"
+    )
+
 iso_detector = IsolationForestDetector(contamination=0.005, n_estimators=200)
 iso_detector.fit(X_train, y_train)
 t_total = time.time() - t_start
