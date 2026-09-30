@@ -61,9 +61,9 @@ try:
     mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
     HAS_MLFLOW = True
     logger.info("mlflow_tracking", uri=MLFLOW_TRACKING_URI)
-except (ImportError, Exception) as e:
+except ImportError:
     HAS_MLFLOW = False
-    logger.warning("mlflow_tracking_disabled", error=str(e))
+    logger.warning("mlflow_tracking_disabled", error="MLflow is not installed")
 from src.fraudlens.data.loaders import DataLoader
 from src.fraudlens.data.preprocessing import FraudPreprocessor, Resampler
 from src.fraudlens.evaluation.business_cost import BusinessCostCalculator
