@@ -3,7 +3,7 @@ FraudLens — Drift Event Repository
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -56,11 +56,12 @@ class DriftEventRepository(BaseRepository[DriftEventModel]):
         feature_name: str | None = None,
     ) -> list[DriftEventModel]:
         """Get events since a timestamp, optionally for a specific feature."""
-        # getattr: typed stubs resolve created_at as Column, not a column
-        # expression usable in where()
+        # cast: under SQLAlchemy's typed stubs `Column >= datetime` resolves
+        # to bool; casting the model to Any keeps the runtime column
+        # expression version-proof across stub generations.
         stmt = (
             select(DriftEventModel)
-            .where(DriftEventModel.created_at >= since)
+            .where(cast(Any, DriftEventModel).created_at >= since)
             .order_by(DriftEventModel.created_at.desc())
         )
         if feature_name:

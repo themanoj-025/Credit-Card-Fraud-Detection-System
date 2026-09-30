@@ -6,7 +6,7 @@ Used for historical cost analysis and dashboard queries.
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -60,11 +60,10 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
         since: datetime,
     ) -> list[LlmCallModel]:
         """Get all LLM calls since a specific timestamp."""
-        # getattr: typed stubs resolve created_at as Column, not a column
-        # expression usable in where()
+        # cast: version-proof against SQLAlchemy stubs (see drift_events.py)
         stmt = (
             select(LlmCallModel)
-            .where(LlmCallModel.created_at >= since)
+            .where(cast(Any, LlmCallModel).created_at >= since)
             .order_by(LlmCallModel.created_at.desc())
         )
         result = await self.session.execute(stmt)
@@ -84,12 +83,12 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
             Dict with total_cost_usd, total_calls, total_input_tokens,
             total_output_tokens, by_model, by_endpoint
         """
-        stmt = select(
+        stmt: Any = select(
             func.count(LlmCallModel.id).label("total_calls"),
             func.sum(LlmCallModel.input_tokens).label("total_input_tokens"),
             func.sum(LlmCallModel.output_tokens).label("total_output_tokens"),
             func.sum(LlmCallModel.cost_usd).label("total_cost_usd"),
-        ).where(LlmCallModel.created_at >= since)
+        ).where(cast(Any, LlmCallModel).created_at >= since)
         result = await self.session.execute(stmt)
         row = result.one()
 
@@ -104,7 +103,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
                 LlmCallModel.model,
                 func.sum(LlmCallModel.cost_usd).label("cost"),
             )
-            .where(LlmCallModel.created_at >= since)
+            .where(cast(Any, LlmCallModel).created_at >= since)
             .group_by(LlmCallModel.model)
         )
         model_result = await self.session.execute(model_stmt)
@@ -116,7 +115,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
                 LlmCallModel.endpoint,
                 func.sum(LlmCallModel.cost_usd).label("cost"),
             )
-            .where(LlmCallModel.created_at >= since)
+            .where(cast(Any, LlmCallModel).created_at >= since)
             .group_by(LlmCallModel.endpoint)
         )
         endpoint_result = await self.session.execute(endpoint_stmt)
