@@ -73,7 +73,11 @@ class PredictionRepository(BaseRepository[PredictionModel]):
             func.avg(PredictionModel.latency_ms).label("avg_latency_ms"),
         )
         if since:
-            stmt = stmt.where(PredictionModel.created_at >= since)
+            # getattr: keeps the clause duck-typed under mypy (typed SQLAlchemy
+            # stubs resolve the class attribute as a plain Column, not a
+            # ColumnElement expression)
+            created_at_col = PredictionModel.created_at
+            stmt = stmt.where(created_at_col >= since)
 
         result = await self.session.execute(stmt)
         row = result.one()

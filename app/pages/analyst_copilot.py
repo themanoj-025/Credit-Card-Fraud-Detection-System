@@ -22,7 +22,8 @@ def _get_copilot_response(
     try:
         client = get_api_client()
         result = client.chat(message, history)
-        return result.get("response", "")
+        # JSON-decoded values are Any; coerce to the declared return type
+        return str(result.get("response", ""))
     except (requests.RequestException, ValueError, AttributeError):
         return None
 

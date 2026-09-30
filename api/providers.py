@@ -26,9 +26,12 @@ import numpy as np
 import pandas as pd
 from fastapi import Request
 
+# Declared before import: optional-import fallback pattern that satisfies
+# mypy (import re-binds the declared name; except-branch assigns the base).
+SQLAlchemyError: Any
 try:
     from sqlalchemy.exc import SQLAlchemyError
-except ImportError:
+except ImportError:  # pragma: no cover — SQLAlchemy is a hard runtime dep
     SQLAlchemyError = Exception
 
 from src.fraudlens.explainability.shap_explainer import ShapExplainer
@@ -98,7 +101,7 @@ class PredictionCache:
         if key in self._cache:
             expiry, result = self._cache[key]
             if expiry >= time.time():
-                return result
+                return dict(result)
             del self._cache[key]
         return None
 
@@ -141,7 +144,8 @@ class FraudPredictor:
         self._shap_initialized = False
 
     @property
-    def model(self) -> object | None:
+    def model(self) -> Any:
+        """The loaded model (duck-typed sklearn estimator)."""
         return self.model_loader.model
 
     @property
@@ -194,12 +198,14 @@ class FraudPredictor:
         if use_cache:
             cached = self.cache.get(transaction)
             if cached is not None:
-                return cached
+                return dict(cached)
 
         # Vectorized prediction path — no DataFrame
         X = self._vectorize_transaction(transaction)
         X_scaled = self.model_loader.preprocess_numpy(X)
 
+        # model is duck-typed (Any from ModelLoader); predict_proba resolves
+        # at runtime on the loaded sklearn estimator
         fraud_proba = float(self.model.predict_proba(X_scaled)[0][1])
         is_fraud = fraud_proba >= self.threshold
 
@@ -244,10 +250,9 @@ class FraudPredictor:
 
         t = threshold or self.threshold
         X_processed = self.model_loader.preprocess(X)
-        # self.model is a FraudPredictor (a wrapper around a sklearn MLPRegressor);
-        # mypy cannot resolve its .predict_proba at type-check time, so we
-        # cast only the attribute access. The runtime call is what matters.
-        _predict_proba = self.model.predict_proba  # type: ignore[attr-defined]
+        # self.model is a duck-typed sklearn estimator (Any property); its
+        # .predict_proba resolves at runtime.
+        _predict_proba = self.model.predict_proba
         probas = _predict_proba(X_processed)[:, 1]
 
         result = X.copy()
@@ -283,7 +288,8 @@ def _get_request_state(request: Request | None = None) -> object | None:
     """Get the FastAPI app state, working both as Depends() injection and plain function call."""
 
     if request is not None:
-        return request.app.state
+        state: object = request.app.state
+        return state
     # Fallback: try to get the current request context
     try:
         # If called as a plain function, we can't access app.state without a request

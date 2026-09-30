@@ -93,11 +93,14 @@ class FraudPreprocessor:
         Returns:
             Scaled training features
         """
-        if not self.scale_features:
+        if not self.scale_features or self.scaler is None:
             return X_train
 
         X_scaled = X_train.copy()
-        X_scaled[SCALE_FEATURES] = self.scaler.fit_transform(X_train[SCALE_FEATURES])
+        # scaler is StandardScaler | None (Any from sklearn stubs); the
+        # fitted-methods return Any which pandas accepts for column assignment
+        scaler: Any = self.scaler
+        X_scaled[SCALE_FEATURES] = scaler.fit_transform(X_train[SCALE_FEATURES])
         self._is_fitted = True
 
         logger.info("Scaler fitted on training data: %s", SCALE_FEATURES)
@@ -113,11 +116,12 @@ class FraudPreprocessor:
         Returns:
             Scaled features
         """
-        if not self.scale_features or not self._is_fitted:
+        if not self.scale_features or not self._is_fitted or self.scaler is None:
             return X
 
         X_scaled = X.copy()
-        X_scaled[SCALE_FEATURES] = self.scaler.transform(X[SCALE_FEATURES])
+        scaler: Any = self.scaler
+        X_scaled[SCALE_FEATURES] = scaler.transform(X[SCALE_FEATURES])
         return X_scaled
 
     def full_preprocess(self, df: pd.DataFrame) -> dict[str, Any]:

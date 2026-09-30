@@ -30,7 +30,7 @@ def sample_data() -> tuple[object, ...]:
 
 
 @pytest.fixture
-def mock_optuna_module() -> None:
+def mock_optuna_module() -> MagicMock:
     """
     Create a fully mocked optuna module.
 

@@ -60,6 +60,8 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
         since: datetime,
     ) -> list[LlmCallModel]:
         """Get all LLM calls since a specific timestamp."""
+        # getattr: typed stubs resolve created_at as Column, not a column
+        # expression usable in where()
         stmt = (
             select(LlmCallModel)
             .where(LlmCallModel.created_at >= since)
@@ -97,7 +99,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
         total_cost = float(row.total_cost_usd or 0.0)
 
         # Per-model breakdown
-        model_stmt = (
+        model_stmt: Any = (
             select(
                 LlmCallModel.model,
                 func.sum(LlmCallModel.cost_usd).label("cost"),
@@ -109,7 +111,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
         by_model = {row.model: float(row.cost) for row in model_result}
 
         # Per-endpoint breakdown
-        endpoint_stmt = (
+        endpoint_stmt: Any = (
             select(
                 LlmCallModel.endpoint,
                 func.sum(LlmCallModel.cost_usd).label("cost"),
@@ -131,7 +133,7 @@ class LlmCallRepository(BaseRepository[LlmCallModel]):
 
     async def get_statistics(self) -> dict[str, Any]:
         """Get overall LLM call statistics."""
-        stmt = select(
+        stmt: Any = select(
             func.count(LlmCallModel.id).label("total_calls"),
             func.sum(LlmCallModel.cost_usd).label("total_cost_usd"),
         )

@@ -22,7 +22,7 @@ Observability:
 
 import os
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,7 +46,7 @@ from src.fraudlens.explainability.shap_explainer import ShapExplainer
 from src.fraudlens.llm.case_narrator import CaseNarrator
 from src.fraudlens.llm.rag_similar_cases import SimilarCaseRetriever
 from src.fraudlens.persistence import init_db
-from src.fraudlens.prediction.model_loader import ModelLoader
+from src.fraudlens.prediction.model_loader import ModelLoader, ModelLoadError
 
 # Attempt to load optional dependencies
 
@@ -124,7 +124,10 @@ async def lifespan(app: FastAPI) -> Any:
         logger.info(
             "Model loaded successfully (threshold=%.4f)", model_loader.threshold
         )
-    except (OSError, ValueError, ImportError) as e:
+    except (OSError, ValueError, ImportError, ModelLoadError) as e:
+        # ModelLoadError (missing/failed-verification artifact) must degrade
+        # gracefully — endpoints return 503 when app.state.predictor is None
+        # — not crash startup. CI runners have no model artifact.
         logger.warning("Failed to load model: %s", e)
         app.state.predictor = None
 
@@ -231,10 +234,13 @@ except ImportError:
 
 # Register rate limit error handler
 app.state.limiter = limiter
-# mypy union-attr / arg-type: _rate_limit_exceeded_handler accepts
-# Request[State] | WebSocket[State]; the generic handler is typed for
-# Exception. We keep the explicit signature so mypy resolves it.
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# mypy arg-type: _rate_limit_exceeded_handler is typed for Request[State],
+# narrower than Starlette's generic Exception handler signature — cast to
+# the expected type (runtime behavior unchanged).
+app.add_exception_handler(
+    RateLimitExceeded,
+    cast(Any, _rate_limit_exceeded_handler),
+)
 
 
 # Correlation ID Middleware

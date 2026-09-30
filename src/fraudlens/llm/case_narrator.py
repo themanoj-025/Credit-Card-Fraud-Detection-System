@@ -64,7 +64,8 @@ class CaseNarrator:
         self.model = model
         self.max_tokens = max_tokens
         self.temperature = temperature
-        self._client = None
+        # Annotated: Anthropic client assigned lazily in _init_client
+        self._client: Any = None
         self._circuit_breaker = None  # Set by main.py's lifespan
 
     def set_circuit_breaker(self, breaker: Any) -> None:
@@ -123,7 +124,7 @@ class CaseNarrator:
         )
 
         try:
-            response = self._call_llm_with_response(prompt)
+            response: Any = self._call_llm_with_response(prompt)
             if self._circuit_breaker is not None:
                 self._circuit_breaker.record_success()
 
@@ -138,7 +139,7 @@ class CaseNarrator:
                     endpoint="narrate",
                 )
 
-            narrative = response.content[0].text.strip()
+            narrative: str = response.content[0].text.strip()
             logger.info("LLM narrative generated (%d chars)", len(narrative))
             return narrative
         except Exception as e:  # any failure must fall back, never crash

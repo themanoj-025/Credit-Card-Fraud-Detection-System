@@ -189,6 +189,7 @@ class TestTriggerResult:
         assert result.triggered is True
         assert "3 CRITICAL" in result.reason
         assert result.candidate_version == "v20260722_120000"
+        assert result.candidate_metrics is not None
         assert result.candidate_metrics["pr_auc"] == 0.88
 
 

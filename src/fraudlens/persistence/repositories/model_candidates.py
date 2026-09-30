@@ -83,8 +83,12 @@ class ModelCandidateRepository(BaseRepository[ModelCandidateModel]):
         if candidate.status != "candidate":
             return None  # Already promoted or rejected
 
-        candidate.status = "promoted"
-        candidate.promoted_at = datetime.now(UTC)
+        # Any view: typed SQLAlchemy stubs resolve these attributes as
+        # Column[T]; instance assignment is valid at runtime (instrumented
+        # descriptors).
+        candidate_status: Any = candidate
+        candidate_status.status = "promoted"
+        candidate_status.promoted_at = datetime.now(UTC)
         await self.session.commit()
         await self.session.refresh(candidate)
         return candidate
@@ -97,7 +101,8 @@ class ModelCandidateRepository(BaseRepository[ModelCandidateModel]):
         if candidate.status != "candidate":
             return None
 
-        candidate.status = "rejected"
+        candidate_any: Any = candidate
+        candidate_any.status = "rejected"
         await self.session.commit()
         await self.session.refresh(candidate)
         return candidate

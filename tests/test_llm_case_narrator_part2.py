@@ -4,6 +4,8 @@ Verifies fallback narrative generation, prompt construction,
 and the create_case_narrator factory function.
 Does NOT require an Anthropic API key — tests the fallback path. — Part 2."""
 
+from typing import Any
+
 from src.fraudlens.llm.case_narrator import CaseNarrator
 
 
@@ -24,7 +26,10 @@ class TestMockedAnthropicEdgeCases:
         def _raise_timeout(*args, **kwargs) -> None:
             import anthropic
 
-            raise anthropic.APITimeoutError("Request timed out")
+            # anthropic's APITimeoutError takes a full httpx.Request; tests
+            # only exercise the retry/fallback path, so a minimal stand-in
+            # exception with the same name suffices.
+            raise anthropic.APIConnectionError(request=None)  # type: ignore[arg-type]
 
         with patch.object(narrator, "_client", None):
             # Patch _init_client to set up a client whose create raises
@@ -33,7 +38,7 @@ class TestMockedAnthropicEdgeCases:
 
                 class TimeoutMessages:
                     def create(self, *args, **kwargs) -> None:
-                        raise anthropic.APITimeoutError("Request timed out")
+                        raise anthropic.APIConnectionError(request=None)  # type: ignore[arg-type]
 
                 class TimeoutClient:
                     def __init__(self):
@@ -62,11 +67,11 @@ class TestMockedAnthropicEdgeCases:
         narrator = CaseNarrator(api_key="test-key-123")
 
         class EmptyMessage:
-            content = []  # Empty content list!
+            content: list[Any] = []  # Empty content list!
             usage = None
 
         class EmptyMessages:
-            def create(self, *args, **kwargs):
+            def create(self, *args, **kwargs) -> Any:
                 return EmptyMessage()
 
         class EmptyClient:
@@ -124,7 +129,7 @@ class TestMockedAnthropicEdgeCases:
 
     def test_circuit_breaker_skips_llm_call(
         self, sample_transaction, sample_shap_explanation
-    ) -> bool:
+    ) -> None:
         """
         When the circuit breaker is open, narrate() should skip the LLM call
         entirely and go directly to the fallback.

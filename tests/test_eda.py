@@ -17,7 +17,7 @@ pytestmark = pytest.mark.unit
 
 
 @pytest.fixture(scope="module")
-def sample_df() -> None:
+def sample_df() -> pd.DataFrame:
     """Create a small synthetic dataset for EDA testing."""
     np.random.seed(42)
     n = 500
