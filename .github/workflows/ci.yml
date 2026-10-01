@@ -182,6 +182,11 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     needs: [scan]
+    # Workflow-level permissions are contents:read; GHCR push needs
+    # packages:write or the token is denied "Create organization package".
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
