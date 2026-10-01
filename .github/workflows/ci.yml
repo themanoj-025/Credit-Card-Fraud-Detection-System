@@ -281,6 +281,9 @@ jobs:
           dockerfile: Dockerfile
           failure-threshold: error
           ignore: DL3066
+          # DL3005: images intentionally `apt-get upgrade` OS packages so
+          # trivy scans pass on the pinned python:3.12-slim base snapshot
+          # (openssl/libssl CVEs are fixed in point releases).
 
   schemathesis-fuzz:
     name: Contract fuzzing (Schemathesis)

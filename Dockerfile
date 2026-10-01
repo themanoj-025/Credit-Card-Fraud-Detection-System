@@ -21,8 +21,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies (minimal set for all stages)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies (minimal set for all stages).
+# upgrade: the pinned base snapshot carries stale OS packages (libssl etc.);
+# pull Debian point releases so trivy CRITICAL/HIGH scans stay clean.
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
