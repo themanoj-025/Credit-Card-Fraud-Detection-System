@@ -37,7 +37,7 @@ _DEFAULT_RETRY_DELAY = 0.5  # seconds
 class FraudLensAPIError(Exception):
     """Custom exception for API errors with status code context."""
 
-    def __init__(self, message: str, status_code: int | None = None) -> Any:
+    def __init__(self, message: str, status_code: int | None = None) -> None:
         self.status_code = status_code
         super().__init__(message)
 
@@ -87,7 +87,7 @@ class FraudLensAPI:
     def _handle_response(self, response: httpx.Response, label: str) -> dict:
         """Handle API response, raising typed errors on failure."""
         if response.is_success:
-            return response.json()
+            return dict(response.json())
 
         if response.status_code == 503:
             raise FraudLensAPIError(
@@ -152,7 +152,7 @@ class FraudLensAPI:
                 # Try unversioned health endpoint
                 try:
                     response = self._client.get("/health")
-                    return response.json()
+                    return dict(response.json())
                 except (requests.RequestException, ValueError):
                     pass
             logger.error("Health check failed: %s", e)

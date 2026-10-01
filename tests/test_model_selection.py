@@ -4,6 +4,7 @@ FraudLens — Model Selection Tests
 Tests for ModelSelector: selection logic, edge cases, and MLflow interaction.
 """
 
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
@@ -15,7 +16,7 @@ pytestmark = pytest.mark.unit
 
 
 @pytest.fixture
-def comparison_data() -> None:
+def comparison_data() -> pd.DataFrame:
     """Create a mock comparison DataFrame with two models."""
     return pd.DataFrame(
         {
@@ -127,7 +128,7 @@ class TestModelSelector:
     def test_select_model_not_in_dict(self, comparison_data) -> None:
         """Test select raises KeyError when best model not in trained_models."""
         selector = ModelSelector(metric="PR-AUC")
-        empty_models = {}
+        empty_models: dict[str, Any] = {}
 
         with pytest.raises(KeyError, match="not found in trained_models"):
             selector.select(comparison_data, empty_models)

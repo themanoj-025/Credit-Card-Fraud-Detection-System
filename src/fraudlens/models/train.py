@@ -211,8 +211,11 @@ class FraudTrainer:
 
     def get_engineered_feature_names(self) -> list[str] | None:
         """Get feature names after engineering (for inference parity)."""
-        if self.feature_engineer is not None:
-            return self.feature_engineer.get_feature_names()
+        # feature_engineer is duck-typed (Any): get_feature_names returns
+        # list[str] at runtime
+        engineer: Any | None = self.feature_engineer
+        if engineer is not None:
+            return list(engineer.get_feature_names())
         return None
 
     def _compute_scale_pos_weight(self, y: pd.Series) -> float:

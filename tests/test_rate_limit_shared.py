@@ -10,10 +10,9 @@ If Redis is not available, this test skips gracefully via pytest mark.
 
 import contextlib
 import os
+from typing import Any
 
 import pytest
-
-pytestmark = pytest.mark.slow
 
 # Markers
 # This test requires Redis. On CI it always runs; locally it's skippable.
@@ -52,9 +51,10 @@ class TestSharedRedisCounter:
         from slowapi import Limiter
         from slowapi.util import get_remote_address
 
-        # ─── Create two limiters sharing the same Redis backend ──────────
-        limiter_a = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
-        limiter_b = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
+        # Any: the tests exercise runtime-only slowapi attributes
+        # (storage / rate_limit / get_window_stats) missing from its stubs
+        limiter_a: Any = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
+        limiter_b: Any = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
 
         test_key = "test:shared:worker"
         # Use a single IP for both limiters
@@ -101,9 +101,9 @@ class TestSharedRedisCounter:
         from slowapi import Limiter
         from slowapi.util import get_remote_address
 
-        # Create two limiters with SEPARATE backends
-        limiter_a = Limiter(key_func=get_remote_address)  # In-memory
-        limiter_b = Limiter(
+        # Any: runtime-only slowapi attributes used below
+        limiter_a: Any = Limiter(key_func=get_remote_address)  # In-memory
+        limiter_b: Any = Limiter(
             key_func=get_remote_address
         )  # Also in-memory (different instance)
 
@@ -135,10 +135,9 @@ class TestSharedRedisCounter:
         from slowapi import Limiter
         from slowapi.util import get_remote_address
 
-        # Redis-backed limiter
-        limiter_redis = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
-        # Separate in-memory limiter
-        limiter_memory = Limiter(key_func=get_remote_address)
+        # Any: runtime-only slowapi attributes used below
+        limiter_redis: Any = Limiter(key_func=get_remote_address, storage_uri=redis_uri)
+        limiter_memory: Any = Limiter(key_func=get_remote_address)
 
         test_key = "test:crossover:worker"
 

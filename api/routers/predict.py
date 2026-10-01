@@ -7,6 +7,7 @@ requested, BackgroundTasks for async SHAP, vectorized prediction path.
 """
 
 import logging
+from typing import Any
 
 import pandas as pd
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
@@ -75,7 +76,8 @@ async def predict_single(
         try:
             anomaly_det = get_anomaly_detector()
             if anomaly_det is not None:
-                raw_model = (
+                # Any: resolves at runtime on the underlying sklearn estimator
+                raw_model: Any = (
                     anomaly_det.model if hasattr(anomaly_det, "model") else anomaly_det
                 )
                 # mypy union-attr: anomaly_det is object | None; score_samples

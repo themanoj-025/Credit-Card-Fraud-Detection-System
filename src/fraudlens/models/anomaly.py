@@ -8,6 +8,7 @@ Provides an alternative signal to supervised models:
 """
 
 import logging
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -88,7 +89,9 @@ class IsolationForestDetector:
         """
         if self.model is None:
             raise ValueError("Model not fitted. Call fit() first.")
-        return self.model.predict(X)
+        # sklearn duck-type: predict returns np.ndarray at runtime
+        model: Any = self.model
+        return np.asarray(model.predict(X))
 
     def score(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -99,7 +102,9 @@ class IsolationForestDetector:
         """
         if self.model is None:
             raise ValueError("Model not fitted. Call fit() first.")
-        return self.model.score_samples(X)
+        # sklearn duck-type: score_samples returns np.ndarray at runtime
+        model: Any = self.model
+        return np.asarray(model.score_samples(X))
 
     def predict_proba_as_fraud(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -114,4 +119,4 @@ class IsolationForestDetector:
         min_score = scores.min()
         max_score = scores.max()
         probas = 1 - (scores - min_score) / (max_score - min_score + 1e-10)
-        return probas
+        return np.asarray(probas)

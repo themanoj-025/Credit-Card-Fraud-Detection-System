@@ -33,7 +33,7 @@ def setup_tracing(service_name: str) -> bool:
                 OTLPSpanExporter,
             )
 
-            exporter = OTLPSpanExporter(endpoint=otlp_endpoint)
+            exporter: Any = OTLPSpanExporter(endpoint=otlp_endpoint)
         else:
             from opentelemetry.sdk.trace.export import ConsoleSpanExporter
 

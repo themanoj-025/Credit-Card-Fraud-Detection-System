@@ -173,7 +173,8 @@ class ModelSelector:
             # Find the MLflow run by custom 'run_name' tag (set in train.py during training)
             experiment = mlflow.get_experiment_by_name(MLFLOW_EXPERIMENT_NAME)
             if experiment:
-                runs = mlflow.search_runs(
+                # Any: duck-type mlflow's mis-stubbed return (see retrain_models.py)
+                runs: Any = mlflow.search_runs(
                     experiment_ids=[experiment.experiment_id],
                     filter_string=f"tags.run_name = '{best_name}'",
                 )

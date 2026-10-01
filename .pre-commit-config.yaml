@@ -8,7 +8,12 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
-        language_version: python3.11
+        # python3 (not python3.11): the CI runner only has the setup-python
+        # version (3.12); pinning 3.11 makes pre-commit fail to build the
+        # hook env ("failed to find interpreter ... python_spec='python3.11'").
+        # Black's output is controlled by target-version, not the running
+        # interpreter, so any 3.x produces identical formatting.
+        language_version: python3
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
@@ -32,6 +37,7 @@ repos:
         args: [--strict, --ignore-missing-imports]
         additional_dependencies:
           - pydantic
+          - pydantic-settings
           - types-requests
         files: ^src/fraudlens/(prediction|explainability|api)/
 

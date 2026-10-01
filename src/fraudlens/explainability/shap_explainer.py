@@ -79,12 +79,13 @@ class ShapExplainer:
             max_features: Max features to include in explanation
         """
         self.max_features = max_features
-        self.explainer = None
+        # shap explainer handle (TreeExplainer | KernelExplainer) — duck-typed
+        self.explainer: Any = None
         self._initialized = False
 
     def init_explainer(
         self,
-        model: object,
+        model: Any,
         feature_names: list[str],
         X_background: pd.DataFrame | None = None,
     ) -> None:
@@ -192,7 +193,7 @@ class ShapExplainer:
 # Internal helpers
 
 
-def _extract_positive_class_values(shap_values, idx: int = 0) -> Any:
+def _extract_positive_class_values(shap_values: Any, idx: int = 0) -> Any:
     """Extract SHAP values for the positive (fraud) class."""
     if isinstance(shap_values, list):
         return shap_values[1][idx]
@@ -202,7 +203,7 @@ def _extract_positive_class_values(shap_values, idx: int = 0) -> Any:
         return shap_values[idx]
 
 
-def _extract_positive_class_global(shap_values) -> Any:
+def _extract_positive_class_global(shap_values: Any) -> Any:
     """Extract global SHAP values for the positive class."""
     if isinstance(shap_values, list):
         return shap_values[1]

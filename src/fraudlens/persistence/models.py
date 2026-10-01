@@ -127,7 +127,8 @@ class FeedbackModel(Base):
     __tablename__ = "feedback"
 
     id = _uuid_column()
-    prediction_id = Column(
+    # Annotated: _uuid_column()'s Any return leaves this inference-blind under mypy
+    prediction_id: Any = Column(
         ForeignKey("predictions.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

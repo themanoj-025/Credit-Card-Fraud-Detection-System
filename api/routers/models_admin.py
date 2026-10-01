@@ -18,9 +18,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
 
+# Optional-import fallback pattern (see api/providers.py)
+SQLAlchemyError: Any
 try:
     from sqlalchemy.exc import SQLAlchemyError
-except ImportError:
+except ImportError:  # pragma: no cover — SQLAlchemy is a hard runtime dep
     SQLAlchemyError = Exception
 
 from api.auth import require_admin_key
@@ -252,8 +254,10 @@ async def promote_candidate(
         try:
             import shutil
 
-            # Find the model artifact
-            candidate_model_path = candidate.model_path
+            # Find the model artifact (candidate re-fetched after promote;
+            # runtime guard above already rejected None)
+            candidate_any: Any = candidate
+            candidate_model_path = candidate_any.model_path
             if candidate_model_path and Path(candidate_model_path).exists():
                 production_path = MODELS_DIR / "best_fraud_model.pkl"
                 shutil.copy2(candidate_model_path, production_path)
@@ -268,8 +272,8 @@ async def promote_candidate(
         logger.info(
             "Model %s promoted to production (trigger=%s, pr_auc=%s)",
             model_version,
-            candidate.trigger,
-            candidate.pr_auc,
+            candidate_any.trigger,
+            candidate_any.pr_auc,
         )
 
         return PromoteResponse(

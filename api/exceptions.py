@@ -23,7 +23,6 @@ Usage:
 
 import logging
 import time
-from typing import Any
 
 from fastapi import HTTPException, status
 
@@ -39,7 +38,7 @@ class ModelNotLoadedError(HTTPException):
     Automatically produces HTTP 503 Service Unavailable.
     """
 
-    def __init__(self, detail: str = "Fraud detection model not loaded") -> Any:
+    def __init__(self, detail: str = "Fraud detection model not loaded") -> None:
         super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)
 
 
@@ -50,7 +49,7 @@ class LLMServiceUnavailable(HTTPException):
     template-based narratives rather than failing the entire request.
     """
 
-    def __init__(self, detail: str = "LLM service unavailable") -> Any:
+    def __init__(self, detail: str = "LLM service unavailable") -> None:
         super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)
 
 
@@ -64,7 +63,7 @@ class PredictionError(HTTPException):
         self,
         detail: str = "Model prediction failed",
         original: Exception | None = None,
-    ) -> Any:
+    ) -> None:
         self.original = original
         super().__init__(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=detail
@@ -77,7 +76,7 @@ class RetrieverUnavailable(HTTPException):
     Automatically produces HTTP 503.
     """
 
-    def __init__(self, detail: str = "Case retriever not initialized") -> Any:
+    def __init__(self, detail: str = "Case retriever not initialized") -> None:
         super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)
 
 
@@ -89,7 +88,7 @@ class InvalidInputError(HTTPException):
 
     def __init__(
         self, detail: str = "Invalid input", errors: list | None = None
-    ) -> Any:
+    ) -> None:
         self.errors = errors or []
         super().__init__(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
@@ -117,7 +116,7 @@ class LLMCircuitBreaker:
         recovery_timeout: float = 30.0,
         cooldown_multiplier: float = 2.0,
         name: str = "llm",
-    ) -> Any:
+    ) -> None:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.cooldown_multiplier = cooldown_multiplier

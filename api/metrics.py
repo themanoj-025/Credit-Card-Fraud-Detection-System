@@ -18,6 +18,8 @@ Usage:
     PREDICTION_COUNTER.labels(outcome="fraud").inc()
 """
 
+from typing import Any
+
 from prometheus_client import Counter, Gauge, Histogram
 from prometheus_fastapi_instrumentator import Instrumentator
 
@@ -96,7 +98,7 @@ LLM_CALLS_TOTAL = Counter(
 )
 
 
-def setup_metrics(app: object) -> None:
+def setup_metrics(app: Any) -> None:
     """Configure and attach Prometheus metrics to the FastAPI app.
 
     Adds the /metrics endpoint and configures automatic instrumentation

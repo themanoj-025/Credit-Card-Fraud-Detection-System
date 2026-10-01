@@ -17,7 +17,7 @@ Usage:
     app.add_exception_handler(ProblemDetail, problem_detail_handler)
 """
 
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -165,9 +165,13 @@ def register_error_handlers(app: "FastAPI") -> None:
     """Register all RFC 7807 error handlers on a FastAPI app."""
     from fastapi import HTTPException
 
-    app.add_exception_handler(ProblemDetail, problem_detail_handler)
-    app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(HTTPException, http_exception_handler)
+    # cast: handler signatures are (Request, SpecificException) — narrower
+    # than Starlette's generic Exception-handler type; runtime is unchanged
+    app.add_exception_handler(ProblemDetail, cast(Any, problem_detail_handler))
+    app.add_exception_handler(
+        RequestValidationError, cast(Any, validation_exception_handler)
+    )
+    app.add_exception_handler(HTTPException, cast(Any, http_exception_handler))
 
     # Generic 500 fallback
     app.add_exception_handler(Exception, http_exception_handler)

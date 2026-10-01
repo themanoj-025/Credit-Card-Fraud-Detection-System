@@ -3,6 +3,7 @@ FraudLens — API Key Repository
 """
 
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,7 +42,10 @@ class ApiKeyRepository(BaseRepository[ApiKeyModel]):
         """Update the last_used_at timestamp for a key."""
         key = await self.get(key_id)
         if key:
-            key.last_used_at = datetime.now(UTC)
+            # Any view: typed SQLAlchemy stubs expose the class attribute as
+            # Column[datetime]; instance attributes are writable at runtime.
+            key_any: Any = key
+            key_any.last_used_at = datetime.now(UTC)
             await self.session.flush()
 
     async def deactivate(self, key_id: str) -> bool:
@@ -49,6 +53,7 @@ class ApiKeyRepository(BaseRepository[ApiKeyModel]):
         key = await self.get(key_id)
         if key is None:
             return False
-        key.is_active = False
+        key_any: Any = key
+        key_any.is_active = False
         await self.session.flush()
         return True
