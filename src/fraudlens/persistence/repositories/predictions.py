@@ -3,7 +3,7 @@ FraudLens — Prediction Repository
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 import sqlalchemy as sa
 from sqlalchemy import func, select
@@ -73,7 +73,8 @@ class PredictionRepository(BaseRepository[PredictionModel]):
             func.avg(PredictionModel.latency_ms).label("avg_latency_ms"),
         )
         if since:
-            stmt = stmt.where(PredictionModel.created_at >= since)
+            # cast: version-proof against SQLAlchemy stubs (see drift_events.py)
+            stmt = stmt.where(cast(Any, PredictionModel).created_at >= since)
 
         result = await self.session.execute(stmt)
         row = result.one()

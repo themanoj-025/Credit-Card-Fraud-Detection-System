@@ -11,6 +11,7 @@ Resilience:
 """
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
@@ -82,8 +83,10 @@ async def explain_transaction(
         narrative = None
         case_narrator = get_case_narrator()
         if case_narrator is not None:
+            # Any: the narrator is a duck-typed app.state attribute
+            narrator: Any = case_narrator
             shap_features = result.get("explanation", {}).get("top_features", [])
-            narrative = case_narrator.narrate(
+            narrative = narrator.narrate(
                 transaction=transaction,
                 fraud_probability=result["fraud_probability"],
                 shap_explanation=shap_features,

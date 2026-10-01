@@ -31,7 +31,7 @@ config = context.config
 
 # Override sqlalchemy.url with DATABASE_URL env var if set
 database_url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
-config.set_main_option("sqlalchemy.url", database_url)
+config.set_main_option("sqlalchemy.url", str(database_url))
 
 # Set up Python logging from the config file
 if config.config_file_name is not None:

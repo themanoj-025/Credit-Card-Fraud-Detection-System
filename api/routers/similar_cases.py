@@ -5,6 +5,7 @@ Retrieves similar historical flagged transactions using FAISS-based RAG.
 """
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
@@ -60,7 +61,9 @@ async def get_similar_cases(
     try:
         # Retrieve more than needed for pagination
         retrieve_k = min(limit + 1, 50)
-        similar = case_retriever.retrieve(transaction.model_dump(), top_k=retrieve_k)
+        # Any: duck-typed app.state attribute — retrieve() resolves at runtime
+        retriever: Any = case_retriever
+        similar = retriever.retrieve(transaction.model_dump(), top_k=retrieve_k)
 
         # Apply cursor-based offset if cursor is provided
         offset = 0

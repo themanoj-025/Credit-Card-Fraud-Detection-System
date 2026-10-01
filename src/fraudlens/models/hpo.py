@@ -60,7 +60,8 @@ class HyperparameterOptimizer:
         self.timeout_seconds = timeout_seconds
         self.best_params: dict[str, Any] = {}
         self.best_score: float = 0.0
-        self.study = None
+        # Annotated: Study assigned later after optimization completes
+        self.study: Any = None
 
     def _cv_score(
         self,

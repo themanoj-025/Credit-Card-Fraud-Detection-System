@@ -5,7 +5,7 @@ Abstract base class with common CRUD operations for all repositories.
 """
 
 import logging
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, cast
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,8 +33,11 @@ class BaseRepository(Generic[ModelType]):
 
     async def get(self, id: Any) -> ModelType | None:
         """Get a record by primary key."""
+        # cast: the generic ModelType bound (Base) doesn't declare `id`
+        # statically; every concrete model defines it. Attribute access on
+        # Any is version-proof across SQLAlchemy stub generations.
         result = await self.session.execute(
-            select(self.model_class).where(self.model_class.id == id)
+            select(self.model_class).where(cast(Any, self.model_class).id == id)
         )
         return result.scalar_one_or_none()
 
@@ -58,7 +61,7 @@ class BaseRepository(Generic[ModelType]):
 
     async def count(self, **filters: Any) -> int:
         """Count records with optional filters."""
-        stmt = select(func.count(self.model_class.id))
+        stmt = select(func.count(cast(Any, self.model_class).id))
         for key, value in filters.items():
             if hasattr(self.model_class, key):
                 stmt = stmt.where(getattr(self.model_class, key) == value)

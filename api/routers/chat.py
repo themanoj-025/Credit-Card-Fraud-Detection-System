@@ -12,6 +12,7 @@ Resilience:
 """
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
@@ -138,17 +139,17 @@ async def analyst_chat(
 
 
 @_CHAT_RETRY
-def _call_chat_llm(client: object, messages: list) -> str:
+def _call_chat_llm(client: Any, messages: list) -> str:
     """Make the Anthropic API call with retry logic.
 
     Uses tenacity for retry with exponential backoff.
     """
-    # mypy no-any-return: `client.messages.create` returns Any. Cast the
-    # Anthropic client to the real type at the call site.
+    # client is duck-typed (Any): messages.create returns Any, so cast the
+    # final str explicitly for no-any-return.
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=1000,
         temperature=0.3,
         messages=messages,
     )
-    return response.content[0].text.strip()
+    return str(response.content[0].text.strip())

@@ -6,6 +6,7 @@ Handles loading the credit card fraud dataset and providing basic statistics.
 
 import logging
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -143,7 +144,9 @@ class DataLoader:
             raise ValueError("Dataset not loaded. Call load() first.")
 
         fraud_sample = self.df[self.df["Class"] == 1].iloc[0]
-        return fraud_sample.drop("Class").to_dict()
+        # pandas .to_dict() is typed as Any; the contract is dict[str, Any]
+        sample: dict[Any, Any] = dict(fraud_sample.drop("Class").to_dict())
+        return sample
 
 
 def load_data(

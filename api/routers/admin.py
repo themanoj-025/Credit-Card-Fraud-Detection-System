@@ -9,13 +9,16 @@ import hashlib
 import logging
 import os
 import secrets
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
+# Optional-import fallback pattern (see api/providers.py)
+SQLAlchemyError: Any
 try:
     from sqlalchemy.exc import SQLAlchemyError
-except ImportError:
+except ImportError:  # pragma: no cover — SQLAlchemy is a hard runtime dep
     SQLAlchemyError = Exception
 
 from api.auth import require_admin_key

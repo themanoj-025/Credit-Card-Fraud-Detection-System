@@ -145,9 +145,11 @@ def setup_logger(
 
         def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:
             record = old_factory(*args, **kwargs)
-            if not hasattr(record, "extra_fields"):
-                record.extra_fields = {}
-            record.extra_fields.update(context)
+            # Context fields are attached dynamically; getattr keeps this
+            # duck-typed under mypy across LogRecord stub versions.
+            record_fields: dict = getattr(record, "extra_fields", {})
+            record_fields.update(context)
+            record.extra_fields = record_fields
             return record
 
         logging.setLogRecordFactory(record_factory)

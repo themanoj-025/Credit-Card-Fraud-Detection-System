@@ -35,8 +35,8 @@ class FraudPredictor:
 
     def __init__(
         self,
-        model=None,
-        scaler=None,
+        model: Any = None,
+        scaler: Any = None,
         feature_names: list[str] | None = None,
         threshold: float = 0.5,
         max_shap_features: int = MAX_SHAP_FEATURES,
@@ -54,7 +54,8 @@ class FraudPredictor:
         self.feature_names = feature_names or ALL_FEATURES
         self.threshold = threshold
         self.max_shap_features = max_shap_features
-        self.explainer = None
+        # shap explainer handle (TreeExplainer | KernelExplainer) — duck-typed
+        self.explainer: Any = None
         self._shap_initialized = False
 
     def load_model(self, model_path: str) -> "FraudPredictor":
@@ -155,7 +156,7 @@ class FraudPredictor:
         return result
 
     @staticmethod
-    def _extract_shap_values(shap_values, idx: int = 0) -> Any:
+    def _extract_shap_values(shap_values: Any, idx: int = 0) -> Any:
         """Extract SHAP values for the positive class, handling different SHAP output shapes."""
         # Newer SHAP (TreeExplainer) returns shape (n_samples, n_features, n_classes) for multi-class
         # Older SHAP returns list of arrays [neg_class_vals, pos_class_vals]
@@ -237,7 +238,7 @@ class FraudPredictor:
 
         return " | ".join(parts) if parts else "No strong individual feature drivers"
 
-    def _extract_global_shap_values(self, shap_values) -> Any:
+    def _extract_global_shap_values(self, shap_values: Any) -> Any:
         """Extract global SHAP values, handling different output shapes."""
         if isinstance(shap_values, list):
             return shap_values[1]

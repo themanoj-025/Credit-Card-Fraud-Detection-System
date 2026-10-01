@@ -131,7 +131,9 @@ class EmbeddingProjector:
             raise RuntimeError(
                 "Projector not fitted. Call fit() first with historical data."
             )
-        return self.transformer.transform(X).astype(np.float32)
+        # transformer is duck-typed (sklearn-compatible projector)
+        transformer: Any = self.transformer
+        return np.asarray(transformer.transform(X), dtype=np.float32)
 
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
         """Fit and transform in one step."""
@@ -173,7 +175,9 @@ class SimilarCaseRetriever:
         self.top_k = top_k
         self.use_projection = use_projection
         self.projection_components = projection_components
-        self.index = None
+        # Annotated: FAISS handles are duck-typed (faiss has no stubs); the
+        # index is built in build_index()/load()
+        self.index: Any = None
         self.historical_cases: pd.DataFrame | None = None
         self.projector: EmbeddingProjector | None = None
         self._feature_columns: list[str] = []
@@ -301,12 +305,12 @@ class SimilarCaseRetriever:
         query = np.ascontiguousarray(query)
         self._faiss.normalize_L2(query)
 
-        # Search
+        # Search (index guaranteed non-None by the guard above)
         scores, indices = self.index.search(query, min(k, self.index.ntotal))
 
         results = []
         for idx, score in zip(indices[0], scores[0]):
-            case = self.historical_cases.iloc[idx]
+            case = self.historical_cases.iloc[idx]  # type: ignore[union-attr]
             results.append(
                 {
                     "similarity_score": round(float(score), 4),
@@ -331,7 +335,9 @@ class SimilarCaseRetriever:
 
         Path(path).mkdir(parents=True, exist_ok=True)
         self._faiss.write_index(self.index, str(Path(path) / "index.faiss"))
-        self.historical_cases.to_csv(Path(path) / "historical_cases.csv", index=False)
+        self.historical_cases.to_csv(  # type: ignore[union-attr]
+            Path(path) / "historical_cases.csv", index=False
+        )
 
         # Save projector state if used
         if self.use_projection and self.projector is not None:
