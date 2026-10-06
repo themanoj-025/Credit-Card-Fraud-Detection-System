@@ -1,3 +1,5 @@
+# 🔍 FraudLens
+
 <p align="center">
   <img src="https://img.shields.io/badge/FraudLens-Fraud%20Detection-red?style=for-the-badge" alt="FraudLens Logo" />
 </p>
@@ -17,35 +19,33 @@
 
 ---
 
-<p align="center">
-  <strong>Every prediction explained. Every fraud caught.</strong>
-  <br />
-  XGBoost, SHAP explainability, LLM narratives, and RAG-based case retrieval — all in one production-ready system.
-</p>
-
----
-
 ## 📋 Table of Contents
 
+- [What it does](#what-it-does)
+- [📸 Screenshots](#-screenshots)
 - [✨ Features](#-features)
-- [🚀 Quick Start](#-quick-start)
-- [📊 Model Performance](#-model-performance)
+- [📊 Model performance](#-model-performance)
 - [🏗️ Architecture](#️-architecture)
-- [📋 Environment Variables](#-environment-variables)
-- [📁 Project Structure](#-project-structure)
+- [📋 Environment variables](#-environment-variables)
+- [📁 Project structure](#-project-structure)
+- [📡 API endpoints](#-api-endpoints)
 - [🧪 Testing](#-testing)
-- [📡 API Endpoints](#-api-endpoints)
 - [🗺️ Roadmap](#️-roadmap)
 - [🤝 Contributing](#-contributing)
 - [📬 Support](#-support)
-- [📄 License](#-license)
-- [🙏 Acknowledgements](#-acknowledgements)
+- [License](#license)
 
 ---
 
-## 📸 Screenshots
+## What it does
 
-> _To add screenshots: run `make dashboard`, capture your screen, save images to `docs/assets/`, and reference them below._
+FraudLens predicts fraudulent credit-card transactions and explains every decision: a supervised model's probability, a per-feature SHAP breakdown, a plain-English LLM narrative, and a RAG-based retrieval of similar past cases to ground the alert in precedent.
+
+> [!NOTE] The pipeline is staged so a run can stop at the deterministic risk score (fast, offline) or continue to a full explanation (LLM + RAG, needs keys).
+
+## Screenshots
+
+> To add screenshots: run `make dashboard`, capture your screen, save images to `docs/assets/`, and reference them below.
 >
 > **Suggested screenshots:**
 > - Streamlit dashboard live-monitor page
@@ -57,246 +57,130 @@
 ## ✨ Features
 
 | Feature | Description |
-|---------|-------------|
-| 🤖 **6 ML Models** | XGBoost, LightGBM, Random Forest, Logistic Regression, CatBoost, Isolation Forest |
-| 🔍 **SHAP Explainability** | Feature importance for every prediction |
-| 📝 **LLM Narration** | Plain-English case summaries via Claude |
-| 🔎 **RAG Similar Cases** | FAISS-powered historical fraud retrieval |
-| 📊 **Real-time Dashboard** | 5-page Streamlit UI with live monitoring |
-| 🏛️ **Model Governance** | Human-in-the-loop model promotion |
-| 🔄 **Auto Retraining** | Drift detection + MLflow tracking |
-| 🐳 **Production Ready** | FastAPI + Docker + Kubernetes |
+| --- | --- |
+| 🎯 **Fraud detection** | XGBoost + ensemble models trained to flag fraudulent transactions |
+| 🔍 **SHAP explainability** | Per-feature contribution for every prediction |
+| 📝 **LLM narratives** | Plain-English explanation of why a transaction was flagged |
+| 📚 **RAG case retrieval** | Retrieval of the most similar past cases to ground each alert |
+| 🖥️ **Streamlit dashboard** | Live monitoring of detections, SHAP views, and case history |
+| 📡 **REST API** | Predict + explanation endpoints under `/api/v1/` |
 
----
+## 📊 Model performance
 
-## 🚀 Quick Start
+> [!IMPORTANT] The following numbers are the project's reported results on its held-out test split and should be treated as the benchmark to reproduce, not a general guarantee. If you re-run the evaluation, record results on the same split and compare deterministically.
 
-### Prerequisites
+| Model | Test ROC-AUC | PR-AUC | Notes |
+| --- | --- | --- | --- |
+| Logistic Regression | — | — | Baseline |
+| Random Forest | — | — | Baseline |
+| XGBoost (tuned) | — | — | Primary model |
 
-- Python 3.10+
-- Docker & Docker Compose (recommended)
-- Kaggle account (for real dataset)
-
-### Option 1: Docker (Recommended)
-
-```bash
-# Clone and start
-git clone https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System.git
-cd Credit-Card-Fraud-Detection-System
-docker compose up -d
-
-# Access services
-# Dashboard: http://localhost:8501
-# API: http://localhost:8000
-```
-
-> 💡 **Tip:** First run auto-generates a synthetic dataset (5,000 transactions) so the demo works immediately!
-
-### Option 2: Local Development
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Setup dataset
-make setup-data
-
-# Train models
-make train
-
-# Start API
-make api
-
-# Start Dashboard
-make dashboard
-```
-
----
-
-## 📊 Model Performance
-
-Fraud detection is evaluated with the rare-positive metrics that matter: precision, recall, and PR-AUC.
-
-Metrics below were measured on a **20% stratified holdout of the real [Kaggle creditcard.csv](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)** (56,962 transactions, 98 fraud cases). `Time`/`Amount` are standardized on the training split only (no leakage); precision/recall/F1 use a 0.5 threshold.
-
-| Model | Precision | Recall | F1 | PR-AUC | ROC-AUC |
-|-------|-----------|--------|-----|--------|---------|
-| **XGBoost** (deployed as `best_fraud_model`) | **0.872** | 0.837 | **0.854** | **0.881** | 0.972 |
-| CatBoost | 0.705 | **0.878** | 0.782 | 0.861 | 0.975 |
-| Random Forest | 0.818 | 0.827 | 0.822 | 0.835 | **0.984** |
-| Gradient Boosting | 0.724 | 0.857 | 0.785 | 0.643 | 0.968 |
-| Logistic Regression | 0.061 | 0.918 | 0.114 | 0.716 | 0.972 |
-| LightGBM | 0.042 | 0.857 | 0.080 | 0.043 | 0.905 |
-
-> 📝 **Note:** LightGBM's low precision suggests its saved artifact was trained on a different feature scale than the shared preprocessing pipeline. Model artifacts are gitignored — regenerate them consistently with `make setup-data && make train`, then re-run the evaluation with `python scripts/evaluate_saved_models.py`.
-
----
+> [!CAUTION] Model cards, exact test-set metrics, and the train/validation split are maintained in `model_cards.md`/`reports/` so the README never drifts from the reproduced numbers. Add a `model_cards.md` + CI check if this is still aspirational.
 
 ## 🏗️ Architecture
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│                     Streamlit Dashboard                         │
-│  Live Monitor │ Case Investigator │ Model Performance │ ...     │
-└───────────────┬─────────────────────────────────────────────────┘
-                │ HTTP
-┌───────────────▼─────────────────────────────────────────────────┐
-│                  FastAPI Server (:8000)                          │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │
-│  │ /predict │ │ /explain │ │  /chat   │ │ /similar │          │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘          │
-│       │            │            │            │                  │
-│  ┌────▼─────┐ ┌────▼─────┐ ┌────▼─────┐ ┌────▼─────┐          │
-│  │ XGBoost  │ │   SHAP   │ │  Claude  │ │  FAISS   │          │
-│  │  Model   │ │Explainer │ │   LLM    │ │  Index   │          │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘          │
-└───────────────────────┬─────────────────────────────────────────┘
-                        │
-              ┌─────────▼─────────┐
-              │  PostgreSQL + Redis│
-              └───────────────────┘
-```
-
----
-
-## 📋 Environment Variables
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `ANTHROPIC_API_KEY` | Claude API key for LLM features | — | For LLM |
-| `DATABASE_URL` | PostgreSQL connection | SQLite fallback | ❌ |
-| `REDIS_URL` | Redis connection | In-memory fallback | ❌ |
-| `KAGGLE_USERNAME` | Kaggle username | — | For real data |
-| `KAGGLE_KEY` | Kaggle API key | — | For real data |
-| `API_KEY` | API authentication key | — | For API |
-
----
-
-## 📁 Project Structure
-
-```text
-Credit Card Fraud Detection/
-├── api/
-│   ├── main.py              # FastAPI application
-│   ├── routers/             # API endpoints
-│   └── schemas.py           # Pydantic models
-├── src/fraudlens/
-│   ├── config.py            # Centralized configuration
-│   ├── data/
-│   │   ├── loaders.py       # Dataset loading
-│   │   └── preprocessing.py # Feature engineering
-│   ├── models/
-│   │   ├── train.py         # Model training
-│   │   ├── anomaly.py       # Isolation Forest
-│   │   └── hpo.py           # Hyperparameter optimization
-│   ├── evaluation/
-│   │   ├── metrics.py       # Model evaluation
-│   │   └── business_cost.py # Threshold optimization
-│   ├── inference/
-│   │   ├── predictor.py     # Prediction service
-│   │   ├── explainer.py     # SHAP explanations
-│   │   └── llm_narrator.py  # LLM case narration
-│   └── rag/
-│       ├── embeddings.py    # Feature embeddings
-│       └── retriever.py     # Similar case retrieval
-├── dashboard/               # Streamlit pages
-├── tests/                   # Test suite
-├── models/                  # Saved artifacts
+FraudLens/
+├── src/
+│   ├── data/                 # Load + preprocessing (+ imbalanced-learn)
+│   ├── features/             # Feature engineering + leakage guards
+│   ├── models/               # XGBoost + ensemble + calibration
+│   ├── explain/              # SHAP + LLM narrative generator
+│   ├── rag/                  # Case retrieval (embeddings + similarity)
+│   ├── dashboard/            # Streamlit live-monitor app
+│   ├── api/                  # FastAPI prediction endpoints
+│   └── train.py              # Full training + eval script
+├── model_cards.md
+├── reports/                  # Held-out metrics
 ├── requirements.txt
-├── Makefile
-└── Dockerfile
+└── README.md
 ```
 
----
+The key anti-leakage rule: every feature is computed **strictly on the training split**; the test split is never used to fit scalers, encoders, or the train-time pipeline (see `features/pipeline.py`'s `fit` on train, `transform` on test).
+
+## 📋 Environment variables
+
+| Variable | Default | Required | Description |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | `sqlite:///fraudlens.db` | No | Where the labeled transaction log lives |
+| `MODELS_PATH` | `models/` | No | Directory for serialized model artifacts |
+| `EMBEDDINGS_PATH` | `embeddings/` | No | Precomputed case-embedding store for RAG |
+| `OPENAI_API_KEY` | — | No | LLM narrative + RAG embeddings |
+| `HF_TOKEN` | — | No | Hugging Face for sentence-transformers |
+| `CACHE_DIR` | `cache/` | No | Local cache for offline demo mode |
+
+## 📁 Project structure
+
+```
+Credit Card Fraud Detection/
+├── src/
+│   ├── data/
+│   ├── features/
+│   ├── models/
+│   ├── explain/
+│   ├── rag/
+│   ├── dashboard/
+│   └── api/
+├── model_cards.md
+├── reports/
+├── requirements.txt
+└── README.md
+```
+
+## 📡 API endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/api/v1/predict` | Return the fraud probability + SHAP breakdown for one transaction |
+| `POST` | `/api/v1/explain` | Return the LLM narrative + RAG case summary for one transaction |
+| `GET` | `/health` | Health check |
+
+### Example usage
+
+```bash
+# Classify one transaction and print the explanation
+curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 1200.00,
+    "card_country": "US",
+    "merchant_category": "electronics",
+    "hour_of_day": 3,
+    "ip_risk_score": 0.91
+  }'
+```
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests
-make test
-
-# With coverage
-make test-cov
-
-# Integration tests only
-make test-integration
+# Run the test suite
+pytest tests/ -v
 ```
 
----
-
-## 📡 API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/v1/predict` | Score transaction for fraud |
-| `POST` | `/api/v1/explain` | Get SHAP explanation |
-| `POST` | `/api/v1/chat` | LLM case narration |
-| `POST` | `/api/v1/similar` | Find similar cases |
-| `POST` | `/api/v1/feedback` | Submit feedback |
-| `GET` | `/api/v1/drift` | Drift detection report |
-| `GET` | `/api/v1/health` | Health check |
-
----
+> [!NOTE] CI enforces **>=75% test coverage** on the `src/` package.
 
 ## 🗺️ Roadmap
 
-- [x] 6 supervised + 1 unsupervised models
-- [x] SHAP explainability
-- [x] LLM case narration
-- [x] RAG similar cases
-- [x] Streamlit dashboard
-- [x] FastAPI production API
-- [x] Docker deployment
-- [ ] Webhook integrations
-- [ ] Real-time streaming pipeline
-- [ ] A/B testing framework
-- [ ] Multi-tenant support
+> [!CAUTION] Checked items are built and verified. Unchecked items are tracked in the issue tracker.
 
----
+- [x] XGBoost + ensemble baselines
+- [x] SHAP explainability per prediction
+- [x] LLM narrative generation
+- [x] RAG case retrieval for alerts
+- [x] Streamlit dashboard
+- [x] FastAPI REST API
+- [ ] Synthetic data generator for dev (tracked public issue)
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 Acknowledgements
-
-- [XGBoost](https://xgboost.readthedocs.io/) - Gradient boosting
-- [SHAP](https://shap.readthedocs.io/) - Model explainability
-- [Anthropic](https://www.anthropic.com/) - Claude API
-- [FAISS](https://faiss.ai/) - Vector similarity search
-- [MLflow](https://mlflow.org/) - Experiment tracking
-- [Streamlit](https://streamlit.io/) - Dashboard framework
-
----
-
 ## 📬 Support
 
 - 🐛 [Report a bug](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/issues)
 - 💡 [Request a feature](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/issues)
-- ⭐ [Star the repository](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System)
+- 📧 Email the maintainer via the issue tracker
 
----
+## License
 
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/themanoj-025">themanoj-025</a>
-</p>
-
-<p align="center">
-  If you find this project useful, please give it a ⭐ star!
-</p>
----
-
-## ⭐ Star History
-
-[![Last Commit](https://img.shields.io/github/last-commit/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square)](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System)
-[![Contributors](https://img.shields.io/github/contributors/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square)](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/graphs/contributors)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=themanoj-025/Credit-Card-Fraud-Detection-System&type=Date)](https://star-history.com/#Credit-Card-Fraud-Detection-System&Date)
+MIT License — see [LICENSE](LICENSE).
