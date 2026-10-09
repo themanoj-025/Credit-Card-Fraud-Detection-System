@@ -1,0 +1,97 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Python Dependencies
+# ════════════════════════════════════════════════════════════════
+
+# ─── Data Science & ML ─────────────────────────────────────────
+pandas>=2.3.3,<3.0.0
+numpy>=2.5.2,<3.0.0
+scikit-learn>=1.9.0,<2.0.0
+xgboost>=1.7.0,<2.0.0
+# >=4.6.0: PYSEC-2024-231 (fixed in 4.6.0); 4.x keeps the LGBMClassifier sklearn API
+lightgbm>=4.6.0,<5.0.0
+imbalanced-learn>=0.14.2,<1.0.0
+
+# ─── Explainability ────────────────────────────────────────────
+shap>=0.49.1,<1.0.0
+
+# ─── LLM Features ──────────────────────────────────────────────
+anthropic>=1.6.0,<2.0.0       # LLM case narrator + analyst copilot
+faiss-cpu>=1.15.1,<2.0.0        # RAG similar-case retrieval
+
+# ─── Database & Persistence ───────────────────────────────────
+sqlalchemy[asyncio]>=2.0.54,<3.0.0
+alembic>=1.20.0,<2.0.0
+asyncpg>=0.28.0,<1.0.0
+aiosqlite>=0.19.0,<1.0.0
+psycopg2-binary>=2.9.13,<3.0.0
+
+# ─── Visualization ─────────────────────────────────────────────
+matplotlib>=3.10.9,<4.0.0
+seaborn>=0.12.0,<1.0.0
+plotly>=7.1.0,<8.0.0
+
+# ─── Dimensionality Reduction ──────────────────────────────────
+umap-learn>=0.5.3,<1.0.0
+scipy>=1.15.3,<2.0.0
+
+# ─── API ───────────────────────────────────────────────────────
+fastapi>=0.116.0,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
+uvicorn>=0.53.0,<1.0.0
+pydantic>=2.13.5
+pydantic-settings>=2.15.0,<3.0.0
+httpx>=0.24.0,<1.0.0
+slowapi>=0.1.9,<1.0.0            # Rate limiting (Redis-backed)
+
+# ─── Dashboard ─────────────────────────────────────────────────
+streamlit>=1.64.0,<2.0.0
+
+# ─── Experiment Tracking ───────────────────────────────────────
+mlflow>=3.16.1,<4.0.0
+
+# ─── Model Serialization ───────────────────────────────────────
+joblib>=1.6.0,<2.0.0
+
+# ─── Drift Detection & Monitoring ──────────────────────────────
+# evidently>=0.7.23,<1.0.0  # SUSPENDED 2026-09-23: caps plotly<6, conflicting with the
+#   plotly>=7.1.0 pin above; not imported anywhere in src/api/app/scripts. Re-enable
+#   (or move to an extras group with plotly<6) when drift monitoring lands.
+
+# ─── Testing ───────────────────────────────────────────────────
+# pytest>=7.3.0,<8.0.0  # widened 2026-09-23: locust>=2.46 (kept for tests/load/locustfile.py)
+#   requires pytest>=8.3.3
+pytest>=9.0.3,<10.0.0  # >=9.0.3: PYSEC-2026-1845 (fixed in 9.0.3)
+pytest-cov>=7.1.0,<8.0.0
+locust>=2.46.3,<3.0.0              # Load testing
+respx>=0.23.1,<1.0.0               # HTTP mock for integration tests
+pytest-xdist>=3.3.0,<4.0.0         # Parallel test execution
+pytest-asyncio>=1.4.0,<2.0.0       # Async test support
+
+# ─── Performance ──────────────────────────────────────────
+redis>=8.1.0,<9.0.0               # Production caching + rate limiting
+httpx>=0.24.0,<1.0.0               # HTTP client with connection pooling
+
+
+# ─── Hyperparameter Optimization ───────────────────────────
+optuna>=5.0.0,<6.0.0
+
+# ─── Observability ───────────────────────────────────────
+structlog>=23.0.0,<24.0.0             # Structured JSON logging
+prometheus-fastapi-instrumentator>=8.1,<9.0  # Prometheus metrics; 8.1+ required for fastapi>=0.116 router handling
+opentelemetry-api>=1.22.0,<2.0.0       # OpenTelemetry API
+opentelemetry-sdk>=1.44.0,<2.0.0       # OpenTelemetry SDK
+opentelemetry-exporter-otlp>=1.22.0,<2.0.0  # OTLP exporter (Jaeger)
+opentelemetry-instrumentation-fastapi>=0.41b0,<1.0.0  # FastAPI auto-instrumentation
+
+# ─── Code Quality ──────────────────────────────────────────────
+black>=26.5.1,<27.0.0
+isort>=5.12.0,<6.0.0
+ruff>=0.16.8,<1.0.0           # Replaces flake8 + typeguard
+pre-commit>=3.0.0,<4.0.0       # Pre-commit hooks
+
+# ─── Resilience ────────────────────────────────────────────
+tenacity>=9.1.4,<10.0.0                 # Retry logic with exponential backoff
+
+# ─── Utilities ─────────────────────────────────────────────────
+tqdm>=4.70.1,<5.0.0
+python-dotenv>=1.2.3,<2.0.0
+requests>=2.28.0,<3.0.0

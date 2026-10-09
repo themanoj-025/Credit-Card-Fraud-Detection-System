@@ -1,0 +1,187 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Docker Compose
+# ════════════════════════════════════════════════════════════════
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  # ─── PostgreSQL ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: fraudlens-postgres
+    environment:
+      POSTGRES_DB: fraudlens
+      POSTGRES_USER: fraudlens
+      POSTGRES_PASSWORD: fraudlens_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraudlens -d fraudlens"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - fraudlens-net
+
+  # ─── Redis (optional — for production rate limiting) ────────
+  redis:
+    image: redis:7-alpine
+    container_name: fraudlens-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - fraudlens-net
+    profiles:
+      - prod
+
+  # ─── Jaeger (distributed tracing) ────────────────────────────
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    container_name: fraudlens-jaeger
+    ports:
+      - "16686:16686"   # UI
+      - "4317:4317"     # OTLP gRPC
+      - "4318:4318"     # OTLP HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: unless-stopped
+    networks:
+      - fraudlens-net
+
+  # ─── Prometheus (metrics scraping) ───────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: fraudlens-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - fraudlens-net
+
+  # ─── Grafana (metrics dashboards) ────────────────────────────
+  grafana:
+    image: grafana/grafana:10.3.0
+    container_name: fraudlens-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./infra/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json:ro
+      - ./infra/grafana/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./infra/grafana/provisioning/dashboards/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/dashboard.json
+      - GF_INSTALL_PLUGINS=
+    restart: unless-stopped
+    networks:
+      - fraudlens-net
+    depends_on:
+      - prometheus
+
+  # ─── FraudLens API ───────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fraudlens-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - KAGGLE_USERNAME=${KAGGLE_USERNAME:-}
+      - KAGGLE_KEY=${KAGGLE_KEY:-}
+      - DATABASE_URL=postgresql+asyncpg://fraudlens:fraudlens_dev@postgres:5432/fraudlens
+      - REDIS_URL=redis://redis:6379/0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c 'python -c "from src.fraudlens.data.download import ensure_data_ready; ensure_data_ready()" && uvicorn api.main:app --host 0.0.0.0 --port 8000'
+    networks:
+      - fraudlens-net
+  # ─── Streamlit Dashboard ────────────────────────────────────
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fraudlens-dashboard
+    command: >
+      streamlit run app/streamlit_app.py
+      --server.port 8501
+      --server.address 0.0.0.0
+      --server.headless true
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - fraudlens-net
+
+  # ─── MLflow Tracking Server ─────────────────────────────────
+  # Opt-in: only start when --profile training is used
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.3.0
+    container_name: fraudlens-mlflow
+    profiles:
+      - training
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri postgresql://fraudlens:fraudlens_dev@postgres:5432/fraudlens
+      --default-artifact-root /mlflow/mlruns
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fraudlens-net
+
+networks:
+  fraudlens-net:
+    driver: bridge

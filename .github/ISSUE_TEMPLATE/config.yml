@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FraudLens Security Vulnerability
+    url: https://github.com/yourusername/credit-card-fraud-detection/security/policy
+    about: Please report security vulnerabilities via the SECURITY.md policy.
+  - name: FraudLens Discussion
+    url: https://github.com/yourusername/credit-card-fraud-detection/discussions
+    about: For questions, feature ideas, or general discussion.

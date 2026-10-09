@@ -1,0 +1,38 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Services
+# ════════════════════════════════════════════════════════════════
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraudlens-api
+  labels:
+    app: fraudlens
+    component: api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+  selector:
+    app: fraudlens
+    component: api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraudlens-dashboard
+  labels:
+    app: fraudlens
+    component: dashboard
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8501
+      targetPort: 8501
+      protocol: TCP
+  selector:
+    app: fraudlens
+    component: dashboard

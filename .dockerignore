@@ -1,0 +1,56 @@
+# ── FraudLens — .dockerignore ──────────────────────────────────────────
+
+# VCS metadata
+.git
+.gitignore
+.gitattributes
+.dvc
+
+# Python caches / artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Large runtime data (bind-mounted / generated at boot)
+# NOTE: do NOT exclude models/ — the Dockerfile serve stage runs
+# `COPY models/ ./models/`; excluding it would break the build.
+data/
+mlruns/
+logs/
+reports/figures/
+
+# IDE / editor config
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# CI / agent config
+.github/
+.gemini/
+.cursorrules
+AGENTS.md
+
+PROJECT_ANALYSIS.md
+
+# Infra configs referenced by compose (not needed in image)
+infra/

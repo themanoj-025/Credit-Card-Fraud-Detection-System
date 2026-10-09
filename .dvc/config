@@ -1,0 +1,4 @@
+[core]
+    remote = storage
+['remote "storage"']
+    url = C:/Users/jm270/AppData/Local/Temp/dvc-storage

@@ -1,0 +1,59 @@
+# ════════════════════════════════════════════════════════════════
+# FraudLens — Pre-commit Hooks
+# Runs on every `git commit` to catch issues before they reach CI.
+# ════════════════════════════════════════════════════════════════
+
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        # python3 (not python3.11): the CI runner only has the setup-python
+        # version (3.12); pinning 3.11 makes pre-commit fail to build the
+        # hook env ("failed to find interpreter ... python_spec='python3.11'").
+        # Black's output is controlled by target-version, not the running
+        # interpreter, so any 3.x produces identical formatting.
+        language_version: python3
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile=black]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.1
+    hooks:
+      - id: mypy
+        language: python
+        types: [python]
+        args: [--strict, --ignore-missing-imports]
+        additional_dependencies:
+          - pydantic
+          - pydantic-settings
+          - types-requests
+        files: ^src/fraudlens/(prediction|explainability|api)/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--multi]  # k8s manifests under infra/k8s are multi-document YAML
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
