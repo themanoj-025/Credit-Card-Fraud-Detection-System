@@ -1,0 +1,14 @@
+{
+  "repository": "Credit Card Fraud Detection",
+  "mode": "AUDIT_ONLY",
+  "aggressiveness": 3,
+  "phase": 9,
+  "status": "COMPLETED_AUDIT",
+  "baseline_sha": "738c88413ca347edb4c51defc6b545456759132a",
+  "total_candidates": 103,
+  "t0_count": 63,
+  "t1_count": 0,
+  "t2_count": 38,
+  "t3_count": 2,
+  "updated_at": "2026-10-11T07:39:18.533Z"
+}
