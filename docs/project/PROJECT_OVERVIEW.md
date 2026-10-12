@@ -23,9 +23,6 @@
 - [15. Glossary](#15-glossary)
 - [16. Changelog / Version History Summary](#16-changelog--version-history-summary)
 - [17. Appendix](#17-appendix)
-- [Security Notes](#security-notes)
-- [Performance Considerations](#performance-considerations)
-- [Suggested Onboarding Path](#suggested-onboarding-path)
 
 ---
 

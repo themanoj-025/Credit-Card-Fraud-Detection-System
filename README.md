@@ -22,7 +22,7 @@
 ## 📋 Table of Contents
 
 - [What it does](#what-it-does)
-- [📸 Screenshots](#-screenshots)
+- [📸 Screenshots](#screenshots)
 - [✨ Features](#-features)
 - [📊 Model performance](#-model-performance)
 - [🏗️ Architecture](#️-architecture)
@@ -111,7 +111,7 @@ The key anti-leakage rule: every feature is computed **strictly on the training 
 
 ## 📁 Project structure
 
-```
+```text
 Credit Card Fraud Detection/
 ├── src/
 │   ├── data/
@@ -184,3 +184,4 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 ## License
 
 MIT License — see [LICENSE](LICENSE).
+
