@@ -111,7 +111,7 @@ The key anti-leakage rule: every feature is computed **strictly on the training 
 
 ## 📁 Project structure
 
-```
+```text
 Credit Card Fraud Detection/
 ├── src/
 │   ├── data/
