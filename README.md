@@ -22,7 +22,7 @@
 ## 📋 Table of Contents
 
 - [What it does](#what-it-does)
-- [📸 Screenshots](#-screenshots)
+- [📸 Screenshots](#screenshots)
 - [✨ Features](#-features)
 - [📊 Model performance](#-model-performance)
 - [🏗️ Architecture](#️-architecture)
