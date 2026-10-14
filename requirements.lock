@@ -172,7 +172,7 @@ httpcore2==2.13.0
     # via httpx2
 httptools==0.8.0
     # via streamlit
-httpx==0.24.0
+httpx==0.28.1
     # via
     #   -r requirements.txt
     #   respx
@@ -228,7 +228,7 @@ llvmlite==0.49.0
     # via
     #   numba
     #   pynndescent
-locust==2.46.3
+locust==2.46.7
     # via -r requirements.txt
 mako==1.4.1
     # via alembic
@@ -243,11 +243,11 @@ matplotlib==3.11.2
     #   -r requirements.txt
     #   mlflow
     #   seaborn
-mlflow==3.16.1
+mlflow==3.17.1
     # via -r requirements.txt
-mlflow-skinny==3.16.1
+mlflow-skinny==3.17.1
     # via mlflow
-mlflow-tracing==3.16.1
+mlflow-tracing==3.17.1
     # via mlflow
 msgpack==1.2.1
     # via locust
@@ -256,7 +256,9 @@ multidict==6.7.1
     #   aiohttp
     #   yarl
 mypy-extensions==1.1.0
-    # via black
+    # via
+    #   black
+    #   isort
 narwhals==2.25.0
     # via
     #   altair
@@ -267,7 +269,6 @@ nodeenv==1.10.0
 numba==0.67.0
     # via
     #   pynndescent
-    #   shap
     #   umap-learn
 numpy==2.5.2
     # via
@@ -290,11 +291,13 @@ numpy==2.5.2
     #   streamlit
     #   umap-learn
     #   xgboost
-opentelemetry-api==1.22.0
+opentelemetry-api==1.45.1
     # via
     #   -r requirements.txt
+    #   fastapi
     #   mlflow-skinny
     #   mlflow-tracing
+    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
@@ -302,45 +305,52 @@ opentelemetry-api==1.22.0
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-otlp==1.22.0
+opentelemetry-exporter-http-transport==0.66b1
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp==1.45.1
     # via -r requirements.txt
-opentelemetry-exporter-otlp-proto-common==1.44.0
+opentelemetry-exporter-otlp-common==0.66b1
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.44.0
+opentelemetry-exporter-otlp-proto-common==1.45.1
+    # via
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-grpc==1.45.1
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.44.0
+opentelemetry-exporter-otlp-proto-http==1.45.1
     # via opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.65b0
+opentelemetry-instrumentation==0.66b1
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-asgi==0.65b0
+opentelemetry-instrumentation-asgi==0.66b1
     # via opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-fastapi==0.66b0
+opentelemetry-instrumentation-fastapi==0.66b1
     # via -r requirements.txt
-opentelemetry-proto==1.44.0
+opentelemetry-proto==1.45.1
     # via
     #   mlflow-skinny
     #   mlflow-tracing
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.44.0
+opentelemetry-sdk==1.45.1
     # via
     #   -r requirements.txt
     #   mlflow-skinny
     #   mlflow-tracing
+    #   opentelemetry-exporter-otlp-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.65b0
+opentelemetry-semantic-conventions==0.66b1
     # via
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-sdk
-opentelemetry-util-http==0.65b0
+opentelemetry-util-http==0.66b1
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
@@ -362,7 +372,6 @@ packaging==24.2
     #   shap
     #   skops
     #   streamlit
-    #   wheel
 pandas==2.3.3
     # via
     #   -r requirements.txt
@@ -392,7 +401,7 @@ prettytable==3.18.0
     # via skops
 prometheus-client==0.26.0
     # via prometheus-fastapi-instrumentator
-prometheus-fastapi-instrumentator==8.1
+prometheus-fastapi-instrumentator==8.1.0
     # via -r requirements.txt
 propcache==0.5.4
     # via
@@ -490,13 +499,14 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.28.0
+requests==2.34.2
     # via
     #   -r requirements.txt
     #   databricks-sdk
     #   docker
     #   locust
     #   mlflow-skinny
+    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-http
     #   python-socketio
     #   streamlit
@@ -506,20 +516,19 @@ rpds-py==2026.6.3
     # via
     #   jsonschema
     #   referencing
-ruff==0.16.10
+ruff==0.17.0
     # via -r requirements.txt
 scikit-learn==1.9.1
     # via
     #   -r requirements.txt
     #   imbalanced-learn
-    #   lightgbm
     #   mlflow
     #   pynndescent
     #   shap
     #   sklearn-compat
     #   skops
     #   umap-learn
-scipy==1.15.3
+scipy==1.18.1
     # via
     #   -r requirements.txt
     #   imbalanced-learn
@@ -533,7 +542,7 @@ scipy==1.15.3
     #   xgboost
 seaborn==0.12.0
     # via -r requirements.txt
-shap==0.49.1
+shap==0.53.0
     # via -r requirements.txt
 simple-websocket==1.1.0
     # via python-engineio
@@ -565,11 +574,11 @@ starlette==1.6.0
     #   mlflow-skinny
     #   prometheus-fastapi-instrumentator
     #   streamlit
-streamlit==1.64.0
+streamlit==1.65.0
     # via -r requirements.txt
-structlog==23.0.0
+structlog==23.3.0
     # via -r requirements.txt
-tenacity==9.1.4
+tenacity==9.2.1
     # via -r requirements.txt
 threadpoolctl==3.6.0
     # via
@@ -610,7 +619,6 @@ typing-extensions==4.16.0
     #   pydantic-core
     #   pytest-asyncio
     #   referencing
-    #   shap
     #   sqlalchemy
     #   starlette
     #   streamlit
@@ -651,15 +659,13 @@ werkzeug==3.1.8
     #   flask-cors
     #   flask-login
     #   locust
-wheel==0.48.0
-    # via lightgbm
 wrapt==2.3.0
     # via
     #   deprecated
     #   opentelemetry-instrumentation
 wsproto==1.3.2
     # via simple-websocket
-xgboost==1.7.0
+xgboost==1.7.6
     # via -r requirements.txt
 yarl==1.25.1
     # via aiohttp
