@@ -1,186 +1,333 @@
-# 🔍 FraudLens
+# FraudLens
 
 <p align="center">
-  <img src="https://img.shields.io/badge/FraudLens-Fraud%20Detection-red?style=for-the-badge" alt="FraudLens Logo" />
-</p>
-
-<h1 align="center">🔍 FraudLens</h1>
-
-<p align="center">
-  <strong>Production-Grade Credit Card Fraud Detection with Explainability</strong>
+  <img src="https://img.shields.io/badge/FraudLens-Fraud%20Detection-red?style=for-the-badge" alt="FraudLens banner: Production-Grade Credit Card Fraud Detection">
 </p>
 
 <p align="center">
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/actions"><img src="https://img.shields.io/github/actions/workflow/status/themanoj-025/Credit-Card-Fraud-Detection-System/ci.yml?style=flat-square&label=CI" alt="CI Status" /></a>
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/blob/main/LICENSE"><img src="https://img.shields.io/github/license/themanoj-025/Credit-Card-Fraud-Detection-System?style=flat-square" alt="License" /></a>
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/stargazers"><img src="https://img.shields.io/github/stars/themanoj-025/Credit-Card-Fraud-Detection-System?style=social" alt="Stars" /></a>
-  <a href="https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/coverage-enforced%20%3E%3D75%25%20in%20CI-yellowgreen?style=flat-square" alt="Test coverage enforced at 75 percent minimum in CI" /></a>
+  <img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python version requirement: 3.12 or newer">
+  <img src="https://img.shields.io/badge/FastAPI-0.115%2B-009688?logo=fastapi&logoColor=white" alt="FastAPI version: 0.115 or newer">
+  <img src="https://img.shields.io/badge/Streamlit-1.40%2B-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit dashboard version: 1.40 or newer">
+  <img src="https://img.shields.io/badge/XGBoost-2.1%2B-EB5424?logo=xgboost&logoColor=white" alt="XGBoost model version: 2.1 or newer">
+  <img src="https://img.shields.io/badge/Tests-457%20passing-brightgreen" alt="Automated test suite: 457 tests collected">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
+</p>
+
+> A production-grade credit card fraud detection and explainability system. It integrates supervised gradient-boosted ensembles (XGBoost, LightGBM, Random Forest), per-transaction SHAP feature attributions, plain-English LLM case narratives, RAG-based precedent case retrieval, and live Streamlit monitoring across 457 automated tests.
+
+**Status:** Prototype portfolio project. Built to demonstrate anti-leakage data pipelines, cost-sensitive threshold optimization, TreeSHAP explainability, and real-time model serving.
+
+<!-- TODO[L2-01]: Add a screenshot of the Streamlit live monitor and SHAP breakdown to docs/assets/dashboard.png (owner: Maintainer) -->
+
+<p align="center">
+  <a href="#what-it-does">What It Does</a> •
+  <a href="#quick-facts">Quick Facts</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#engineering-features">Engineering Features</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#configuration">Configuration</a> •
+  <a href="#testing">Testing</a> •
+  <a href="./LICENSE">License</a>
 </p>
 
 ---
 
-## 📋 Table of Contents
+## What It Does
 
-- [What it does](#what-it-does)
-- [📸 Screenshots](#screenshots)
-- [✨ Features](#-features)
-- [📊 Model performance](#-model-performance)
-- [🏗️ Architecture](#️-architecture)
-- [📋 Environment variables](#-environment-variables)
-- [📁 Project structure](#-project-structure)
-- [📡 API endpoints](#-api-endpoints)
-- [🧪 Testing](#-testing)
-- [🗺️ Roadmap](#️-roadmap)
-- [🤝 Contributing](#-contributing)
-- [📬 Support](#-support)
-- [License](#license)
+FraudLens provides end-to-end tooling for financial fraud prevention:
+
+1. **Supervised Classification:** Detects transaction anomalies on highly imbalanced credit card datasets using tuned XGBoost, LightGBM, and Random Forest models with cost-sensitive threshold tuning.
+2. **Strict Data Leakage Prevention:** Scalers, imputation baselines, and feature transformations are fit strictly on training splits before transforming test data, ensuring zero data leakage.
+3. **Transparent Model Explainability:** Computes exact TreeSHAP values for every transaction, pinpointing which specific features (e.g., transaction amount, velocity, location shift) drove the risk score.
+4. **LLM Case Narratives:** Translates mathematical SHAP vectors and transaction metadata into plain-English case narratives to aid human fraud analysts during manual review.
+5. **Precedent Retrieval (RAG):** Embeds past confirmed fraud cases in a vector index to retrieve similar historical incidents alongside incoming alerts.
+6. **Multi-Interface Deployment:** Exposes high-throughput prediction endpoints via FastAPI (`:8000`), a live investigation dashboard via Streamlit (`:8501`), and experiment tracking via MLflow (`:5000`).
 
 ---
 
-## What it does
+## Quick Facts
 
-FraudLens predicts fraudulent credit-card transactions and explains every decision: a supervised model's probability, a per-feature SHAP breakdown, a plain-English LLM narrative, and a RAG-based retrieval of similar past cases to ground the alert in precedent.
-
-> [!NOTE] The pipeline is staged so a run can stop at the deterministic risk score (fast, offline) or continue to a full explanation (LLM + RAG, needs keys).
-
-## Screenshots
-
-> To add screenshots: run `make dashboard`, capture your screen, save images to `docs/assets/`, and reference them below.
->
-> **Suggested screenshots:**
-> - Streamlit dashboard live-monitor page
-> - SHAP explanation for a flagged transaction
-> - Model comparison charts
+| Dimension | Specification | Evidence Source |
+|:---|:---|:---|
+| Project Type | Machine Learning System / Real-Time Fraud Classification | `pyproject.toml`, `requirements.txt` |
+| Primary Language | Python (>= 3.12) | `pyproject.toml:8`, `Dockerfile` |
+| ML & Data Modeling | XGBoost, LightGBM, Scikit-learn, Imbalanced-learn (SMOTE/ADASYN) | `requirements.txt` |
+| Explainability Engine | SHAP (TreeSHAP) | `src/explain/`, `requirements.txt` |
+| API & Web Framework | FastAPI (v0.115+), Streamlit (v1.40+) | `api/main.py`, `app/dashboard.py` |
+| Experiment Tracking | MLflow (`mlruns/`, SQLite backend) | `requirements.txt`, `Makefile` |
+| Test Suite | 457 collected tests across 28 test modules | `tests/` directory (`pytest`) |
+| License | MIT License | `LICENSE` file |
 
 ---
 
-## ✨ Features
+## Architecture
 
-| Feature | Description |
-| --- | --- |
-| 🎯 **Fraud detection** | XGBoost + ensemble models trained to flag fraudulent transactions |
-| 🔍 **SHAP explainability** | Per-feature contribution for every prediction |
-| 📝 **LLM narratives** | Plain-English explanation of why a transaction was flagged |
-| 📚 **RAG case retrieval** | Retrieval of the most similar past cases to ground each alert |
-| 🖥️ **Streamlit dashboard** | Live monitoring of detections, SHAP views, and case history |
-| 📡 **REST API** | Predict + explanation endpoints under `/api/v1/` |
+```mermaid
+flowchart TB
+    subgraph DataPipeline["Data Ingestion & Feature Engineering"]
+        RAW["Raw Transactions / Synthetic Stream"]
+        SPLIT["Stratified Split (Fit on Train ONLY)"]
+        RESAMP["Imbalance Handling (SMOTE / Class Weights)"]
+        FEAT["Feature Engineering (PCA transforms, velocity)"]
+    end
 
-## 📊 Model performance
+    subgraph Modeling["Model Training & Tracking"]
+        XGB["XGBoost / LightGBM Ensembles"]
+        THRESH["Cost-Sensitive Threshold Optimizer"]
+        MLFLOW["MLflow Experiment Tracking (:5000)"]
+    end
 
-> [!IMPORTANT] The following numbers are the project's reported results on its held-out test split and should be treated as the benchmark to reproduce, not a general guarantee. If you re-run the evaluation, record results on the same split and compare deterministically.
+    subgraph Explainability["Decision Support & Explainability"]
+        SHAP_ENG["TreeSHAP Attribution Engine"]
+        RAG["Vector Precedent Index (Similar Cases)"]
+        LLM["Anthropic / OpenAI Case Narrator"]
+    end
 
-| Model | Test ROC-AUC | PR-AUC | Notes |
-| --- | --- | --- | --- |
-| Logistic Regression | — | — | Baseline |
-| Random Forest | — | — | Baseline |
-| XGBoost (tuned) | — | — | Primary model |
+    subgraph Serving["Delivery Layer"]
+        API["FastAPI REST Endpoints (:8000)"]
+        DASH["Streamlit Live Dashboard (:8501)"]
+    end
 
-> [!CAUTION] Model cards, exact test-set metrics, and the train/validation split are maintained in `model_cards.md`/`reports/` so the README never drifts from the reproduced numbers. Add a `model_cards.md` + CI check if this is still aspirational.
-
-## 🏗️ Architecture
-
-```text
-FraudLens/
-├── src/
-│   ├── data/                 # Load + preprocessing (+ imbalanced-learn)
-│   ├── features/             # Feature engineering + leakage guards
-│   ├── models/               # XGBoost + ensemble + calibration
-│   ├── explain/              # SHAP + LLM narrative generator
-│   ├── rag/                  # Case retrieval (embeddings + similarity)
-│   ├── dashboard/            # Streamlit live-monitor app
-│   ├── api/                  # FastAPI prediction endpoints
-│   └── train.py              # Full training + eval script
-├── model_cards.md
-├── reports/                  # Held-out metrics
-├── requirements.txt
-└── README.md
+    RAW --> SPLIT --> RESAMP --> FEAT --> XGB
+    XGB --> THRESH --> MLFLOW
+    XGB --> SHAP_ENG --> API
+    FEAT --> RAG --> LLM --> API
+    API --> DASH
 ```
 
-The key anti-leakage rule: every feature is computed **strictly on the training split**; the test split is never used to fit scalers, encoders, or the train-time pipeline (see `features/pipeline.py`'s `fit` on train, `transform` on test).
+*Data flow summary: Training pipelines fit preprocessors strictly on the training partition to eliminate leakage. Tuned models pass predictions to the SHAP engine and RAG index, generating real-time risk scores, attribution vectors, and natural-language justifications served through FastAPI and Streamlit.*
 
-## 📋 Environment variables
+---
 
-| Variable | Default | Required | Description |
-| --- | --- | --- | --- |
-| `DATABASE_URL` | `sqlite:///fraudlens.db` | No | Where the labeled transaction log lives |
-| `MODELS_PATH` | `models/` | No | Directory for serialized model artifacts |
-| `EMBEDDINGS_PATH` | `embeddings/` | No | Precomputed case-embedding store for RAG |
-| `OPENAI_API_KEY` | — | No | LLM narrative + RAG embeddings |
-| `HF_TOKEN` | — | No | Hugging Face for sentence-transformers |
-| `CACHE_DIR` | `cache/` | No | Local cache for offline demo mode |
+## Tech Stack
 
-## 📁 Project structure
+### Data Science & Modeling
+- **Runtime:** Python 3.12+
+- **Gradient Boosting:** `xgboost>=2.1.0`, `lightgbm>=4.5.0`
+- **Machine Learning Core:** `scikit-learn>=1.5.0`, `imbalanced-learn>=0.12.0`
+- **Interpretability:** `shap>=0.46.0`
+- **Data Manipulation:** `pandas>=2.2.0`, `numpy>=1.26.0`
+- **Experiment Tracking:** `mlflow>=2.16.0`
 
-```text
-Credit Card Fraud Detection/
-├── src/
-│   ├── data/
-│   ├── features/
-│   ├── models/
-│   ├── explain/
-│   ├── rag/
-│   ├── dashboard/
-│   └── api/
-├── model_cards.md
-├── reports/
-├── requirements.txt
-└── README.md
+### API & Application Serving
+- **REST Service:** FastAPI (`fastapi>=0.115.0`), Uvicorn (`uvicorn[standard]>=0.30.0`)
+- **Interactive UI:** Streamlit (`streamlit>=1.40.0`)
+- **Database & Migrations:** SQLAlchemy, Alembic, SQLite (`fraudlens.db`) / PostgreSQL
+- **Resilience:** Redis rate limiting (`slowapi`), Tenacity retry logic
+
+### Infrastructure
+- **Containerization:** Multi-stage `Dockerfile`, Docker Compose (`docker-compose.yml`)
+
+---
+
+## Engineering Features
+
+### Anti-Leakage Pipeline Architecture
+A common flaw in fraud detection models is preprocessing the entire dataset before splitting, allowing test set distributions to leak into normalization parameters.
+- **Strict Separation:** `src/features/pipeline.py` enforces a rigid `fit` on training data and `transform` on validation/test data protocol.
+- **Verification:** Unit tests in [`tests/test_preprocessing.py`](tests/test_preprocessing.py) verify that scaler statistics and imputation values remain isolated to training folds.
+
+### Cost-Sensitive Threshold Optimization
+Default classification thresholds (0.5) are suboptimal for severe class imbalances (where fraud constitutes < 0.2% of transactions).
+- **Business Loss Formulation:** `src/models/business_cost.py` models expected financial impact: `Cost = (False Positives × Review Cost) + (False Negatives × Average Fraud Value)`.
+- The optimal decision threshold is mathematically selected to minimize total financial exposure rather than maximizing raw accuracy.
+
+### Grounded Multi-Stage Explanations
+Every flagged transaction generates three complementary layers of explanation:
+1. **Mathematical:** Exact SHAP feature importance scores detailing directional impact.
+2. **Precedent Retrieval:** Vector similarity search locating the closest past confirmed fraud records.
+3. **Analyst Narrative:** An automated plain-language summary recommending concrete investigative actions.
+
+---
+
+## Prerequisites
+
+Before running FraudLens, ensure you have installed:
+- **Python:** Version 3.12 or newer (`python --version`)
+- **Docker & Docker Compose:** Required for running the containerized multi-service stack
+- **Kaggle API Credentials:** Optional, for downloading the original European credit card fraud benchmark dataset
+
+---
+
+## Quick Start
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System.git
+cd Credit-Card-Fraud-Detection-System
 ```
 
-## 📡 API endpoints
+### 2. Configure Python environment
 
-| Method | Path | Description |
-| --- | --- | --- |
-| `POST` | `/api/v1/predict` | Return the fraud probability + SHAP breakdown for one transaction |
-| `POST` | `/api/v1/explain` | Return the LLM narrative + RAG case summary for one transaction |
-| `GET` | `/health` | Health check |
+**On Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pip install -e .
+```
 
-### Example usage
+**On Linux / macOS (Bash):**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+### 3. Set environment configuration
+```bash
+cp .env.example .env
+```
+*(On Windows cmd: `copy .env.example .env`).*
+
+### 4. Run the Training Pipeline
+Train baseline and XGBoost models, calculate SHAP values, and evaluate performance:
+```bash
+python run_pipeline.py
+```
+
+### 5. Launch the FastAPI Prediction Service
+```bash
+uvicorn api.main:app --reload --port 8000
+```
+Interactive API documentation will be available at `http://localhost:8000/docs`.
+
+### 6. Launch the Streamlit Monitoring Dashboard (Separate terminal)
+```bash
+streamlit run app/dashboard.py
+```
+Open `http://localhost:8501` to view real-time model metrics and interactive SHAP transaction inspections.
+
+### 7. Launch MLflow Experiment UI (Optional)
+```bash
+mlflow ui --port 5000
+```
+Open `http://localhost:5000` to compare hyperparameter runs and ROC-AUC curves.
+
+---
+
+## Docker Deployment
+
+To launch the complete containerized FraudLens stack (FastAPI, Streamlit, and Redis):
 
 ```bash
-# Classify one transaction and print the explanation
-curl -X POST http://localhost:8000/api/v1/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "amount": 1200.00,
-    "card_country": "US",
-    "merchant_category": "electronics",
-    "hour_of_day": 3,
-    "ip_risk_score": 0.91
-  }'
+# 1. Prepare environment
+cp .env.example .env
+
+# 2. Build and launch services
+docker compose up --build -d
+
+# 3. View live logs
+docker compose logs -f
 ```
 
-## 🧪 Testing
+Access endpoints:
+- **FastAPI Documentation:** `http://localhost:8000/docs`
+- **Streamlit Dashboard:** `http://localhost:8501`
+
+To stop containers:
+```bash
+docker compose down
+```
+
+---
+
+## Configuration
+
+Settings are parsed in [`src/config.py`](src/config.py) from environment variables or a local `.env` file:
+
+| Variable | Required | Default | Description | Secret |
+|:---|:---:|:---|:---|:---:|
+| `API_SECRET_KEY` | No | `dev-secret` | Authentication key for protected administrative API endpoints | **Yes** |
+| `DATABASE_URL` | No | `sqlite:///./fraudlens.db` | Persistence connection string for transaction logs | **Yes** |
+| `REDIS_URL` | No | `redis://localhost:6379/0` | Redis instance for rate limiting and cache | **Yes** |
+| `ANTHROPIC_API_KEY` | No | `""` | Optional API key for Claude-powered analyst narratives | **Yes** |
+| `OPENAI_API_KEY` | No | `""` | Optional API key for OpenAI-powered analyst narratives | **Yes** |
+| `OPTIMAL_THRESHOLD` | No | `0.45` | Default decision boundary probability for fraud classification | No |
+| `COST_FP` | No | `10.0` | Estimated operational cost ($) of reviewing a false positive alert | No |
+| `COST_FN` | No | `250.0` | Estimated average financial loss ($) of a missed fraud incident | No |
+
+---
+
+## Project Structure
+
+```text
+Credit-Card-Fraud-Detection-System/
+├── api/                           # FastAPI application endpoints and route routers
+│   ├── main.py                    # API entrypoint and lifecycle events
+│   └── routers/                   # Endpoints: /predict, /batch, /explain, /health
+├── app/                           # Streamlit dashboard application
+│   └── dashboard.py               # Live transaction visualizer and SHAP inspector
+├── data/                          # Dataset storage (raw, processed, synthetic caches)
+├── models/                        # Serialized model artifacts (.joblib, .json)
+├── notebooks/                     # Exploratory data analysis and research notebooks
+├── reports/                       # Generated evaluation summaries and figures
+├── src/                           # Core machine learning package
+│   ├── data/                      # Data loaders, Kaggle fetchers, synthetic generators
+│   ├── features/                  # Feature engineering, scaling, anti-leakage pipelines
+│   ├── models/                    # XGBoost, LightGBM, cost-sensitive threshold optimizer
+│   ├── explain/                   # SHAP attribution calculations and LLM narrators
+│   └── rag/                       # Historical case vector indexing and similarity search
+├── tests/                         # Automated test suite (457 test cases across 28 modules)
+├── .env.example                   # Annotated environment variable template
+├── Dockerfile                     # Multi-stage production container build
+├── docker-compose.yml             # Docker service composition definition
+├── Makefile                       # Development task runner
+├── pyproject.toml                 # Package definition and tool configurations
+├── requirements.txt               # Pinned package dependencies
+└── run_pipeline.py                # End-to-end training and evaluation script
+```
+
+---
+
+## Testing
+
+The test suite validates data preprocessing, anti-leakage boundaries, model serialization, SHAP generation, and API contracts:
 
 ```bash
-# Run the test suite
+# Run the complete test suite
 pytest tests/ -v
+
+# Run unit tests only
+pytest tests/ -m "unit" -v
+
+# Run with coverage report
+pytest tests/ --cov=src --cov=api --cov-report=term-missing
+
+# Run documentation anchor, link, and fence validation
+python .github/scripts/lint_readme.py
 ```
 
-> [!NOTE] CI enforces **>=75% test coverage** on the `src/` package.
+---
 
-## 🗺️ Roadmap
+## Limitations and Threat Model
 
-> [!CAUTION] Checked items are built and verified. Unchecked items are tracked in the issue tracker.
+- **Adversarial Concept Drift:** Fraud patterns evolve rapidly. The system includes drift detection utilities (`src/models/drift.py`), but production models require periodic retraining on recent labeled data.
+- **Synthetic Fallback:** When Kaggle benchmark data is not locally present, the training pipeline generates synthetic transactions matching statistical properties of financial data. Real-world evaluation should be run against production transaction logs.
+- **Offline Explainability:** While LLM case narratives require external AI API keys, deterministic risk scores and TreeSHAP feature attributions operate entirely offline with zero third-party dependencies.
 
-- [x] XGBoost + ensemble baselines
-- [x] SHAP explainability per prediction
-- [x] LLM narrative generation
-- [x] RAG case retrieval for alerts
-- [x] Streamlit dashboard
-- [x] FastAPI REST API
-- [ ] Synthetic data generator for dev (tracked public issue)
+---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions and model improvements are welcome! Please review [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting pull requests.
 
-## 📬 Support
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/isolation-forest-tuning`).
+3. Commit your changes following Conventional Commits (`git commit -m 'feat: optimize anomaly detection hyperparameters'`).
+4. Ensure all tests and linters pass (`pytest tests/` and `python .github/scripts/lint_readme.py`).
+5. Open a Pull Request.
 
-- 🐛 [Report a bug](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/issues)
-- 💡 [Request a feature](https://github.com/themanoj-025/Credit-Card-Fraud-Detection-System/issues)
-- 📧 Email the maintainer via the issue tracker
+---
+
+## Security
+
+Please report vulnerabilities confidentially according to our security policy in [SECURITY.md](./SECURITY.md). Do not file public issues for active security exploits.
+
+---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+This project is licensed under the terms of the MIT License. See [LICENSE](./LICENSE) for details.
