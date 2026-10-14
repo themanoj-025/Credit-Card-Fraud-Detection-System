@@ -236,7 +236,7 @@ docker compose down
 
 ## Configuration
 
-Settings are parsed in [`src/config.py`](src/config.py) from environment variables or a local `.env` file:
+Settings are parsed in [`src/fraudlens/config.py`](src/fraudlens/config.py) from environment variables or a local `.env` file:
 
 | Variable | Required | Default | Description | Secret |
 |:---|:---:|:---|:---|:---:|
