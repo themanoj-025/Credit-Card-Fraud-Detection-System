@@ -4,7 +4,7 @@ aiohttp==3.14.3
     # via mlflow
 aiosignal==1.4.0
     # via aiohttp
-aiosqlite==0.19.0
+aiosqlite==0.22.1
     # via -r requirements.txt
 alembic==1.20.0
     # via
@@ -17,7 +17,7 @@ annotated-doc==0.0.5
     # via fastapi
 annotated-types==0.8.0
     # via pydantic
-anthropic==1.11.0
+anthropic==1.8.0
     # via -r requirements.txt
 anyio==4.14.2
     # via
@@ -29,7 +29,7 @@ anyio==4.14.2
     #   streamlit
 asgiref==3.12.1
     # via opentelemetry-instrumentation-asgi
-asyncpg==0.28.0
+asyncpg==0.31.0
     # via -r requirements.txt
 attrs==26.1.0
     # via
@@ -102,7 +102,7 @@ execnet==2.1.2
     # via pytest-xdist
 faiss-cpu==1.15.1
     # via -r requirements.txt
-fastapi==0.142.2
+fastapi==0.141.1
     # via
     #   -r requirements.txt
     #   mlflow-skinny
@@ -195,7 +195,7 @@ importlib-metadata==8.9.0
     # via mlflow-skinny
 iniconfig==2.3.0
     # via pytest
-isort==9.0.2
+isort==5.13.2
     # via -r requirements.txt
 itsdangerous==2.2.0
     # via
@@ -220,7 +220,7 @@ jsonschema-specifications==2025.9.1
     # via jsonschema
 kiwisolver==1.5.0
     # via matplotlib
-lightgbm==4.6.0
+lightgbm==4.7.0
     # via -r requirements.txt
 limits==5.8.0
     # via slowapi
@@ -228,7 +228,7 @@ llvmlite==0.49.0
     # via
     #   numba
     #   pynndescent
-locust==2.46.7
+locust==2.46.6
     # via -r requirements.txt
 mako==1.4.1
     # via alembic
@@ -238,16 +238,16 @@ markupsafe==3.0.3
     #   jinja2
     #   mako
     #   werkzeug
-matplotlib==3.11.2
+matplotlib==3.11.1
     # via
     #   -r requirements.txt
     #   mlflow
     #   seaborn
-mlflow==3.17.1
+mlflow==3.16.1
     # via -r requirements.txt
-mlflow-skinny==3.17.1
+mlflow-skinny==3.16.1
     # via mlflow
-mlflow-tracing==3.17.1
+mlflow-tracing==3.16.1
     # via mlflow
 msgpack==1.2.1
     # via locust
@@ -256,9 +256,7 @@ multidict==6.7.1
     #   aiohttp
     #   yarl
 mypy-extensions==1.1.0
-    # via
-    #   black
-    #   isort
+    # via black
 narwhals==2.25.0
     # via
     #   altair
@@ -269,8 +267,9 @@ nodeenv==1.10.0
 numba==0.67.0
     # via
     #   pynndescent
+    #   shap
     #   umap-learn
-numpy==2.5.2
+numpy==2.5.3
     # via
     #   -r requirements.txt
     #   contourpy
@@ -291,13 +290,11 @@ numpy==2.5.2
     #   streamlit
     #   umap-learn
     #   xgboost
-opentelemetry-api==1.45.1
+opentelemetry-api==1.44.0
     # via
     #   -r requirements.txt
-    #   fastapi
     #   mlflow-skinny
     #   mlflow-tracing
-    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
@@ -305,52 +302,45 @@ opentelemetry-api==1.45.1
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-http-transport==0.66b1
-    # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp==1.45.1
+opentelemetry-exporter-otlp==1.44.0
     # via -r requirements.txt
-opentelemetry-exporter-otlp-common==0.66b1
+opentelemetry-exporter-otlp-proto-common==1.44.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-common==1.45.1
-    # via
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.45.1
+opentelemetry-exporter-otlp-proto-grpc==1.44.0
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.45.1
+opentelemetry-exporter-otlp-proto-http==1.44.0
     # via opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.66b1
+opentelemetry-instrumentation==0.65b0
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-asgi==0.66b1
+opentelemetry-instrumentation-asgi==0.65b0
     # via opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-fastapi==0.66b1
+opentelemetry-instrumentation-fastapi==0.65b0
     # via -r requirements.txt
-opentelemetry-proto==1.45.1
+opentelemetry-proto==1.44.0
     # via
     #   mlflow-skinny
     #   mlflow-tracing
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.45.1
+opentelemetry-sdk==1.44.0
     # via
     #   -r requirements.txt
     #   mlflow-skinny
     #   mlflow-tracing
-    #   opentelemetry-exporter-otlp-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.66b1
+opentelemetry-semantic-conventions==0.65b0
     # via
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-sdk
-opentelemetry-util-http==0.66b1
+opentelemetry-util-http==0.65b0
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
@@ -372,6 +362,7 @@ packaging==24.2
     #   shap
     #   skops
     #   streamlit
+    #   wheel
 pandas==2.3.3
     # via
     #   -r requirements.txt
@@ -395,7 +386,7 @@ pluggy==1.6.0
     # via
     #   pytest
     #   pytest-cov
-pre-commit==3.0.0
+pre-commit==3.8.0
     # via -r requirements.txt
 prettytable==3.18.0
     # via skops
@@ -449,7 +440,7 @@ pynndescent==0.6.0
     # via umap-learn
 pyparsing==3.3.2
     # via matplotlib
-pytest==9.0.3
+pytest==9.1.1
     # via
     #   -r requirements.txt
     #   locust
@@ -460,7 +451,7 @@ pytest-asyncio==1.4.0
     # via -r requirements.txt
 pytest-cov==7.1.0
     # via -r requirements.txt
-pytest-xdist==3.3.0
+pytest-xdist==3.8.0
     # via -r requirements.txt
 python-dateutil==2.9.0.post0
     # via
@@ -469,7 +460,7 @@ python-dateutil==2.9.0.post0
     #   pandas
 python-discovery==1.5.2
     # via virtualenv
-python-dotenv==1.2.4
+python-dotenv==1.2.3
     # via
     #   -r requirements.txt
     #   mlflow-skinny
@@ -506,7 +497,6 @@ requests==2.34.2
     #   docker
     #   locust
     #   mlflow-skinny
-    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-http
     #   python-socketio
     #   streamlit
@@ -516,19 +506,20 @@ rpds-py==2026.6.3
     # via
     #   jsonschema
     #   referencing
-ruff==0.17.0
+ruff==0.16.8
     # via -r requirements.txt
-scikit-learn==1.9.1
+scikit-learn==1.9.0
     # via
     #   -r requirements.txt
     #   imbalanced-learn
+    #   lightgbm
     #   mlflow
     #   pynndescent
     #   shap
     #   sklearn-compat
     #   skops
     #   umap-learn
-scipy==1.18.1
+scipy==1.17.1
     # via
     #   -r requirements.txt
     #   imbalanced-learn
@@ -540,9 +531,9 @@ scipy==1.18.1
     #   skops
     #   umap-learn
     #   xgboost
-seaborn==0.12.0
+seaborn==0.13.2
     # via -r requirements.txt
-shap==0.53.0
+shap==0.49.1
     # via -r requirements.txt
 simple-websocket==1.1.0
     # via python-engineio
@@ -554,13 +545,13 @@ skops==0.15.0
     # via mlflow
 slicer==0.0.8
     # via shap
-slowapi==0.1.9
+slowapi==0.1.10
     # via -r requirements.txt
 smmap==5.0.3
     # via gitdb
 sniffio==1.3.1
     # via anthropic
-sqlalchemy==2.1.2
+sqlalchemy==2.0.54
     # via
     #   -r requirements.txt
     #   alembic
@@ -574,11 +565,11 @@ starlette==1.6.0
     #   mlflow-skinny
     #   prometheus-fastapi-instrumentator
     #   streamlit
-streamlit==1.65.0
+streamlit==1.64.0
     # via -r requirements.txt
 structlog==23.3.0
     # via -r requirements.txt
-tenacity==9.2.1
+tenacity==9.1.4
     # via -r requirements.txt
 threadpoolctl==3.6.0
     # via
@@ -619,6 +610,7 @@ typing-extensions==4.16.0
     #   pydantic-core
     #   pytest-asyncio
     #   referencing
+    #   shap
     #   sqlalchemy
     #   starlette
     #   streamlit
@@ -630,7 +622,7 @@ typing-inspection==0.4.4
     #   pydantic-settings
 tzdata==2026.3
     # via pandas
-umap-learn==0.5.3
+umap-learn==0.5.12
     # via -r requirements.txt
 urllib3==2.7.0
     # via
@@ -638,7 +630,7 @@ urllib3==2.7.0
     #   docker
     #   geventhttpclient
     #   requests
-uvicorn==0.54.0
+uvicorn==0.53.0
     # via
     #   -r requirements.txt
     #   mlflow-skinny
@@ -659,6 +651,8 @@ werkzeug==3.1.8
     #   flask-cors
     #   flask-login
     #   locust
+wheel==0.48.0
+    # via lightgbm
 wrapt==2.3.0
     # via
     #   deprecated
