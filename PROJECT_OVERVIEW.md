@@ -174,7 +174,7 @@ graph TD
     Client["Payment Gateway / Checkout Service"] -->|"HTTP POST /predict (API Key)"| FraudLens["FraudLens System Boundary"]
     Analyst["Fraud Risk Analyst"] -->|"HTTPS Web Browser"| FraudLens
     DataScientist["Data Scientist / ML Engineer"] -->|"CLI / Notebooks / Admin API"| FraudLens
-    
+
     FraudLens -->|"Prompt & Context"| LLM["External LLM Provider (OpenAI / Gemini / Ollama)"]
     FraudLens -->|"Scrapes /metrics"| Prometheus["Prometheus Monitoring Service"]
     Prometheus -->|"Visualizes Metrics"| Grafana["Grafana Telemetry Dashboard"]
@@ -353,7 +353,7 @@ stateDiagram-v2
     [*] --> Ingested: POST /predict received
     Ingested --> Preprocessed: Scalers applied
     Preprocessed --> Scored: Model inference complete
-    
+
     state Scored {
         [*] --> ThresholdCheck
         ThresholdCheck --> AutoApproved: prob < threshold
@@ -363,10 +363,10 @@ stateDiagram-v2
     AutoApproved --> Dispatched: Immediate 200 OK
     FlaggedForReview --> InQueue: Enqueued for analyst
     InQueue --> UnderInvestigation: Analyst opens record
-    
+
     UnderInvestigation --> ConfirmedFraud: Analyst confirms theft
     UnderInvestigation --> ConfirmedLegitimate: Analyst confirms false positive
-    
+
     ConfirmedFraud --> FeedbackStored: Database record updated
     ConfirmedLegitimate --> FeedbackStored: Database record updated
     FeedbackStored --> [*]
@@ -989,55 +989,55 @@ For cloud production environments, standard manifests are provided:
 
 This examination verifies deep forensic comprehension of the FraudLens architecture:
 
-1. **Q: What is the exact class imbalance percentage in the standard credit card fraud benchmark used by FraudLens?**  
+1. **Q: What is the exact class imbalance percentage in the standard credit card fraud benchmark used by FraudLens?**
    *A:* 0.172% fraud incidence (492 fraud cases out of 284,807 total transactions). Reference: [`README.md`](README.md).
-2. **Q: What default dollar value is assigned to an undetected fraud loss (`AVG_FRAUD_LOSS`)?**  
+2. **Q: What default dollar value is assigned to an undetected fraud loss (`AVG_FRAUD_LOSS`)?**
    *A:* $1,200.00. Reference: [`src/fraudlens/config.py`](src/fraudlens/config.py).
-3. **Q: What default operational cost is assigned to manual analyst review (`REVIEW_COST`)?**  
+3. **Q: What default operational cost is assigned to manual analyst review (`REVIEW_COST`)?**
    *A:* $15.00. Reference: [`src/fraudlens/config.py`](src/fraudlens/config.py).
-4. **Q: What is the default optimal decision threshold (`DECISION_THRESHOLD`) configured in settings?**  
+4. **Q: What is the default optimal decision threshold (`DECISION_THRESHOLD`) configured in settings?**
    *A:* 0.045. Reference: [`src/fraudlens/config.py`](src/fraudlens/config.py).
-5. **Q: What Python version requirement is enforced across build manifests?**  
+5. **Q: What Python version requirement is enforced across build manifests?**
    *A:* Python >= 3.12. Reference: [`pyproject.toml`](pyproject.toml).
-6. **Q: How many automated test functions exist across how many test files?**  
+6. **Q: How many automated test functions exist across how many test files?**
    *A:* 457 test functions across 31 test files. Reference: [`tests/`](tests/).
-7. **Q: What hashing algorithm protects API keys stored in the database?**  
+7. **Q: What hashing algorithm protects API keys stored in the database?**
    *A:* SHA-256. Reference: [`api/auth.py`](api/auth.py).
-8. **Q: What are the three states implemented by `circuit_breaker.py`?**  
+8. **Q: What are the three states implemented by `circuit_breaker.py`?**
    *A:* `CLOSED`, `OPEN`, and `HALF_OPEN`. Reference: [`circuit_breaker.py`](circuit_breaker.py).
-9. **Q: How many consecutive failures trip the circuit breaker into `OPEN` state?**  
+9. **Q: How many consecutive failures trip the circuit breaker into `OPEN` state?**
    *A:* 5 failures (`failure_threshold=5`). Reference: [`circuit_breaker.py`](circuit_breaker.py).
-10. **Q: How many seconds does the circuit breaker remain open before transitioning to `HALF_OPEN`?**  
+10. **Q: How many seconds does the circuit breaker remain open before transitioning to `HALF_OPEN`?**
     *A:* 60 seconds (`recovery_timeout=60`). Reference: [`circuit_breaker.py`](circuit_breaker.py).
-11. **Q: Which scaler normalizes the `Amount` feature during preprocessing?**  
+11. **Q: Which scaler normalizes the `Amount` feature during preprocessing?**
     *A:* `RobustScaler` (to mitigate extreme outlier influence). Reference: [`src/fraudlens/data/preprocessing.py`](src/fraudlens/data/preprocessing.py).
-12. **Q: Which scaler normalizes the `Time` feature during preprocessing?**  
+12. **Q: Which scaler normalizes the `Time` feature during preprocessing?**
     *A:* `StandardScaler`. Reference: [`src/fraudlens/data/preprocessing.py`](src/fraudlens/data/preprocessing.py).
-13. **Q: Which statistical tests detect feature distribution shifts in `drift.py`?**  
+13. **Q: Which statistical tests detect feature distribution shifts in `drift.py`?**
     *A:* Two-sample Kolmogorov-Smirnov test and Population Stability Index (PSI). Reference: [`src/fraudlens/monitoring/drift.py`](src/fraudlens/monitoring/drift.py).
-14. **Q: What primary ORM and database engine are configured by default?**  
+14. **Q: What primary ORM and database engine are configured by default?**
     *A:* SQLAlchemy async engine with SQLite via `aiosqlite` (`sqlite+aiosqlite:///data/fraudlens.db`). Reference: [`src/fraudlens/persistence/database.py`](src/fraudlens/persistence/database.py).
-15. **Q: What are the 6 relational tables declared in `models.py`?**  
+15. **Q: What are the 6 relational tables declared in `models.py`?**
     *A:* `predictions`, `api_keys`, `feedback`, `llm_calls`, `model_candidates`, and `drift_events`. Reference: [`src/fraudlens/persistence/models.py`](src/fraudlens/persistence/models.py).
-16. **Q: Which 6 pages make up the Streamlit operational dashboard?**  
+16. **Q: Which 6 pages make up the Streamlit operational dashboard?**
     *A:* Live Monitor, Case Investigator, Analyst Copilot, Model Performance, Model Governance, and Governance Tabs. Reference: [`app/pages/`](app/pages/).
-17. **Q: What HTTP header conveys client credentials to FastAPI endpoints?**  
+17. **Q: What HTTP header conveys client credentials to FastAPI endpoints?**
     *A:* `X-API-Key`. Reference: [`api/auth.py`](api/auth.py).
-18. **Q: What endpoint provides Prometheus telemetry scraping?**  
+18. **Q: What endpoint provides Prometheus telemetry scraping?**
     *A:* `/metrics`. Reference: [`api/main.py`](api/main.py).
-19. **Q: What load testing tool is automated via `load-test.js`?**  
+19. **Q: What load testing tool is automated via `load-test.js`?**
     *A:* k6. Reference: [`load-test.js`](load-test.js).
-20. **Q: What unsupervised algorithm flags out-of-distribution transactions?**  
+20. **Q: What unsupervised algorithm flags out-of-distribution transactions?**
     *A:* Isolation Forest. Reference: [`src/fraudlens/models/anomaly.py`](src/fraudlens/models/anomaly.py).
-21. **Q: What distance metric ranks historical cases in `rag_similar_cases.py`?**  
+21. **Q: What distance metric ranks historical cases in `rag_similar_cases.py`?**
     *A:* Cosine similarity over normalized feature representations. Reference: [`src/fraudlens/llm/rag_similar_cases.py`](src/fraudlens/llm/rag_similar_cases.py).
-22. **Q: What explainability algorithm computes local additive feature attributions?**  
+22. **Q: What explainability algorithm computes local additive feature attributions?**
     *A:* TreeSHAP (`shap.TreeExplainer`). Reference: [`src/fraudlens/explainability/shap_explainer.py`](src/fraudlens/explainability/shap_explainer.py).
-23. **Q: What fallback occurs if an external LLM call fails?**  
+23. **Q: What fallback occurs if an external LLM call fails?**
     *A:* A deterministic template-based narrative synthesizes top SHAP drivers and transaction metadata. Reference: [`src/fraudlens/llm/case_narrator.py`](src/fraudlens/llm/case_narrator.py).
-24. **Q: What tool manages database schema versioning and migrations?**  
+24. **Q: What tool manages database schema versioning and migrations?**
     *A:* Alembic. Reference: [`alembic/`](alembic/).
-25. **Q: What total number of tracked files are cataloged in this repository?**  
+25. **Q: What total number of tracked files are cataloged in this repository?**
     *A:* 244 tracked files with 100% manifest coverage. Reference: [§APP](#app).
 
 ---
