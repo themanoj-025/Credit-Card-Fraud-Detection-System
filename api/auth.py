@@ -35,12 +35,17 @@ _ADMIN_SECRET = os.environ.get("FRAUDLENS_ADMIN_SECRET", "")
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
-def _verify_api_key(api_key: str) -> str | None:
+def _hash_api_token(token_value: str) -> str:
+    """Compute constant-time SHA-256 hash for API key lookup."""
+    return hashlib.sha256(token_value.encode("utf-8")).hexdigest()
+
+
+def _verify_api_key(raw_token: str) -> str | None:
     """
     Verify an API key against configured hashed keys.
 
     Args:
-        api_key: The raw API key from the request header
+        raw_token: The raw API key from the request header
 
     Returns:
         The key's role ("admin" or "readonly") if valid, None otherwise
@@ -49,7 +54,7 @@ def _verify_api_key(api_key: str) -> str | None:
         # No keys configured — allow all requests (development mode)
         return "admin"
 
-    key_hash = hashlib.sha256(api_key.encode()).hexdigest()
+    key_hash = _hash_api_token(raw_token)
     for entry in _API_KEY_CONFIG.split(";"):
         entry = entry.strip()
         if "=" in entry:
@@ -106,14 +111,9 @@ async def require_admin_key(
         async def create_key(key: str = Depends(require_admin_key)) -> Any:
             ...
     """
-    key_hash = hashlib.sha256(api_key.encode()).hexdigest()
-
-    for entry in _API_KEY_CONFIG.split(";"):
-        entry = entry.strip()
-        if "=" in entry:
-            stored_hash, role = entry.split("=", 1)
-            if hmac.compare_digest(key_hash, stored_hash) and role == "admin":
-                return api_key
+    role = _verify_api_key(api_key)
+    if role == "admin":
+        return api_key
 
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
