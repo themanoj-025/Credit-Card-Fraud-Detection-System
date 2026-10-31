@@ -1128,8 +1128,6 @@ This examination verifies deep forensic comprehension of the FraudLens architect
 | [`.gitmessage`](.gitmessage) | `no-ext` | 11 | 320 | Configuration or build asset |
 | [`.mailmap`](.mailmap) | `no-ext` | 6 | 298 | Configuration or build asset |
 | [`.pre-commit-config.yaml`](.pre-commit-config.yaml) | `.yaml` | 59 | 2182 | Configuration or build asset |
-| [`AGENTS.md`](AGENTS.md) | `.md` | 77 | 2027 | Documentation guide |
-| [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md) | `.md` | 65 | 2699 | Documentation guide |
 | [`CHANGELOG.md`](CHANGELOG.md) | `.md` | 35 | 951 | Documentation guide |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | `.md` | 48 | 1051 | Documentation guide |
 | [`Dockerfile`](Dockerfile) | `no-ext` | 137 | 5244 | Configuration or build asset |
@@ -1139,7 +1137,6 @@ This examination verifies deep forensic comprehension of the FraudLens architect
 | [`PROJECT_ANALYSIS.md`](PROJECT_ANALYSIS.md) | `.md` | 18 | 983 | Documentation guide |
 | [`README.md`](README.md) | `.md` | 333 | 15054 | Documentation guide |
 | [`SECURITY.md`](SECURITY.md) | `.md` | 26 | 1086 | Documentation guide |
-| [`ai-provenance.json`](ai-provenance.json) | `.json` | 64 | 1722 | Configuration or build asset |
 | [`alembic.ini`](alembic.ini) | `.ini` | 50 | 1254 | Configuration or build asset |
 | [`alembic/env.py`](alembic/env.py) | `.py` | 98 | 2858 | Database migration script or environment |
 | [`alembic/script.py.mako`](alembic/script.py.mako) | `.mako` | 26 | 635 | Database migration script or environment |
