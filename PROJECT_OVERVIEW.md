@@ -7,8 +7,8 @@ git_commit_full: "4f84481e956c63759687f1aeb5e9d8899fd410b1"
 git_tree_hash: "3e4a013cf979ed4b63099bddefec79a5b4b28d5f"
 document_version: "3.0.0"
 generated_at: "2026-10-15T15:25:00+05:30"
-author: "Antigravity Autonomous Forensics Engine"
-verification_status: "VERIFIED_CANONICAL"
+author: "Manoj Jana"
+verification_status: "VERIFIED"
 manifests_sha256:
   requirements.txt: "67c037af595396cbc447b3afad00a4520de0fc691ae5978c065160aff1912b44"
   pyproject.toml: "254e064637b3ccaadfc551220939f6efd6850c5b05e8fea832ce8a6e4dc8f79f"
@@ -1132,9 +1132,7 @@ This examination verifies deep forensic comprehension of the FraudLens architect
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | `.md` | 48 | 1051 | Documentation guide |
 | [`Dockerfile`](Dockerfile) | `no-ext` | 137 | 5244 | Configuration or build asset |
 | [`LICENSE`](LICENSE) | `no-ext` | 21 | 1079 | Configuration or build asset |
-| [`MODERNIZATION_AUDIT.md`](MODERNIZATION_AUDIT.md) | `.md` | 51 | 2104 | Documentation guide |
 | [`Makefile`](Makefile) | `no-ext` | 167 | 7325 | Configuration or build asset |
-| [`PROJECT_ANALYSIS.md`](PROJECT_ANALYSIS.md) | `.md` | 18 | 983 | Documentation guide |
 | [`README.md`](README.md) | `.md` | 333 | 15054 | Documentation guide |
 | [`SECURITY.md`](SECURITY.md) | `.md` | 26 | 1086 | Documentation guide |
 | [`alembic.ini`](alembic.ini) | `.ini` | 50 | 1254 | Configuration or build asset |
