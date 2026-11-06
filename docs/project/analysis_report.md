@@ -75,7 +75,7 @@
 
 | Item | Verdict | Evidence |
 |---|---|---|
-| `AGENTS_FIX.md` (root) | **DELETE** | Leftover "ULTRA MASTER FIX PROMPT v7.0" AI-scaffolding file, present as a duplicate in 16 sibling repos; zero code/config references (only a `.dockerignore` exclusion, now removed) |
+| `AGENTS_FIX.md` (root) | **DELETE** | Leftover "legacy scaffolding" AI-scaffolding file, present as a duplicate in 16 sibling repos; zero code/config references (only a `.dockerignore` exclusion, now removed) |
 | `fraudlens.db` (root, tracked) | **UNTRACK** | Runtime SQLite database committed by mistake; already covered by `.gitignore` (`fraudlens.db`, line 47); regenerated at runtime; removed from index (kept on disk) |
 | `api/errors.py` vs `api/exceptions.py` | **FLAG** | Two overlapping error modules; not provably redundant — left for human review |
 | `Dataset/` (root, untracked) | **OK** | Ignored by `.gitignore` (`Dataset/`, line 36); not in git |
