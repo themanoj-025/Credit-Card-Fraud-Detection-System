@@ -3,7 +3,7 @@
 # ════════════════════════════════════════════════════════════════
 
 # ─── Data Science & ML ─────────────────────────────────────────
-pandas>=3.1.0,<4.0.0
+pandas>=3.1.1,<4.0.0
 numpy>=2.5.4,<3.0.0
 scikit-learn>=1.9.1,<2.0.0
 xgboost>=1.7.0,<2.0.0
@@ -19,7 +19,7 @@ anthropic>=2.6.0,<3.0.0       # LLM case narrator + analyst copilot
 faiss-cpu>=1.15.1,<2.0.0        # RAG similar-case retrieval
 
 # ─── Database & Persistence ───────────────────────────────────
-sqlalchemy[asyncio]>=2.1.6,<3.0.0
+sqlalchemy[asyncio]>=2.1.8,<3.0.0
 alembic>=1.20.1,<2.0.0
 asyncpg>=0.32.0,<1.0.0
 aiosqlite>=0.19.0,<1.0.0
@@ -35,7 +35,7 @@ umap-learn>=0.5.3,<1.0.0
 scipy>=1.15.3,<2.0.0
 
 # ─── API ───────────────────────────────────────────────────────
-fastapi>=0.162.0,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
+fastapi>=0.162.2,<1.0.0  # floor 0.116: instrumentator 8.x routing fix requires it
 uvicorn>=0.54.0,<1.0.0
 pydantic>=2.14.3
 pydantic-settings>=2.16.2,<3.0.0
@@ -43,7 +43,7 @@ httpx>=0.24.0,<1.0.0
 slowapi>=0.1.9,<1.0.0            # Rate limiting (Redis-backed)
 
 # ─── Dashboard ─────────────────────────────────────────────────
-streamlit>=1.66.1,<2.0.0
+streamlit>=1.67.0,<2.0.0
 
 # ─── Experiment Tracking ───────────────────────────────────────
 mlflow>=3.18.0,<4.0.0
@@ -85,7 +85,7 @@ opentelemetry-instrumentation-fastapi>=0.66b2,<1.0.0  # FastAPI auto-instrumenta
 # ─── Code Quality ──────────────────────────────────────────────
 black>=26.10.1,<27.0.0
 isort>=9.0.2,<10.0.0
-ruff>=0.17.2,<1.0.0           # Replaces flake8 + typeguard
+ruff>=0.17.4,<1.0.0           # Replaces flake8 + typeguard
 pre-commit>=4.7.0,<5.0.0       # Pre-commit hooks
 
 # ─── Resilience ────────────────────────────────────────────
