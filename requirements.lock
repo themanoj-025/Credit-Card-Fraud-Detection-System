@@ -17,7 +17,7 @@ annotated-doc==0.0.5
     # via fastapi
 annotated-types==0.8.0
     # via pydantic
-anthropic==2.3.0
+anthropic==2.8.0
     # via -r requirements.txt
 anyio==4.14.2
     # via
@@ -132,7 +132,7 @@ gevent==25.5.1
     # via
     #   geventhttpclient
     #   locust
-geventhttpclient==2.3.9
+geventhttpclient==2.5.1
     # via locust
 gitdb==4.0.12
     # via gitpython
@@ -226,7 +226,7 @@ llvmlite==0.49.0
     # via
     #   numba
     #   pynndescent
-locust==2.46.7
+locust==2.47.0
     # via -r requirements.txt
 mako==1.4.1
     # via alembic
@@ -241,11 +241,11 @@ matplotlib==3.11.2
     #   -r requirements.txt
     #   mlflow
     #   seaborn
-mlflow==3.17.2
+mlflow==3.18.0
     # via -r requirements.txt
-mlflow-skinny==3.17.2
+mlflow-skinny==3.18.0
     # via mlflow
-mlflow-tracing==3.17.2
+mlflow-tracing==3.18.0
     # via mlflow
 msgpack==1.2.1
     # via locust
@@ -290,7 +290,7 @@ numpy==2.5.4
     #   streamlit
     #   umap-learn
     #   xgboost
-opentelemetry-api==1.45.1
+opentelemetry-api==1.45.2
     # via
     #   -r requirements.txt
     #   anthropic
@@ -305,38 +305,38 @@ opentelemetry-api==1.45.1
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-http-transport==0.66b1
+opentelemetry-exporter-http-transport==0.66b2
     # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp==1.45.1
+opentelemetry-exporter-otlp==1.45.2
     # via -r requirements.txt
-opentelemetry-exporter-otlp-common==0.66b1
+opentelemetry-exporter-otlp-common==0.66b2
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-common==1.45.1
+opentelemetry-exporter-otlp-proto-common==1.45.2
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.45.1
+opentelemetry-exporter-otlp-proto-grpc==1.45.2
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.45.1
+opentelemetry-exporter-otlp-proto-http==1.45.2
     # via opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.66b1
+opentelemetry-instrumentation==0.66b2
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-asgi==0.66b1
+opentelemetry-instrumentation-asgi==0.66b2
     # via opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-fastapi==0.66b1
+opentelemetry-instrumentation-fastapi==0.66b2
     # via -r requirements.txt
-opentelemetry-proto==1.45.1
+opentelemetry-proto==1.45.2
     # via
     #   mlflow-skinny
     #   mlflow-tracing
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.45.1
+opentelemetry-sdk==1.45.2
     # via
     #   -r requirements.txt
     #   mlflow-skinny
@@ -344,13 +344,13 @@ opentelemetry-sdk==1.45.1
     #   opentelemetry-exporter-otlp-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.66b1
+opentelemetry-semantic-conventions==0.66b2
     # via
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-sdk
-opentelemetry-util-http==0.66b1
+opentelemetry-util-http==0.66b2
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
@@ -429,7 +429,7 @@ pyasn1-modules==0.4.2
     # via google-auth
 pycparser==3.0
     # via cffi
-pydantic==2.13.5
+pydantic==2.14.3
     # via
     #   -r requirements.txt
     #   anthropic
@@ -437,7 +437,7 @@ pydantic==2.13.5
     #   mlflow-skinny
     #   mlflow-tracing
     #   pydantic-settings
-pydantic-core==2.46.5
+pydantic-core==2.50.4
     # via pydantic
 pydantic-settings==2.16.2
     # via -r requirements.txt
@@ -449,14 +449,14 @@ pynndescent==0.6.0
     # via umap-learn
 pyparsing==3.3.2
     # via matplotlib
-pytest==9.1.1
+pytest==9.2.0
     # via
     #   -r requirements.txt
     #   locust
     #   pytest-asyncio
     #   pytest-cov
     #   pytest-xdist
-pytest-asyncio==1.4.0
+pytest-asyncio==1.4.1.post1
     # via -r requirements.txt
 pytest-cov==7.1.0
     # via -r requirements.txt
@@ -479,7 +479,9 @@ python-engineio==4.13.5
     #   locust
     #   python-socketio
 python-multipart==0.0.32
-    # via streamlit
+    # via
+    #   mlflow-skinny
+    #   streamlit
 python-socketio==5.16.4
     # via locust
 pytokens==0.4.1
@@ -631,7 +633,6 @@ urllib3==2.7.0
     # via
     #   databricks-sdk
     #   docker
-    #   geventhttpclient
     #   requests
 uvicorn==0.54.0
     # via
