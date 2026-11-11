@@ -12,7 +12,7 @@
 # ════════════════════════════════════════════════════════════════
 
 # ─── Stage 1: Python Base ─────────────────────────────────────────────
-FROM python:3.12-slim as base
+FROM python:3.15-slim as base
 
 WORKDIR /app
 
